@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% from '_macros.html' import field %}
+{% block title %}Pengaturan Akun - {{ app_name }}{% endblock %}
+{% block content %}
+<div class="max-w-3xl mx-auto">
+    <h1 class="text-2xl font-extrabold text-slate-900 mb-2">Pengaturan Akun</h1>
+    <p class="text-slate-500 text-sm mb-6">
+        {{ current_user.username }} &middot; {{ current_user.email }} &middot;
+        <span class="uppercase text-xs font-semibold">{{ current_user.role }}</span>
+    </p>
+
+    <div class="grid md:grid-cols-2 gap-6">
+        <section class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+            <h2 class="text-lg font-bold text-slate-900 mb-4">Ubah Email</h2>
+            <form method="POST" action="{{ url_for('pengaturan_email') }}" class="space-y-4" novalidate>
+                {{ email_form.hidden_tag() }}
+                {{ field(email_form.email_baru, autocomplete="email", placeholder="nama@email.com") }}
+                {{ field(email_form.password_sekarang, autocomplete="current-password") }}
+                {{ email_form.submit(class="w-full bg-indigo-700 hover:bg-indigo-800 text-white font-semibold py-2.5 rounded-lg cursor-pointer") }}
+            </form>
+        </section>
+
+        <section class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+            <h2 class="text-lg font-bold text-slate-900 mb-4">Ubah Kata Sandi</h2>
+            <form method="POST" action="{{ url_for('pengaturan_password') }}" class="space-y-4" novalidate>
+                {{ password_form.hidden_tag() }}
+                {{ field(password_form.password_sekarang, autocomplete="current-password") }}
+                {{ field(password_form.password_baru, autocomplete="new-password") }}
+                <p class="text-xs text-slate-500 -mt-2">Minimal 8 karakter, mengandung huruf besar, huruf kecil, angka, dan simbol.</p>
+                {{ field(password_form.konfirmasi_password, autocomplete="new-password") }}
+                {{ password_form.submit(class="w-full bg-indigo-700 hover:bg-indigo-800 text-white font-semibold py-2.5 rounded-lg cursor-pointer") }}
+            </form>
+        </section>
+    </div>
+</div>
+{% endblock %}

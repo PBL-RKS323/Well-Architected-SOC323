@@ -3,6 +3,24 @@
 Setiap perubahan dicatat di sini: apa yang berubah, alasannya, dan cara mengujinya.
 Format tanggal: YYYY-MM-DD (WIB).
 
+## [0.2.0] - 2026-10-19 - Pengaturan Akun
+
+### Ditambahkan
+- Halaman **Pengaturan** (`/pengaturan`) untuk semua user yang login: ubah email dan ubah
+  kata sandi. Keduanya wajib memasukkan kata sandi saat ini sebagai konfirmasi.
+- Kata sandi baru tidak boleh sama dengan yang lama, sesi diperbarui setelah ganti kata sandi.
+- Event log baru: `EMAIL_CHANGED`, `PASSWORD_CHANGED`, `CREDENTIAL_CHANGE_FAILED`.
+- Link "Pengaturan" di navbar.
+
+### Diperbaiki
+- Kebijakan kata sandi sebelumnya hanya menerima simbol `@$!%*?&`, sehingga kata sandi seperti
+  `Admin123#` ditolak. Sekarang semua simbol diterima (tetap wajib huruf besar, huruf kecil,
+  angka, simbol, minimal 8 karakter).
+
+### Cara uji
+- `pytest -q` → 33 passed.
+- Manual: login, buka Pengaturan, ganti email/kata sandi, logout, login dengan data baru.
+
 ## [0.1.1] - 2026-10-19 - Database PostgreSQL
 
 ### Diubah

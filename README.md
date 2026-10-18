@@ -12,6 +12,7 @@ smartwatch, dan aksesoris). Dibangun dengan Flask dan database SQL, mengikuti po
 | Manajemen produk / CRUD (khusus admin) | Selesai |
 | Halaman utama / katalog produk | Selesai |
 | Dashboard admin dasar | Selesai |
+| Pengaturan akun (ubah email & kata sandi) | Selesai |
 | Cari & filter, detail + ulasan, cart, checkout, bukti bayar, riwayat pesanan, profil + avatar, kelola akun | Berikutnya |
 
 Riwayat perubahan ada di [CHANGELOG.md](CHANGELOG.md), kontrol keamanan dan format log ada di
@@ -112,6 +113,7 @@ Pengujian memakai database SQLite sementara di memori, jadi tidak menyentuh data
 | `/register` | Tamu | Daftar akun customer |
 | `/login` | Tamu | Login |
 | `/logout` | Login | Logout (POST) |
+| `/pengaturan` | Login | Ubah email & kata sandi |
 | `/admin` | Admin | Dashboard admin |
 | `/admin/produk` | Admin | Daftar produk |
 | `/admin/produk/tambah` | Admin | Tambah produk |

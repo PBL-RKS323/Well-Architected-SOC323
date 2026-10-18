@@ -11,7 +11,7 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 load_dotenv()
 
 from config import Config  # noqa: E402  (dibaca setelah .env dimuat)
-from controllers import auth_controller, admin_controller, produk_controller, katalog_controller  # noqa: E402
+from controllers import auth_controller, admin_controller, produk_controller, katalog_controller, akun_controller  # noqa: E402,E501
 from forms.auth_form import PASSWORD_POLICY, PASSWORD_POLICY_MESSAGE  # noqa: E402
 from helpers.security_logger import init_security_logger, log_event  # noqa: E402
 from middlewares.auth_middleware import init_auth_middleware  # noqa: E402
@@ -89,6 +89,19 @@ def register_routes(app):
     @app.route("/logout", methods=["POST"])
     def logout():
         return auth_controller.logout()
+
+    # --- PENGATURAN AKUN (semua user yang login) ---
+    @app.route("/pengaturan")
+    def pengaturan():
+        return akun_controller.pengaturan()
+
+    @app.route("/pengaturan/email", methods=["POST"])
+    def pengaturan_email():
+        return akun_controller.ubah_email()
+
+    @app.route("/pengaturan/password", methods=["POST"])
+    def pengaturan_password():
+        return akun_controller.ubah_password()
 
     # --- ADMIN ---
     @app.route("/admin")

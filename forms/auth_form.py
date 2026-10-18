@@ -4,9 +4,10 @@ from wtforms.validators import DataRequired, Email, Length, EqualTo, Regexp, Val
 
 from models.user import User
 
-PASSWORD_POLICY = r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$"
-PASSWORD_POLICY_MESSAGE = ("Kata sandi harus mengandung minimal 1 huruf besar, 1 huruf kecil, "
-                           "1 angka, dan 1 karakter spesial (@$!%*?&).")
+# Semua simbol diterima (mis. # - _ .), tidak dibatasi ke daftar tertentu
+PASSWORD_POLICY = r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9\s]).{8,128}$"
+PASSWORD_POLICY_MESSAGE = ("Kata sandi minimal 8 karakter dan harus mengandung huruf besar, huruf kecil, "
+                           "angka, dan simbol (contoh: # @ ! _ -).")
 
 
 class RegisterForm(FlaskForm):

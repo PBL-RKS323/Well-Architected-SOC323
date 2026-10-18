@@ -18,6 +18,7 @@
                         <a href="{{ url_for('admin_dashboard') }}" class="hover:text-indigo-200">Dashboard Admin</a>
                         <a href="{{ url_for('admin_produk') }}" class="hover:text-indigo-200">Kelola Produk</a>
                     {% endif %}
+                    <a href="{{ url_for('pengaturan') }}" class="hover:text-indigo-200">Pengaturan</a>
                     <span class="text-indigo-200">
                         {{ current_user.username }}
                         <span class="ml-1 text-[10px] uppercase px-2 py-0.5 rounded-full {{ 'bg-amber-400 text-amber-950' if current_user.is_admin() else 'bg-indigo-700' }}">{{ current_user.role }}</span>

@@ -1,0 +1,63 @@
+import logging
+
+from flask import render_template, redirect, url_for, flash, session, g
+
+from forms.akun_form import UbahEmailForm, UbahPasswordForm
+from helpers.security_logger import log_event
+from models import db
+
+
+def _render(email_form=None, password_form=None):
+    return render_template(
+        "akun/pengaturan.html",
+        email_form=email_form or UbahEmailForm(prefix="email", formdata=None),
+        password_form=password_form or UbahPasswordForm(prefix="pw", formdata=None),
+    )
+
+
+def pengaturan():
+    return _render()
+
+
+def ubah_email():
+    form = UbahEmailForm(prefix="email")
+    if form.validate_on_submit():
+        if not g.user.check_password(form.password_sekarang.data):
+            log_event("CREDENTIAL_CHANGE_FAILED", logging.WARNING, user_id=g.user.id,
+                      target="email", reason="wrong_current_password")
+            form.password_sekarang.errors.append("Kata sandi saat ini salah.")
+            return _render(email_form=form)
+
+        g.user.email = form.email_baru.data.strip().lower()
+        db.session.commit()
+        log_event("EMAIL_CHANGED", logging.WARNING, user_id=g.user.id, username=g.user.username)
+        flash("Email berhasil diperbarui.", "success")
+        return redirect(url_for("pengaturan"))
+    return _render(email_form=form)
+
+
+def ubah_password():
+    form = UbahPasswordForm(prefix="pw")
+    if form.validate_on_submit():
+        if not g.user.check_password(form.password_sekarang.data):
+            log_event("CREDENTIAL_CHANGE_FAILED", logging.WARNING, user_id=g.user.id,
+                      target="password", reason="wrong_current_password")
+            form.password_sekarang.errors.append("Kata sandi saat ini salah.")
+            return _render(password_form=form)
+        if g.user.check_password(form.password_baru.data):
+            form.password_baru.errors.append("Kata sandi baru tidak boleh sama dengan kata sandi lama.")
+            return _render(password_form=form)
+
+        g.user.set_password(form.password_baru.data)
+        db.session.commit()
+
+        # Sesi diperbarui setelah ganti kata sandi
+        user_id = g.user.id
+        session.clear()
+        session["user_id"] = user_id
+        session.permanent = True
+
+        log_event("PASSWORD_CHANGED", logging.WARNING, user_id=user_id, username=g.user.username)
+        flash("Kata sandi berhasil diperbarui.", "success")
+        return redirect(url_for("pengaturan"))
+    return _render(password_form=form)
