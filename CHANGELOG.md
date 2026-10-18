@@ -3,6 +3,21 @@
 Setiap perubahan dicatat di sini: apa yang berubah, alasannya, dan cara mengujinya.
 Format tanggal: YYYY-MM-DD (WIB).
 
+## [0.1.1] - 2026-10-19 - Database PostgreSQL
+
+### Diubah
+- PostgreSQL ditetapkan sebagai database utama (PostgreSQL 16, terpasang di WSL Ubuntu 24.04
+  untuk pengembangan lokal). MySQL tetap bisa dipakai lewat `DATABASE_URL`.
+- Database `db_ecommerce` dengan user khusus `ecommerce_user` (bukan superuser `postgres`),
+  hak aksesnya hanya untuk database aplikasi.
+
+### Ditambahkan
+- `scripts/start-postgres-wsl.bat` untuk menyalakan PostgreSQL di WSL.
+
+### Cara uji
+- Jalankan `scripts\start-postgres-wsl.bat`, lalu `flask db upgrade` dan `flask run`.
+  Halaman katalog tampil (HTTP 200) dan tabel `users`, `produk` ada di `db_ecommerce`.
+
 ## [0.1.0] - 2026-10-19 - Sprint 1: Fitur Dasar (Luaran ATS)
 
 ### Ditambahkan

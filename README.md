@@ -53,7 +53,12 @@ docs/                   # dokumentasi keamanan
    pip install -r requirements.txt
    ```
 
-2. Buat database kosong.
+2. Buat database kosong. Database utama proyek ini **PostgreSQL** (sesuai arsitektur SOC tim:
+   database di zona terpisah dengan server primary dan backup).
+
+   > **PostgreSQL di Windows lewat WSL:** jika installer Windows tidak bisa diunduh, pasang di WSL
+   > Ubuntu: `wsl -d Ubuntu-24.04 -u root -- apt-get install -y postgresql`. Sebelum menjalankan
+   > aplikasi, jalankan `scripts\start-postgres-wsl.bat` dan biarkan jendelanya terbuka.
 
    PostgreSQL:
    ```sql
@@ -61,7 +66,7 @@ docs/                   # dokumentasi keamanan
    CREATE DATABASE db_ecommerce OWNER ecommerce_user;
    ```
 
-   MySQL / MariaDB:
+   MySQL / MariaDB (alternatif):
    ```sql
    CREATE DATABASE db_ecommerce CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
    ```
