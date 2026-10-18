@@ -4,7 +4,9 @@ from models import db, utcnow
 class Produk(db.Model):
     __tablename__ = "produk"
 
-    KATEGORI = ["Handphone", "Laptop", "Tablet", "Smartwatch", "Audio", "Aksesoris"]
+    # Fokus toko: produk elektronik dari ekosistem brand tertentu
+    MEREK = ["Apple", "Samsung", "Xiaomi"]
+    KATEGORI = ["Handphone", "Laptop", "Smartwatch", "Tablet", "Audio", "Aksesoris"]
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     nama_produk = db.Column(db.String(100), nullable=False)

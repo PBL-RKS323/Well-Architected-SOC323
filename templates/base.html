@@ -19,9 +19,11 @@
                         <a href="{{ url_for('admin_produk') }}" class="hover:text-indigo-200">Kelola Produk</a>
                     {% endif %}
                     <a href="{{ url_for('pengaturan') }}" class="hover:text-indigo-200">Pengaturan</a>
-                    <span class="text-indigo-200">
+                    <span class="flex items-center gap-1.5 text-indigo-100">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/>
+                        </svg>
                         {{ current_user.username }}
-                        <span class="ml-1 text-[10px] uppercase px-2 py-0.5 rounded-full {{ 'bg-amber-400 text-amber-950' if current_user.is_admin() else 'bg-indigo-700' }}">{{ current_user.role }}</span>
                     </span>
                     <form action="{{ url_for('logout') }}" method="POST">
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">

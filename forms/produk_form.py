@@ -14,10 +14,8 @@ class FormProduk(FlaskForm):
         DataRequired(message="Nama produk wajib diisi!"),
         Length(min=3, max=100, message="Nama produk harus di antara 3 hingga 100 karakter."),
     ])
-    merek = StringField("Merek", validators=[
-        DataRequired(message="Merek wajib diisi!"),
-        Length(min=2, max=50, message="Merek harus di antara 2 hingga 50 karakter."),
-    ])
+    merek = SelectField("Merek", choices=[(m, m) for m in Produk.MEREK],
+                        validators=[DataRequired(message="Merek wajib dipilih!")])
     kategori = SelectField("Kategori", choices=[(k, k) for k in Produk.KATEGORI],
                            validators=[DataRequired(message="Kategori wajib dipilih!")])
     harga = DecimalField("Harga (Rp)", places=2, validators=[

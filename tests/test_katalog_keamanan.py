@@ -19,6 +19,32 @@ def test_katalog_menampilkan_produk_dan_rupiah(client):
     assert "Rp 18.999.000" in html
 
 
+def test_katalog_dikelompokkan_per_ekosistem(client):
+    login(client, "admin@tokoelektronik.id", ADMIN_PASSWORD)
+    client.post("/admin/produk/tambah", data=produk_data(nama_produk="iPhone 16", merek="Apple"),
+                content_type="multipart/form-data")
+    client.post("/admin/produk/tambah", data=produk_data(nama_produk="Redmi Note 14", merek="Xiaomi"),
+                content_type="multipart/form-data")
+
+    html = client.get("/").get_data(as_text=True)
+    assert "Ekosistem Apple" in html and "Ekosistem Xiaomi" in html
+    assert "Ekosistem Samsung" not in html  # brand tanpa produk tidak ditampilkan
+    assert html.index("Ekosistem Apple") < html.index("iPhone 16") < html.index("Ekosistem Xiaomi")
+
+
+def test_merek_di_luar_daftar_ditolak(client):
+    login(client, "admin@tokoelektronik.id", ADMIN_PASSWORD)
+    resp = client.post("/admin/produk/tambah", data=produk_data(merek="Merek Palsu"),
+                       content_type="multipart/form-data")
+    assert resp.status_code == 200
+    assert "Not a valid choice" in resp.get_data(as_text=True) or "pilihan" in resp.get_data(as_text=True)
+
+
+def test_kolom_password_punya_tombol_mata(client):
+    html = client.get("/login").get_data(as_text=True)
+    assert "data-toggle-password" in html
+
+
 def test_xss_di_nama_produk_di_escape(client):
     login(client, "admin@tokoelektronik.id", ADMIN_PASSWORD)
     client.post("/admin/produk/tambah", data=produk_data(nama_produk="<script>alert(1)</script>"),

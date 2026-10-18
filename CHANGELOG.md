@@ -3,6 +3,23 @@
 Setiap perubahan dicatat di sini: apa yang berubah, alasannya, dan cara mengujinya.
 Format tanggal: YYYY-MM-DD (WIB).
 
+## [0.2.1] - 2026-10-19 - Penyesuaian Tampilan & Katalog
+
+### Diubah
+- Katalog dikelompokkan per ekosistem brand (Apple, Samsung, Xiaomi) sesuai fokus toko:
+  produk elektronik (handphone, laptop, smartwatch, dll).
+- Merek produk sekarang dipilih dari daftar (Apple, Samsung, Xiaomi), bukan diketik bebas.
+  Urutan kategori: Handphone, Laptop, Smartwatch, Tablet, Audio, Aksesoris.
+- Navbar menampilkan ikon user + username (badge role dihapus).
+- Badge "Mode Admin" di dashboard dihapus.
+
+### Ditambahkan
+- Tombol mata di semua kolom kata sandi untuk menampilkan/menyembunyikan isi (JS terpisah,
+  tetap sesuai Content-Security-Policy).
+
+### Cara uji
+- `pytest -q` → 36 passed.
+
 ## [0.2.0] - 2026-10-19 - Pengaturan Akun
 
 ### Ditambahkan

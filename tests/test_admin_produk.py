@@ -27,7 +27,7 @@ def test_dashboard_admin_dan_log_akses(client, app):
     resp = client.get("/admin")
     html = resp.get_data(as_text=True)
     assert resp.status_code == 200
-    assert "Dashboard Admin" in html and "Mode Admin" in html
+    assert "Dashboard Admin" in html and "Login sebagai admin (admin)" in html
     assert "ADMIN_ACCESS" in read_log(app)
 
 
