@@ -1,0 +1,69 @@
+# Dokumentasi Keamanan
+
+Acuan: OWASP Top 10 2025, alur SSDLC (rencana → kode → uji → monitor) per fitur.
+
+## Pemetaan OWASP Top 10 (2025)
+
+| Risiko | Kontrol yang diterapkan | Lokasi |
+|---|---|---|
+| A01 Broken Access Control | Middleware default-deny, cek role admin dari database tiap request, decorator `admin_required`, aksi ubah data hanya lewat POST | `middlewares/auth_middleware.py` |
+| A02 Security Misconfiguration | `SECRET_KEY` & `DATABASE_URL` wajib dari `.env` (aplikasi menolak jalan tanpa itu), debug mati secara default, header keamanan (CSP, X-Frame-Options, nosniff, Referrer-Policy), halaman error tanpa detail teknis | `config.py`, `app.py` |
+| A03 Software Supply Chain Failures | Versi dependensi dikunci di `requirements.txt` | `requirements.txt` |
+| A04 Cryptographic Failures | Kata sandi di-hash (Werkzeug scrypt), cookie sesi HttpOnly + SameSite=Lax, opsi `SESSION_COOKIE_SECURE` untuk HTTPS | `models/user.py`, `config.py` |
+| A05 Injection | Query lewat ORM SQLAlchemy (terparameter), output Jinja2 auto-escape (XSS), input divalidasi WTForms | `models/`, `forms/` |
+| A06 Insecure Design | Role customer tidak bisa dipilih saat register, upload gambar diperiksa isi biner, nama file acak | `controllers/`, `helpers/image_security.py` |
+| A07 Authentication Failures | Kebijakan kata sandi kuat, penguncian akun 5x gagal, pesan error login generik, sesi dibersihkan saat login (anti session fixation), sesi kedaluwarsa 1 jam, CSRF di semua form | `controllers/auth_controller.py` |
+| A08 Software or Data Integrity Failures | Token CSRF global, file upload divalidasi sebelum disimpan | `app.py`, `helpers/image_security.py` |
+| A09 Security Logging and Alerting Failures | Log audit ke `logs/security.log`, format seragam untuk Wazuh, karakter baris baru dinetralkan (anti log injection) | `helpers/security_logger.py` |
+| A10 Mishandling of Exceptional Conditions | Error handler 400/404/413/500 dengan pesan aman, redirect `next` hanya ke path internal | `app.py`, `controllers/auth_controller.py` |
+
+## Format Log Keamanan (untuk Wazuh)
+
+Lokasi default: `logs/security.log` (bisa diganti lewat `SECURITY_LOG_FILE`).
+
+```
+<waktu ISO 8601 WIB> | <LEVEL> | <EVENT> | src_ip=<ip> | key=value | ...
+```
+
+Contoh:
+
+```
+2026-10-19T14:30:00+07:00 | INFO | SUCCESSFUL_LOGIN | src_ip=192.168.20.10 | user_id=3 | username=budi | role=customer
+2026-10-19T14:31:12+07:00 | WARNING | FAILED_LOGIN | src_ip=192.168.66.5 | email=admin@tokoelektronik.id | reason=invalid_password
+2026-10-19T14:31:40+07:00 | WARNING | ACCOUNT_LOCKED | src_ip=192.168.66.5 | user_id=1 | username=admin | minutes=5
+2026-10-19T14:35:02+07:00 | WARNING | ACCESS_DENIED | src_ip=192.168.20.10 | user_id=3 | username=budi | role=customer | path=/admin
+```
+
+| Event | Level | Kapan |
+|---|---|---|
+| `SUCCESSFUL_LOGIN` | INFO | Login berhasil |
+| `FAILED_LOGIN` | WARNING | Login gagal (`reason=invalid_password` / `unknown_email`) |
+| `ACCOUNT_LOCKED` | WARNING | Akun dikunci setelah 5 kali gagal (indikasi brute force) |
+| `LOGIN_BLOCKED` | WARNING | Percobaan login ke akun yang sedang terkunci |
+| `ADMIN_ACCESS` | INFO | Setiap request ke area `/admin` oleh admin |
+| `ACCESS_DENIED` | WARNING | Non-admin mencoba membuka area `/admin` |
+| `REGISTER_SUCCESS` | INFO | Akun customer baru dibuat |
+| `LOGOUT` | INFO | Logout |
+| `PRODUCT_CREATE` / `PRODUCT_UPDATE` | INFO | Admin menambah / mengubah produk |
+| `PRODUCT_DELETE` | WARNING | Admin menghapus produk |
+| `UPLOAD_REJECTED` | WARNING | File upload ditolak (bukan gambar asli / terlalu besar) |
+| `CSRF_FAILURE` | WARNING | Request form tanpa token CSRF yang valid |
+
+Jika aplikasi berjalan di belakang Nginx, isi `TRUST_PROXY=1` agar `src_ip` berisi IP asli
+klien, bukan IP Nginx.
+
+Konfigurasi Wazuh agent (contoh `ossec.conf` di server web):
+
+```xml
+<localfile>
+  <log_format>syslog</log_format>
+  <location>/opt/elektronik-store/logs/security.log</location>
+</localfile>
+```
+
+## Checklist SSDLC Sprint 1
+
+- [x] Rencana: daftar fitur ATS dan ancaman utamanya (brute force, akses admin tanpa izin, upload berbahaya, XSS, CSRF)
+- [x] Kode: kontrol di tabel OWASP di atas
+- [x] Uji: 24 tes otomatis (`pytest -q`), termasuk uji negatif (akses ditolak, file palsu, password lemah)
+- [x] Monitor: log keamanan siap dikirim ke Wazuh

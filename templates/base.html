@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{{ app_name }}{% endblock %}</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="{{ url_for('static', filename='js/app.js') }}" defer></script>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+    <nav class="bg-indigo-900 text-white shadow-md">
+        <div class="container mx-auto max-w-6xl px-4 py-3 flex flex-wrap justify-between items-center gap-3">
+            <a href="{{ url_for('katalog') }}" class="font-bold text-lg tracking-wide">{{ app_name }}</a>
+            <div class="flex items-center gap-4 text-sm font-medium">
+                <a href="{{ url_for('katalog') }}" class="hover:text-indigo-200">Katalog</a>
+                {% if current_user %}
+                    {% if current_user.is_admin() %}
+                        <a href="{{ url_for('admin_dashboard') }}" class="hover:text-indigo-200">Dashboard Admin</a>
+                        <a href="{{ url_for('admin_produk') }}" class="hover:text-indigo-200">Kelola Produk</a>
+                    {% endif %}
+                    <span class="text-indigo-200">
+                        {{ current_user.username }}
+                        <span class="ml-1 text-[10px] uppercase px-2 py-0.5 rounded-full {{ 'bg-amber-400 text-amber-950' if current_user.is_admin() else 'bg-indigo-700' }}">{{ current_user.role }}</span>
+                    </span>
+                    <form action="{{ url_for('logout') }}" method="POST">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-lg cursor-pointer">Logout</button>
+                    </form>
+                {% else %}
+                    <a href="{{ url_for('login') }}" class="hover:text-indigo-200">Login</a>
+                    <a href="{{ url_for('register') }}" class="bg-white text-indigo-900 px-3 py-1.5 rounded-lg hover:bg-indigo-100">Daftar</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto max-w-6xl px-4 mt-8 mb-12 flex-1">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+                {% set colors = {
+                    'success': 'bg-emerald-50 text-emerald-900 border-emerald-300',
+                    'danger': 'bg-red-50 text-red-900 border-red-300',
+                    'warning': 'bg-amber-50 text-amber-900 border-amber-300'
+                } %}
+                <div class="p-4 mb-4 text-sm rounded-lg border shadow-sm {{ colors.get(category, 'bg-indigo-50 text-indigo-900 border-indigo-300') }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="text-center text-xs text-slate-400 py-6">&copy; {{ app_name }} - PBL RKS 323</footer>
+</body>
+</html>

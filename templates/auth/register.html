@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% from '_macros.html' import field %}
+{% block title %}Daftar - {{ app_name }}{% endblock %}
+{% block content %}
+<div class="max-w-md mx-auto bg-white p-8 rounded-xl shadow-md border border-slate-200">
+    <h2 class="text-2xl font-bold text-slate-900 mb-6 text-center">Daftar Akun Baru</h2>
+    <form method="POST" class="space-y-5" novalidate>
+        {{ form.hidden_tag() }}
+        {{ field(form.username, autocomplete="username") }}
+        {{ field(form.email, autocomplete="email", placeholder="nama@email.com") }}
+        {{ field(form.password, autocomplete="new-password") }}
+        <p class="text-xs text-slate-500 -mt-3">Minimal 8 karakter, mengandung huruf besar, huruf kecil, angka, dan simbol (@$!%*?&).</p>
+        {{ field(form.confirm_password, autocomplete="new-password") }}
+        {{ form.submit(class="w-full bg-indigo-700 hover:bg-indigo-800 text-white font-semibold py-2.5 rounded-lg cursor-pointer") }}
+    </form>
+    <p class="mt-5 text-center text-sm text-slate-600">
+        Sudah punya akun? <a href="{{ url_for('login') }}" class="text-indigo-700 font-semibold hover:underline">Login di sini</a>
+    </p>
+</div>
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard Admin - {{ app_name }}{% endblock %}
+{% block content %}
+<div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+    <div>
+        <h1 class="text-2xl font-extrabold text-slate-900">Dashboard Admin</h1>
+        <p class="text-slate-500 text-sm">Masuk sebagai <strong>{{ admin.username }}</strong> &middot; hak akses penuh pengelolaan toko.</p>
+    </div>
+    <span class="inline-flex items-center gap-2 bg-amber-100 text-amber-900 border border-amber-300 text-xs font-bold uppercase px-3 py-1.5 rounded-full">
+        <span class="w-2 h-2 rounded-full bg-amber-500"></span> Mode Admin
+    </span>
+</div>
+
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+    {% for label, value in [('Total Produk', stats.total_produk), ('Total Stok', stats.total_stok),
+                            ('Produk Stok Habis', stats.stok_habis), ('Customer Terdaftar', stats.total_customer)] %}
+    <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+        <p class="text-xs font-semibold uppercase text-slate-500">{{ label }}</p>
+        <p class="text-3xl font-extrabold text-slate-900 mt-1">{{ value }}</p>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="bg-white border border-slate-200 rounded-xl shadow-sm">
+    <div class="flex items-center justify-between p-4 border-b border-slate-200">
+        <h2 class="font-bold text-slate-900">Produk Terbaru</h2>
+        <div class="flex gap-2">
+            <a href="{{ url_for('admin_produk') }}" class="text-sm border border-slate-300 hover:bg-slate-50 px-3 py-1.5 rounded-lg">Kelola Produk</a>
+            <a href="{{ url_for('admin_produk_tambah') }}" class="text-sm bg-indigo-700 hover:bg-indigo-800 text-white px-3 py-1.5 rounded-lg">+ Tambah Produk</a>
+        </div>
+    </div>
+    {% if produk_terbaru %}
+    <ul class="divide-y divide-slate-100">
+        {% for produk in produk_terbaru %}
+        <li class="flex items-center justify-between p-4 text-sm">
+            <span><strong>{{ produk.nama_produk }}</strong> <span class="text-slate-500">({{ produk.merek }})</span></span>
+            <span class="text-slate-600">{{ produk.harga | rupiah }} &middot; stok {{ produk.stok }}</span>
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p class="p-6 text-center text-slate-500 text-sm">Belum ada produk.</p>
+    {% endif %}
+</div>
+{% endblock %}

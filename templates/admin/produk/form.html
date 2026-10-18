@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% from '_macros.html' import field %}
+{% block title %}{{ 'Tambah' if mode == 'tambah' else 'Edit' }} Produk - {{ app_name }}{% endblock %}
+{% block content %}
+<div class="max-w-2xl mx-auto bg-white p-8 rounded-xl shadow-md border border-slate-200">
+    <h1 class="text-2xl font-bold text-slate-900 mb-6 border-b pb-3">
+        {{ 'Tambah Produk Baru' if mode == 'tambah' else 'Edit Produk' }}
+    </h1>
+    <form method="POST" enctype="multipart/form-data" class="space-y-5" novalidate>
+        {{ form.hidden_tag() }}
+        {{ field(form.nama_produk, placeholder="Contoh: Galaxy S25 Ultra 256GB") }}
+        <div class="grid sm:grid-cols-2 gap-5">
+            {{ field(form.merek, placeholder="Contoh: Samsung") }}
+            {{ field(form.kategori) }}
+            {{ field(form.harga, placeholder="Contoh: 18999000") }}
+            {{ field(form.stok, placeholder="0") }}
+        </div>
+        {{ field(form.deskripsi, rows=4) }}
+
+        {% if produk %}
+        <div class="flex items-center gap-4">
+            <img src="{{ url_for('static', filename='uploads/' ~ produk.gambar) }}" alt="" class="w-20 h-20 object-cover rounded-lg border">
+            <p class="text-xs text-slate-500">Gambar saat ini. Kosongkan input di bawah jika tidak ingin mengganti.</p>
+        </div>
+        {% endif %}
+        {{ field(form.gambar, accept=".jpg,.jpeg,.png") }}
+
+        <div class="flex justify-end gap-3 pt-2">
+            <a href="{{ url_for('admin_produk') }}" class="border border-slate-300 hover:bg-slate-50 px-4 py-2 rounded-lg text-sm">Batal</a>
+            {{ form.submit(class="bg-indigo-700 hover:bg-indigo-800 text-white font-semibold px-5 py-2 rounded-lg text-sm cursor-pointer") }}
+        </div>
+    </form>
+</div>
+{% endblock %}

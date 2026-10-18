@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="text-center mb-8">
+    <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Katalog Produk Elektronik</h1>
+    <p class="text-slate-500 mt-2">Handphone, laptop, smartwatch, dan aksesoris pilihan.</p>
+</div>
+
+{% if not produk_list %}
+    <div class="text-center p-12 bg-white rounded-xl border border-dashed border-slate-300 max-w-md mx-auto">
+        <p class="text-slate-500 font-medium">Belum ada produk yang dijual.</p>
+    </div>
+{% else %}
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {% for produk in produk_list %}
+        <article class="bg-white rounded-2xl overflow-hidden border border-slate-200 flex flex-col p-4 shadow-sm hover:shadow-md transition">
+            <img src="{{ url_for('static', filename='uploads/' ~ produk.gambar) }}" alt="{{ produk.nama_produk }}"
+                 class="w-full h-48 object-cover rounded-xl border bg-slate-50 mb-4">
+            <span class="text-[11px] font-semibold uppercase tracking-wide text-indigo-600">{{ produk.kategori }} &middot; {{ produk.merek }}</span>
+            <h2 class="text-lg font-bold text-slate-900 mt-1 truncate" title="{{ produk.nama_produk }}">{{ produk.nama_produk }}</h2>
+            <p class="text-indigo-700 font-extrabold mt-1">{{ produk.harga | rupiah }}</p>
+            <p class="text-slate-500 text-xs line-clamp-3 mt-2 flex-1">{{ produk.deskripsi or 'Tidak ada deskripsi produk.' }}</p>
+            <p class="text-xs mt-3 font-medium {{ 'text-emerald-700' if produk.stok > 0 else 'text-red-600' }}">
+                {{ 'Stok: ' ~ produk.stok if produk.stok > 0 else 'Stok habis' }}
+            </p>
+        </article>
+        {% endfor %}
+    </div>
+{% endif %}
+{% endblock %}
