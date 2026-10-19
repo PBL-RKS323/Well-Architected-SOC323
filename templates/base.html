@@ -29,6 +29,11 @@
     <script src="{{ url_for('static', filename='js/app.js') }}" defer></script>
 </head>
 <body class="bg-soft text-ink font-sans antialiased min-h-screen {% block body_class %}{% endblock %}">
+    {% if config.DEMO_MODE %}
+    <p role="note" class="bg-ink text-white text-xs text-center px-4 py-2">
+        Toko demo tugas kuliah (PBL Polibatam). Produk tidak benar-benar dijual, jangan melakukan transfer sungguhan.
+    </p>
+    {% endif %}
     {% block body %}{% endblock %}
 </body>
 </html>

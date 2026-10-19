@@ -8,5 +8,7 @@ puremagic==2.2.0
 # Driver database: pilih sesuai server yang dipakai (DATABASE_URL di .env)
 PyMySQL==1.2.3
 psycopg2-binary==2.9.13
+# Server produksi (Linux)
+gunicorn==23.0.0
 # Pengujian
 pytest==9.1.1

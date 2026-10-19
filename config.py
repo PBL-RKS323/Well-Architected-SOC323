@@ -14,6 +14,8 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     APP_NAME = os.getenv("APP_NAME", "Elektronik Store")
+    # Isi 1 di server publik: tampilkan pemberitahuan bahwa ini toko demo (rekening & produk bukan asli)
+    DEMO_MODE = _flag("DEMO_MODE")
 
     # Upload gambar produk
     UPLOAD_FOLDER = os.path.join(BASE_DIR, "static", "uploads")
