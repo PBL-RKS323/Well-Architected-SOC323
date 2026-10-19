@@ -58,7 +58,7 @@
             <span class="block h-2 w-2 rounded-full bg-slate-300 transition-all data-[aktif]:w-6 data-[aktif]:bg-brand" {{ 'data-aktif' if loop.first }}></span>
         </button>
         {% endfor %}
-        {# Putar otomatis tiap 5 detik; tombol ini menjeda/melanjutkan (konten bergerak wajib bisa dihentikan) #}
+        {# Putar otomatis tiap 3 detik; tombol ini menjeda/melanjutkan (konten bergerak wajib bisa dihentikan) #}
         <button type="button" data-carousel-jeda aria-label="Jeda putar otomatis"
                 class="w-11 h-11 flex items-center justify-center rounded-full text-muted hover:text-ink cursor-pointer">
             <span data-ikon-jeda>{{ icon('pause', 'w-4 h-4') }}</span>

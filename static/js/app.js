@@ -85,11 +85,11 @@ document.addEventListener("change", function (event) {
     });
 });
 
-// Carousel beranda: geser manual (jari / tombol panah / titik) dan putar otomatis tiap 5 detik.
+// Carousel beranda: geser manual (jari / tombol panah / titik) dan putar otomatis tiap 3 detik.
 // Berhenti hanya jika dijeda lewat tombol, saat pengguna keyboard sedang menekan Tab di dalam carousel,
-// atau saat tab browser tidak terlihat. Klik panah/titik hanya mengulang hitungan 5 detik.
+// atau saat tab browser tidak terlihat. Klik panah/titik hanya mengulang hitungan 3 detik.
 // Jika pengguna memilih "kurangi gerakan", slide berganti tanpa animasi geser.
-const JEDA_CAROUSEL_MS = 5000;
+const JEDA_CAROUSEL_MS = 3000;
 let pakaiKeyboard = false;  // true setelah tombol Tab ditekan, false lagi setelah klik/sentuh
 document.addEventListener("keydown", function (e) { if (e.key === "Tab") { pakaiKeyboard = true; } });
 document.addEventListener("pointerdown", function () { pakaiKeyboard = false; });
@@ -129,7 +129,7 @@ document.querySelectorAll("[data-carousel]").forEach(function (carousel) {
     carousel.addEventListener("focusout", function (e) {
         if (!carousel.contains(e.relatedTarget)) { difokus = false; mulai(); }
     });
-    track.addEventListener("touchend", mulai, { passive: true });  // setelah digeser jari, hitung ulang 5 detik
+    track.addEventListener("touchend", mulai, { passive: true });  // setelah digeser jari, hitung ulang 3 detik
 
     const prev = carousel.querySelector("[data-carousel-prev]");
     const next = carousel.querySelector("[data-carousel-next]");
