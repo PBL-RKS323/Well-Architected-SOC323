@@ -34,3 +34,42 @@ document.addEventListener("click", function (event) {
     button.querySelector('[data-icon="show"]').classList.toggle("hidden", show);
     button.querySelector('[data-icon="hide"]').classList.toggle("hidden", !show);
 });
+
+// Konfirmasi untuk tombol tertentu di form yang punya beberapa tombol (mis. batalkan pesanan).
+document.addEventListener("click", function (event) {
+    const button = event.target.closest("[data-confirm-click]");
+    if (button && !window.confirm(button.dataset.confirmClick)) {
+        event.preventDefault();
+    }
+});
+
+// Tombol salin (nomor pesanan / nomor rekening).
+document.addEventListener("click", function (event) {
+    const button = event.target.closest("[data-copy]");
+    if (!button || !navigator.clipboard) {
+        return;
+    }
+    navigator.clipboard.writeText(button.dataset.copy).then(function () {
+        const label = button.querySelector("[data-copy-label]");
+        if (label) {
+            const awal = label.textContent;
+            label.textContent = "Tersalin";
+            setTimeout(function () { label.textContent = awal; }, 1500);
+        }
+    });
+});
+
+// Checkout: tampilkan form alamat / info toko dan ongkir sesuai metode pengiriman yang dipilih.
+// Total di layar hanya informasi; harga final tetap dihitung ulang di server.
+document.addEventListener("change", function (event) {
+    if (event.target.name !== "metode_pengiriman") {
+        return;
+    }
+    const metode = event.target.value;
+    document.querySelectorAll("[data-show-for]").forEach(function (el) {
+        el.classList.toggle("hidden", el.dataset.showFor !== metode);
+    });
+    document.querySelectorAll("[data-kurir][data-ambil]").forEach(function (el) {
+        el.textContent = el.dataset[metode];
+    });
+});

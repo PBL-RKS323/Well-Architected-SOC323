@@ -16,7 +16,9 @@ smartwatch, dan aksesoris). Dibangun dengan Flask dan database SQL, mengikuti po
 | Tampilan sesuai desain Figma (mobile-first, admin desktop) | Selesai |
 | Cari & filter katalog, detail produk, profil | Selesai |
 | Keranjang belanja | Selesai |
-| Checkout, bukti bayar, riwayat & status pesanan, ulasan, avatar, kelola akun, login Google, Midtrans | Berikutnya |
+| Checkout (kurir ongkir flat / ambil di toko), transfer bank + unggah bukti bayar | Selesai |
+| Pesanan Saya + lacak status, verifikasi pembayaran & update status oleh admin | Selesai |
+| Laporan transaksi, Midtrans (QRIS/e-wallet), login Google, ulasan, avatar, kelola akun | Berikutnya |
 
 Riwayat perubahan ada di [CHANGELOG.md](CHANGELOG.md), kontrol keamanan dan format log ada di
 [docs/KEAMANAN.md](docs/KEAMANAN.md).
@@ -35,11 +37,11 @@ Riwayat perubahan ada di [CHANGELOG.md](CHANGELOG.md), kontrol keamanan dan form
 ```
 app.py                  # app factory, routing, error handler, perintah CLI
 config.py               # konfigurasi dari environment (.env)
-models/                 # Model: User, Produk
+models/                 # Model: User, Produk, KeranjangItem, Pesanan
 forms/                  # validasi input (WTForms)
-controllers/            # Controller: auth, admin, produk, katalog
+controllers/            # Controller: auth, akun, toko, keranjang, pesanan, admin, produk
 middlewares/            # autentikasi global + otorisasi role admin
-helpers/                # upload gambar aman, logger keamanan
+helpers/                # upload gambar aman, logger keamanan, format waktu WIB
 templates/              # View (Jinja2)
 static/                 # js, folder upload gambar
 migrations/             # file migrasi database
@@ -100,6 +102,20 @@ docs/                   # dokumentasi keamanan
 
    Buka http://127.0.0.1:5000
 
+## Alur Pesanan
+
+```
+Menunggu Pembayaran --(pelanggan unggah bukti)--> Menunggu Verifikasi --(admin terima)--> Diproses
+        ^                                              |                                   |
+        +-------------(admin tolak + alasan)-----------+                     kurir: Dikirim --> Selesai
+                                                                             ambil: Siap Diambil --> Selesai
+Batal: pelanggan (sebelum kirim bukti), admin (sebelum dikirim), atau otomatis 24 jam tanpa pembayaran.
+Stok dipotong saat checkout dan dikembalikan jika pesanan batal.
+```
+
+Data toko untuk checkout (alamat toko, rekening, ongkir) masih **contoh/dummy** dan bisa diganti di `.env`
+(`TOKO_ALAMAT`, `BANK_NAMA`, `BANK_NOREK`, `BANK_ATAS_NAMA`, `ONGKIR_FLAT`).
+
 ## Menjalankan Pengujian
 
 ```bash
@@ -107,6 +123,12 @@ pytest -q
 ```
 
 Pengujian memakai database SQLite sementara di memori, jadi tidak menyentuh database asli.
+Untuk menguji di PostgreSQL, buat database khusus uji (isinya dihapus setiap tes!) lalu:
+
+```bash
+set TEST_DATABASE_URL=postgresql+psycopg2://ecommerce_user:password_db@127.0.0.1:5432/db_ecommerce_uji
+pytest -q
+```
 
 ## Halaman
 
@@ -119,6 +141,10 @@ Pengujian memakai database SQLite sementara di memori, jadi tidak menyentuh data
 | `/login` | Tamu | Login |
 | `/logout` | Login | Logout (POST) |
 | `/keranjang` | Login | Keranjang belanja (tambah/ubah/hapus lewat POST) |
+| `/checkout` | Login | Pilih pengiriman (kurir / ambil di toko), isi alamat, buat pesanan |
+| `/pesanan` | Login | Pesanan Saya: cari, filter status |
+| `/pesanan/<kode>` | Pemilik | Detail, lacak status, unggah bukti bayar, batalkan, konfirmasi diterima |
+| `/pesanan/<kode>/bukti` | Pemilik / Admin | Gambar bukti bayar (tidak bisa diakses publik) |
 | `/profil` | Login | Profil akun |
 | `/pengaturan` | Login | Ubah nama, email & kata sandi |
 | `/admin` | Admin | Dashboard admin |
@@ -126,3 +152,5 @@ Pengujian memakai database SQLite sementara di memori, jadi tidak menyentuh data
 | `/admin/produk/tambah` | Admin | Tambah produk |
 | `/admin/produk/<id>/edit` | Admin | Edit produk |
 | `/admin/produk/<id>/hapus` | Admin | Hapus produk (POST) |
+| `/admin/pesanan` | Admin | Daftar pesanan per status + pencarian |
+| `/admin/pesanan/<id>` | Admin | Detail pesanan, cek bukti bayar, terima/tolak, kirim (resi), siap diambil, selesai, batalkan |

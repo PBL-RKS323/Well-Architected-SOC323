@@ -26,6 +26,7 @@ def app(tmp_path):
     class Cfg(TestConfig):
         UPLOAD_FOLDER = str(tmp_path / "uploads")
         SECURITY_LOG_FILE = str(tmp_path / "logs" / "security.log")
+        BUKTI_BAYAR_FOLDER = str(tmp_path / "bukti_bayar")
 
     app = create_app(Cfg)
     with app.app_context():
@@ -37,6 +38,9 @@ def app(tmp_path):
         db.session.add_all([admin, customer])
         db.session.commit()
     yield app
+    with app.app_context():
+        db.session.remove()
+        db.drop_all()  # wajib jika TEST_DATABASE_URL memakai PostgreSQL agar tiap tes mulai dari kosong
 
 
 @pytest.fixture

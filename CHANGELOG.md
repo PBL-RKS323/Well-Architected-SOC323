@@ -3,6 +3,51 @@
 Setiap perubahan dicatat di sini: apa yang berubah, alasannya, dan cara mengujinya.
 Format tanggal: YYYY-MM-DD (WIB).
 
+## [0.5.0] - 2026-10-19 - Sprint 5: Checkout & Pesanan
+
+### Ditambahkan
+- **Checkout** (`/checkout`) sesuai desain: pilih **Dikirim kurir** (ongkir flat Rp 15.000) atau
+  **Ambil di toko** (gratis), alamat/data pengambil, catatan, ringkasan, tombol bayar menempel di bawah layar HP.
+  Alamat otomatis diisi dari pesanan terakhir.
+- **Pembayaran transfer bank manual**: halaman konfirmasi (nomor pesanan + tombol salin, rekening tujuan,
+  batas bayar 24 jam) lalu pelanggan **mengunggah bukti transfer**. Opsi QRIS/E-Wallet (Midtrans) tampil
+  sebagai "Segera".
+- **Pesanan Saya** (`/pesanan`): kartu pesanan dengan status, foto produk, total, tab Semua/Aktif/Selesai/
+  Dibatalkan, pencarian nomor pesanan atau nama produk, tombol Bayar / Lacak / Beli Lagi.
+- **Detail & lacak pesanan**: timeline langkah (dibuat, bukti dikirim, pembayaran diterima, dikirim / siap
+  diambil, selesai), nomor resi, alamat, rincian biaya, batalkan pesanan, konfirmasi pesanan diterima.
+- **Admin - Pesanan** (`/admin/pesanan`): tab per status dengan jumlah, pencarian kode/nama/email, detail
+  pesanan dengan bukti bayar, tombol Terima / Tolak (wajib alasan) / Tandai Dikirim (+resi) / Siap Diambil /
+  Selesai / Batalkan, riwayat status. Badge jumlah pesanan yang menunggu verifikasi di menu.
+- **Dasbor admin** mengikuti desain: total pendapatan (hanya pesanan lunas), total pesanan, status operasional
+  (perlu verifikasi, perlu dikirim, stok menipis), produk terlaris, tabel pesanan terbaru.
+- Navigasi bawah HP sekarang 5 menu (Beranda, Jelajah, Keranjang, Pesanan, Profil), menu Pesanan Saya di profil.
+- Tabel baru `pesanan`, `pesanan_item` (salinan nama & harga saat checkout), `pesanan_riwayat`.
+
+### Keamanan
+- Harga, ongkir, dan total dihitung di server dari database; nilai harga dari form diabaikan.
+- Stok dipotong dengan `UPDATE ... WHERE stok >= jumlah` sehingga tidak bisa minus saat checkout bersamaan.
+- Pesanan & bukti bayar hanya bisa dibuka pemiliknya (admin boleh melihat bukti). Percobaan membuka milik
+  orang lain dijawab 404 dan dicatat `ACCESS_DENIED`.
+- Bukti bayar disimpan di folder privat `instance/bukti_bayar/` (bukan `static/`), divalidasi isi biner,
+  dikirim dengan `Cache-Control: private, no-store`.
+- Status hanya bisa pindah sesuai tabel transisi; UPDATE bersyarat mencegah race condition (mis. stok
+  dikembalikan dua kali). Aksi tidak sah dicatat `ORDER_INVALID_TRANSITION`.
+- Maksimal 3 pesanan belum dibayar per akun; pesanan yang tidak dibayar 24 jam batal otomatis dan stoknya
+  kembali.
+- Event log baru: `ORDER_CREATE`, `PAYMENT_PROOF_UPLOADED`, `PAYMENT_VERIFIED`, `PAYMENT_REJECTED`,
+  `ORDER_STATUS_CHANGE`, `ORDER_CANCELLED`, `ORDER_INVALID_TRANSITION`.
+
+### Diubah
+- Menghapus produk tidak menghapus riwayat pesanan (item pesanan menyimpan nama & harga).
+- `TEST_DATABASE_URL` opsional untuk menjalankan tes di PostgreSQL; tabel dibersihkan setelah tiap tes.
+
+### Cara uji
+- `flask db upgrade` (membuat tabel pesanan).
+- `pytest -q` -> 95 passed (SQLite), juga lulus di PostgreSQL 16.
+- Manual: tambah produk ke keranjang -> Checkout -> unggah bukti di detail pesanan -> login admin ->
+  Pesanan -> Terima -> Tandai Dikirim -> login pelanggan -> Pesanan Sudah Diterima.
+
 ## [0.4.0] - 2026-10-19 - Sprint 4: Keranjang Belanja
 
 ### Ditambahkan

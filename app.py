@@ -12,13 +12,15 @@ load_dotenv()
 
 from config import Config  # noqa: E402  (dibaca setelah .env dimuat)
 from controllers import (auth_controller, admin_controller, produk_controller, toko_controller,  # noqa: E402
-                         akun_controller, keranjang_controller)
+                         akun_controller, keranjang_controller, pesanan_controller, admin_pesanan_controller)
 from forms.auth_form import PASSWORD_POLICY, PASSWORD_POLICY_MESSAGE  # noqa: E402
 from helpers.security_logger import init_security_logger, log_event  # noqa: E402
+from helpers.waktu import format_tanggal  # noqa: E402
 from middlewares.auth_middleware import init_auth_middleware  # noqa: E402
 from models import db  # noqa: E402
 from models.produk import Produk  # noqa: E402,F401  (wajib diimpor agar terbaca oleh migrasi)
-from models.keranjang import KeranjangItem  # noqa: E402
+from models.keranjang import KeranjangItem  # noqa: E402,F401
+from models.pesanan import Pesanan, PesananItem, PesananRiwayat  # noqa: E402,F401
 from models.user import User  # noqa: E402
 
 migrate = Migrate()
@@ -52,11 +54,18 @@ def create_app(config_class=Config):
     def rupiah(value):
         return "Rp " + f"{int(value or 0):,}".replace(",", ".")
 
+    @app.template_filter("tanggal")
+    def tanggal(value, jam=True):
+        return format_tanggal(value, jam)
+
     @app.context_processor
     def inject_globals():
         user = g.get("user")
-        return {"app_name": app.config["APP_NAME"], "current_user": user,
+        data = {"app_name": app.config["APP_NAME"], "current_user": user,
                 "cart_count": keranjang_controller.jumlah_item(user)}
+        if user is not None and user.is_admin():
+            data["perlu_verifikasi"] = admin_pesanan_controller.jumlah_perlu_verifikasi()
+        return data
 
     @app.after_request
     def security_headers(response):
@@ -124,6 +133,43 @@ def register_routes(app):
     def keranjang_kosongkan():
         return keranjang_controller.kosongkan()
 
+    # --- CHECKOUT & PESANAN (wajib login, hanya pesanan milik sendiri) ---
+    @app.route("/checkout", methods=["GET", "POST"])
+    def checkout():
+        return pesanan_controller.checkout()
+
+    @app.route("/pesanan")
+    def pesanan():
+        return pesanan_controller.index()
+
+    @app.route("/pesanan/<kode>")
+    def pesanan_detail(kode):
+        return pesanan_controller.detail(kode)
+
+    @app.route("/pesanan/<kode>/konfirmasi")
+    def pesanan_konfirmasi(kode):
+        return pesanan_controller.konfirmasi(kode)
+
+    @app.route("/pesanan/<kode>/bayar", methods=["POST"])
+    def pesanan_bayar(kode):
+        return pesanan_controller.unggah_bukti(kode)
+
+    @app.route("/pesanan/<kode>/bukti")
+    def pesanan_bukti(kode):
+        return pesanan_controller.bukti(kode)
+
+    @app.route("/pesanan/<kode>/batal", methods=["POST"])
+    def pesanan_batal(kode):
+        return pesanan_controller.batal(kode)
+
+    @app.route("/pesanan/<kode>/terima", methods=["POST"])
+    def pesanan_terima(kode):
+        return pesanan_controller.terima(kode)
+
+    @app.route("/pesanan/<kode>/beli-lagi", methods=["POST"])
+    def pesanan_beli_lagi(kode):
+        return pesanan_controller.beli_lagi(kode)
+
     # --- PROFIL & PENGATURAN AKUN (semua user yang login) ---
     @app.route("/profil")
     def profil():
@@ -165,6 +211,18 @@ def register_routes(app):
     @app.route("/admin/produk/<int:produk_id>/hapus", methods=["POST"])
     def admin_produk_hapus(produk_id):
         return produk_controller.destroy(produk_id)
+
+    @app.route("/admin/pesanan")
+    def admin_pesanan():
+        return admin_pesanan_controller.index()
+
+    @app.route("/admin/pesanan/<int:pesanan_id>")
+    def admin_pesanan_detail(pesanan_id):
+        return admin_pesanan_controller.detail(pesanan_id)
+
+    @app.route("/admin/pesanan/<int:pesanan_id>/status", methods=["POST"])
+    def admin_pesanan_status(pesanan_id):
+        return admin_pesanan_controller.ubah_status(pesanan_id)
 
 
 def register_error_handlers(app):

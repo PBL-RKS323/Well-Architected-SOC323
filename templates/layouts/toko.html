@@ -10,6 +10,9 @@
         <nav class="hidden md:flex items-center gap-6 text-sm font-medium text-muted">
             <a href="{{ url_for('beranda') }}" class="{{ 'text-brand' if ep == 'beranda' else 'hover:text-ink' }}">Beranda</a>
             <a href="{{ url_for('jelajah') }}" class="{{ 'text-brand' if ep in ['jelajah', 'produk_detail'] else 'hover:text-ink' }}">Jelajah</a>
+            {% if current_user %}
+                <a href="{{ url_for('pesanan') }}" class="{{ 'text-brand' if ep and ep.startswith('pesanan') else 'hover:text-ink' }}">Pesanan Saya</a>
+            {% endif %}
             {% if current_user and current_user.is_admin() %}
                 <a href="{{ url_for('admin_dashboard') }}" class="hover:text-ink">Panel Admin</a>
             {% endif %}
@@ -45,13 +48,15 @@
     </div>
 </footer>
 
-{# Navigasi bawah khusus layar HP #}
+{# Navigasi bawah khusus layar HP (halaman checkout menggantinya dengan tombol bayar) #}
+{% block bottom_nav scoped %}
 <nav class="md:hidden fixed bottom-0 inset-x-0 z-30 bg-white border-t border-slate-100 shadow-[0_-4px_16px_rgba(15,23,42,0.04)]">
-    <div class="grid grid-cols-4 text-[11px] font-medium">
+    <div class="grid grid-cols-5 text-[11px] font-medium">
         {% set items = [
             ('beranda', 'store', 'Beranda', ['beranda']),
             ('jelajah', 'layout-grid', 'Jelajah', ['jelajah', 'produk_detail']),
             ('keranjang', 'shopping-bag', 'Keranjang', ['keranjang']),
+            ('pesanan', 'receipt-text', 'Pesanan', ['pesanan', 'pesanan_detail', 'pesanan_konfirmasi']),
             ('profil', 'user', 'Profil', ['profil', 'pengaturan']),
         ] %}
         {% for endpoint, ic, label, active in items %}
@@ -61,4 +66,5 @@
         {% endfor %}
     </div>
 </nav>
+{% endblock %}
 {% endblock %}

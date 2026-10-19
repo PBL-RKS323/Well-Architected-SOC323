@@ -9,6 +9,7 @@ from helpers.security_logger import log_event
 from middlewares.auth_middleware import admin_required
 from models import db
 from models.keranjang import KeranjangItem
+from models.pesanan import PesananItem
 from models.produk import Produk
 
 
@@ -93,6 +94,8 @@ def destroy(produk_id):
     produk = db.get_or_404(Produk, produk_id)
     delete_image(produk.gambar, current_app.config["UPLOAD_FOLDER"])
     KeranjangItem.query.filter_by(produk_id=produk.id).delete()
+    # Riwayat pesanan tetap disimpan (nama & harga sudah disalin saat checkout)
+    PesananItem.query.filter_by(produk_id=produk.id).update({"produk_id": None})
     db.session.delete(produk)
     db.session.commit()
 

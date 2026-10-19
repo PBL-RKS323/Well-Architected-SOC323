@@ -1,0 +1,138 @@
+{% extends 'layouts/admin.html' %}
+{% from '_icons.html' import icon %}
+{% from '_pesanan.html' import badge_status, foto_item %}
+{% block title %}Pesanan #{{ pesanan.kode }} - {{ app_name }}{% endblock %}
+{% block content %}
+{% set s = pesanan.status %}
+<a href="{{ url_for('admin_pesanan') }}" class="inline-flex items-center gap-2 text-sm font-medium text-muted hover:text-ink mb-4">{{ icon('arrow-left', 'w-4 h-4') }} Semua pesanan</a>
+
+<div class="flex flex-wrap items-start justify-between gap-4 mb-6">
+    <div>
+        <div class="flex items-center gap-3">
+            <h1 class="font-display text-3xl font-extrabold">#{{ pesanan.kode }}</h1>
+            {{ badge_status(pesanan) }}
+        </div>
+        <p class="text-muted mt-1">Dipesan {{ pesanan.created_at | tanggal }} &middot; {{ pesanan.LABEL_PENGIRIMAN[pesanan.metode_pengiriman] }}</p>
+    </div>
+</div>
+
+<div class="grid xl:grid-cols-3 gap-5 items-start">
+    <div class="xl:col-span-2 space-y-5">
+        {# Aksi sesuai status: hanya tombol yang transisinya sah yang ditampilkan #}
+        {% if s not in ['selesai', 'dibatalkan'] %}
+        <section class="bg-white border border-slate-100 rounded-2xl p-5">
+            <h2 class="font-display text-lg font-bold">Tindakan</h2>
+            {% if s == 'menunggu_pembayaran' %}
+                <p class="text-sm text-muted mt-1">Menunggu pelanggan membayar dan mengunggah bukti (batas {{ pesanan.batas_bayar | tanggal }}). Pesanan batal otomatis jika lewat batas.</p>
+            {% elif s == 'menunggu_verifikasi' %}
+                <p class="text-sm text-muted mt-1">Cocokkan bukti transfer dengan mutasi rekening sebesar <strong class="text-ink">{{ pesanan.total | rupiah }}</strong>.</p>
+            {% elif s == 'diproses' %}
+                <p class="text-sm text-muted mt-1">Pembayaran sudah diterima. Kemas pesanan lalu {{ 'kirim dan isi nomor resi' if pesanan.metode_pengiriman == 'kurir' else 'tandai siap diambil' }}.</p>
+            {% else %}
+                <p class="text-sm text-muted mt-1">{{ 'Pesanan dalam pengiriman. Tandai selesai jika sudah diterima pelanggan.' if s == 'dikirim' else 'Tandai selesai setelah pesanan diambil pelanggan.' }}</p>
+            {% endif %}
+
+            <form action="{{ url_for('admin_pesanan_status', pesanan_id=pesanan.id) }}" method="POST" class="mt-4 space-y-3">
+                {{ form.hidden_tag() }}
+                {% if s == 'diproses' and pesanan.metode_pengiriman == 'kurir' %}
+                <div>
+                    {{ form.nomor_resi.label(class="block text-sm font-semibold mb-1.5") }}
+                    {{ form.nomor_resi(class="w-full sm:w-80 bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-brand focus:ring-4 focus:ring-brand/15", placeholder="Contoh: JNE1234567890") }}
+                </div>
+                {% endif %}
+                {% if pesanan.bisa_ke('menunggu_pembayaran') or pesanan.bisa_ke('dibatalkan') %}
+                <div>
+                    {{ form.alasan.label(class="block text-sm font-semibold mb-1.5", text="Alasan (wajib untuk tolak / batalkan)") }}
+                    {{ form.alasan(class="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-brand focus:ring-4 focus:ring-brand/15", placeholder="Contoh: nominal transfer tidak sesuai") }}
+                </div>
+                {% endif %}
+                <div class="flex flex-wrap gap-2 pt-1">
+                    {% set tombol_utama = "inline-flex items-center gap-2 bg-brand hover:bg-brand-dark text-white text-sm font-medium px-5 py-2.5 rounded-full cursor-pointer" %}
+                    {% set tombol_bahaya = "inline-flex items-center gap-2 bg-red-50 hover:bg-red-100 text-coral text-sm font-semibold px-5 py-2.5 rounded-full cursor-pointer" %}
+                    {% if s == 'menunggu_verifikasi' %}
+                        <button type="submit" name="aksi" value="terima" class="{{ tombol_utama }}">{{ icon('circle-check', 'w-4 h-4') }} Terima Pembayaran</button>
+                        <button type="submit" name="aksi" value="tolak" class="inline-flex items-center gap-2 bg-amber-50 hover:bg-amber-100 text-amber-800 text-sm font-semibold px-5 py-2.5 rounded-full cursor-pointer">{{ icon('x', 'w-4 h-4') }} Tolak Bukti</button>
+                    {% elif s == 'diproses' and pesanan.metode_pengiriman == 'kurir' %}
+                        <button type="submit" name="aksi" value="kirim" class="{{ tombol_utama }}">{{ icon('truck', 'w-4 h-4') }} Tandai Dikirim</button>
+                    {% elif s == 'diproses' %}
+                        <button type="submit" name="aksi" value="siap_diambil" class="{{ tombol_utama }}">{{ icon('store', 'w-4 h-4') }} Siap Diambil</button>
+                    {% elif s in ['dikirim', 'siap_diambil'] %}
+                        <button type="submit" name="aksi" value="selesai" class="{{ tombol_utama }}">{{ icon('circle-check', 'w-4 h-4') }} Tandai Selesai</button>
+                    {% endif %}
+                    {% if pesanan.bisa_ke('dibatalkan') %}
+                        <button type="submit" name="aksi" value="batal" class="{{ tombol_bahaya }}" data-confirm-click="Batalkan pesanan ini? Stok akan dikembalikan.">{{ icon('circle-x', 'w-4 h-4') }} Batalkan</button>
+                    {% endif %}
+                </div>
+                {% if s == 'diproses' %}<p class="text-xs text-muted">Membatalkan pesanan yang sudah dibayar berarti dana harus dikembalikan manual ke pelanggan.</p>{% endif %}
+            </form>
+        </section>
+        {% endif %}
+
+        <section class="bg-white border border-slate-100 rounded-2xl p-5">
+            <h2 class="font-display text-lg font-bold mb-4">Produk ({{ pesanan.jumlah_barang }} item)</h2>
+            <ul class="divide-y divide-slate-100">
+                {% for item in pesanan.items %}
+                <li class="flex items-center gap-3 py-3 first:pt-0">
+                    {{ foto_item(item, 'w-12 h-12') }}
+                    <div class="flex-1 min-w-0">
+                        <p class="font-semibold truncate">{{ item.nama_produk }}</p>
+                        <p class="text-xs text-muted">{{ item.merek }} &middot; {{ item.jumlah }} &times; {{ item.harga | rupiah }}{{ ' · produk sudah dihapus' if not item.produk }}</p>
+                    </div>
+                    <p class="font-semibold whitespace-nowrap">{{ item.subtotal | rupiah }}</p>
+                </li>
+                {% endfor %}
+            </ul>
+            <dl class="border-t border-slate-100 mt-2 pt-4 space-y-2 text-sm">
+                <div class="flex justify-between"><dt class="text-muted">Subtotal</dt><dd>{{ pesanan.subtotal | rupiah }}</dd></div>
+                <div class="flex justify-between"><dt class="text-muted">Ongkos kirim</dt><dd>{{ pesanan.ongkir | rupiah if pesanan.ongkir else 'Gratis' }}</dd></div>
+                <div class="flex justify-between text-base"><dt class="font-semibold">Total</dt><dd class="font-display font-extrabold text-brand">{{ pesanan.total | rupiah }}</dd></div>
+            </dl>
+        </section>
+
+        <section class="bg-white border border-slate-100 rounded-2xl p-5">
+            <h2 class="font-display text-lg font-bold mb-4">Riwayat Status</h2>
+            <ol class="relative border-l-2 border-slate-100 ml-2 space-y-4">
+                {% for r in pesanan.riwayat | reverse %}
+                <li class="pl-5 relative">
+                    <span class="absolute -left-[9px] top-1 w-4 h-4 rounded-full border-2 border-white {{ 'bg-brand' if loop.first else 'bg-slate-300' }}"></span>
+                    <p class="text-sm font-semibold">{{ pesanan.LABEL_STATUS[r.status] }}{% if r.keterangan %} <span class="font-normal text-muted">&middot; {{ r.keterangan }}</span>{% endif %}</p>
+                    <p class="text-xs text-muted">{{ r.created_at | tanggal }} &middot; oleh {{ r.oleh }}</p>
+                </li>
+                {% endfor %}
+            </ol>
+        </section>
+    </div>
+
+    <div class="space-y-5">
+        <section class="bg-white border border-slate-100 rounded-2xl p-5">
+            <h2 class="font-display text-lg font-bold mb-3">Bukti Bayar</h2>
+            {% if pesanan.bukti_bayar %}
+                <a href="{{ url_for('pesanan_bukti', kode=pesanan.kode) }}" target="_blank" rel="noopener" class="block">
+                    <img src="{{ url_for('pesanan_bukti', kode=pesanan.kode) }}" alt="Bukti transfer pesanan {{ pesanan.kode }}" class="w-full max-h-96 object-contain rounded-xl bg-soft border border-slate-100">
+                </a>
+                <p class="text-xs text-muted mt-2">Diunggah {{ pesanan.bukti_diunggah_at | tanggal }}. Klik untuk memperbesar.</p>
+            {% else %}
+                <p class="text-sm text-muted">Belum ada bukti transfer.</p>
+            {% endif %}
+            {% if pesanan.alasan_tolak %}
+                <p class="text-sm bg-red-50 text-red-800 rounded-xl px-3 py-2 mt-3">{{ 'Alasan batal' if s == 'dibatalkan' else 'Alasan ditolak' }}: {{ pesanan.alasan_tolak }}</p>
+            {% endif %}
+        </section>
+
+        <section class="bg-white border border-slate-100 rounded-2xl p-5 text-sm">
+            <h2 class="font-display text-lg font-bold mb-3">Pelanggan</h2>
+            <div class="flex items-center gap-3">
+                <span class="w-10 h-10 rounded-full bg-brand-soft text-brand text-sm font-bold flex items-center justify-center">{{ pesanan.user.initials }}</span>
+                <span class="min-w-0"><span class="block font-semibold">{{ pesanan.user.display_name }}</span><span class="block text-muted truncate">{{ pesanan.user.email }}</span></span>
+            </div>
+            <h3 class="font-semibold mt-5 mb-1">{{ 'Alamat Pengiriman' if pesanan.metode_pengiriman == 'kurir' else 'Diambil oleh' }}</h3>
+            <p>{{ pesanan.nama_penerima }} &middot; {{ pesanan.telepon }}</p>
+            {% if pesanan.metode_pengiriman == 'kurir' %}
+                <p class="text-muted break-words">{{ pesanan.alamat }}, {{ pesanan.kota }} {{ pesanan.kode_pos }}</p>
+            {% endif %}
+            {% if pesanan.nomor_resi %}<p class="mt-2"><span class="text-muted">No. resi:</span> <strong>{{ pesanan.nomor_resi }}</strong></p>{% endif %}
+            {% if pesanan.catatan %}<p class="bg-soft rounded-lg px-3 py-2 mt-3">Catatan: {{ pesanan.catatan }}</p>{% endif %}
+        </section>
+    </div>
+</div>
+{% endblock %}

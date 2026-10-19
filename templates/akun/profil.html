@@ -30,6 +30,11 @@
             <span class="text-muted">{{ icon('chevron-right', 'w-5 h-5') }}</span>
         </a>
         {% endif %}
+        <a href="{{ url_for('pesanan') }}" class="flex items-center gap-4 p-4 hover:bg-soft/60">
+            <span class="w-11 h-11 rounded-full bg-brand-soft text-brand flex items-center justify-center">{{ icon('receipt-text', 'w-5 h-5') }}</span>
+            <span class="flex-1"><span class="block font-semibold">Pesanan Saya</span><span class="block text-sm text-muted">Lacak pesanan dan unggah bukti bayar</span></span>
+            <span class="text-muted">{{ icon('chevron-right', 'w-5 h-5') }}</span>
+        </a>
         <a href="{{ url_for('pengaturan') }}" class="flex items-center gap-4 p-4 hover:bg-soft/60">
             <span class="w-11 h-11 rounded-full bg-brand-soft text-brand flex items-center justify-center">{{ icon('shield-check', 'w-5 h-5') }}</span>
             <span class="flex-1"><span class="block font-semibold">Pengaturan & Keamanan</span><span class="block text-sm text-muted">Ubah nama, email, dan kata sandi</span></span>

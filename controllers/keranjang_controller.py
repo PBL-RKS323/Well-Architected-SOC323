@@ -43,6 +43,7 @@ def index():
                      for i in tersedia if i.produk.diskon_persen),
         "ada_masalah": any(i.jumlah > i.produk.stok for i in items),
     }
+    ringkasan["bisa_checkout"] = bool(items) and not ringkasan["ada_masalah"]
     rekomendasi = []
     if not items:
         rekomendasi = (Produk.query.filter(Produk.stok > 0)

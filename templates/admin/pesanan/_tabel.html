@@ -1,0 +1,47 @@
+{% from '_pesanan.html' import badge_status, foto_item %}
+
+{# Tabel pesanan dipakai di dasbor dan halaman daftar pesanan admin #}
+{% macro tabel_pesanan(daftar, kosong="Belum ada pesanan.") %}
+<div class="overflow-x-auto">
+    <table class="w-full text-sm">
+        <thead class="bg-soft text-muted text-xs uppercase tracking-wide text-left">
+            <tr>
+                <th class="px-5 py-3">ID Pesanan</th>
+                <th class="px-5 py-3">Pelanggan</th>
+                <th class="px-5 py-3">Produk</th>
+                <th class="px-5 py-3">Tanggal</th>
+                <th class="px-5 py-3">Total</th>
+                <th class="px-5 py-3">Status</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+        {% for p in daftar %}
+            {% set pertama = p.items[0] if p.items else none %}
+            <tr class="hover:bg-soft/50">
+                <td class="px-5 py-3"><a href="{{ url_for('admin_pesanan_detail', pesanan_id=p.id) }}" class="font-semibold text-brand hover:underline whitespace-nowrap">#{{ p.kode }}</a></td>
+                <td class="px-5 py-3">
+                    <div class="flex items-center gap-3">
+                        <span class="w-9 h-9 shrink-0 rounded-full bg-brand-soft text-brand text-xs font-bold flex items-center justify-center">{{ p.user.initials }}</span>
+                        <span class="min-w-0"><span class="block font-semibold truncate max-w-44">{{ p.user.display_name }}</span><span class="block text-xs text-muted truncate max-w-44">{{ p.user.email }}</span></span>
+                    </div>
+                </td>
+                <td class="px-5 py-3">
+                    {% if pertama %}
+                    <div class="flex items-center gap-3">
+                        {{ foto_item(pertama, 'w-10 h-10') }}
+                        <span class="min-w-0"><span class="block truncate max-w-56">{{ pertama.nama_produk }}</span>
+                        {% if p.items | length > 1 %}<span class="block text-xs text-muted">+{{ p.items | length - 1 }} produk lain</span>{% endif %}</span>
+                    </div>
+                    {% endif %}
+                </td>
+                <td class="px-5 py-3 text-muted whitespace-nowrap">{{ p.created_at | tanggal(false) }}</td>
+                <td class="px-5 py-3 font-semibold whitespace-nowrap">{{ p.total | rupiah }}</td>
+                <td class="px-5 py-3">{{ badge_status(p) }}</td>
+            </tr>
+        {% else %}
+            <tr><td colspan="6" class="px-5 py-10 text-center text-muted">{{ kosong }}</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endmacro %}

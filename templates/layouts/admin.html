@@ -5,6 +5,7 @@
 {% set menu = [
     ('admin_dashboard', 'layout-dashboard', 'Dasbor', ep == 'admin_dashboard'),
     ('admin_produk', 'package', 'Produk', ep.startswith('admin_produk')),
+    ('admin_pesanan', 'shopping-bag', 'Pesanan', ep.startswith('admin_pesanan')),
     ('pengaturan', 'settings', 'Pengaturan', ep == 'pengaturan'),
     ('beranda', 'store', 'Lihat Toko', false),
 ] %}
@@ -20,7 +21,10 @@
         <nav class="space-y-1 text-sm font-medium">
             {% for endpoint, ic, label, active in menu %}
             <a href="{{ url_for(endpoint) }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl {{ 'bg-brand text-white' if active else 'text-muted hover:bg-soft hover:text-ink' }}">
-                {{ icon(ic, 'w-5 h-5') }} {{ label }}
+                {{ icon(ic, 'w-5 h-5') }} <span class="flex-1">{{ label }}</span>
+                {% if endpoint == 'admin_pesanan' and perlu_verifikasi %}
+                <span class="min-w-5 h-5 px-1.5 rounded-full bg-coral text-white text-[11px] font-bold flex items-center justify-center" title="Menunggu verifikasi pembayaran">{{ perlu_verifikasi }}</span>
+                {% endif %}
             </a>
             {% endfor %}
         </nav>
@@ -42,14 +46,15 @@
         <div class="lg:hidden bg-white border-b border-slate-100 px-4 py-3 flex items-center gap-2 overflow-x-auto scrollbar-none text-sm font-medium">
             <span class="font-display font-extrabold mr-2 whitespace-nowrap">{{ app_name }}</span>
             {% for endpoint, ic, label, active in menu %}
-            <a href="{{ url_for(endpoint) }}" class="whitespace-nowrap px-3 py-1.5 rounded-full {{ 'bg-brand text-white' if active else 'bg-soft text-muted' }}">{{ label }}</a>
+            <a href="{{ url_for(endpoint) }}" class="whitespace-nowrap px-3 py-1.5 rounded-full {{ 'bg-brand text-white' if active else 'bg-soft text-muted' }}">{{ label }}{% if endpoint == 'admin_pesanan' and perlu_verifikasi %} <span class="font-bold {{ 'text-white' if active else 'text-coral' }}">({{ perlu_verifikasi }})</span>{% endif %}</a>
             {% endfor %}
         </div>
 
         <header class="hidden lg:flex items-center justify-between gap-4 px-8 h-16 bg-white border-b border-slate-100">
-            <form action="{{ url_for('admin_produk') }}" method="GET" class="relative w-96">
+            {% set cari_pesanan = ep.startswith('admin_pesanan') %}
+            <form action="{{ url_for('admin_pesanan' if cari_pesanan else 'admin_produk') }}" method="GET" class="relative w-96">
                 <span class="absolute left-4 top-1/2 -translate-y-1/2 text-muted">{{ icon('search', 'w-4 h-4') }}</span>
-                <input type="search" name="q" value="{{ request.args.get('q', '') if ep == 'admin_produk' else '' }}" placeholder="Cari produk..."
+                <input type="search" name="q" value="{{ request.args.get('q', '') if ep in ['admin_produk', 'admin_pesanan'] else '' }}" placeholder="{{ 'Cari pesanan atau pelanggan...' if cari_pesanan else 'Cari produk...' }}"
                        class="w-full bg-soft rounded-full pl-11 pr-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-brand/40">
             </form>
             <div class="flex items-center gap-3">

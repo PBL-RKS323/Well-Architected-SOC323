@@ -1,0 +1,94 @@
+{% extends 'layouts/toko.html' %}
+{% from '_icons.html' import icon %}
+{% from '_pesanan.html' import foto_item %}
+{% block title %}Pesanan Berhasil Dibuat - {{ app_name }}{% endblock %}
+{% block content %}
+<div class="max-w-xl mx-auto">
+    <div class="text-center">
+        <span class="inline-flex w-28 h-28 rounded-full bg-brand-soft items-center justify-center">
+            <span class="w-20 h-20 rounded-full bg-brand text-white flex items-center justify-center shadow-lg shadow-brand/30">{{ icon('check', 'w-10 h-10') }}</span>
+        </span>
+        <h1 class="font-display text-2xl md:text-3xl font-extrabold mt-5">Pesanan Berhasil Dibuat!</h1>
+        <p class="text-muted mt-2">Terima kasih, {{ current_user.display_name }}. Selesaikan pembayaran agar pesananmu segera kami proses.</p>
+    </div>
+
+    <section class="bg-brand-soft/60 rounded-3xl p-4 mt-6">
+        <div class="bg-white rounded-2xl p-4 flex items-center justify-between gap-3">
+            <div class="min-w-0">
+                <p class="text-xs font-bold tracking-wider text-muted">NOMOR PESANAN</p>
+                <p class="font-display text-lg font-extrabold truncate">#{{ pesanan.kode }}</p>
+            </div>
+            <button type="button" data-copy="{{ pesanan.kode }}"
+                    class="inline-flex items-center gap-1.5 bg-brand-soft text-brand text-sm font-semibold px-4 py-2 rounded-full cursor-pointer">
+                {{ icon('copy', 'w-4 h-4') }} <span data-copy-label>Salin</span>
+            </button>
+        </div>
+        <dl class="text-sm space-y-3 px-2 pt-4 pb-1">
+            <div class="flex items-center justify-between gap-3">
+                <dt class="flex items-center gap-2 text-muted">{{ icon('calendar', 'w-4 h-4') }} Tanggal</dt>
+                <dd class="font-semibold text-right">{{ pesanan.created_at | tanggal }}</dd>
+            </div>
+            <div class="flex items-center justify-between gap-3">
+                <dt class="flex items-center gap-2 text-muted">{{ icon('landmark', 'w-4 h-4') }} Pembayaran</dt>
+                <dd class="font-semibold text-right">{{ pesanan.LABEL_PEMBAYARAN[pesanan.metode_pembayaran] }}</dd>
+            </div>
+            <div class="flex items-center justify-between gap-3">
+                <dt class="flex items-center gap-2 text-muted">{{ icon('truck', 'w-4 h-4') }} Pengiriman</dt>
+                <dd class="font-semibold text-right">{{ pesanan.LABEL_PENGIRIMAN[pesanan.metode_pengiriman] }}</dd>
+            </div>
+            <div class="flex items-center justify-between gap-3">
+                <dt class="flex items-center gap-2 text-muted">{{ icon('banknote', 'w-4 h-4') }} Total Bayar</dt>
+                <dd class="font-display text-xl font-extrabold">{{ pesanan.total | rupiah }}</dd>
+            </div>
+        </dl>
+    </section>
+
+    {% if pesanan.status == 'menunggu_pembayaran' %}
+    <section class="bg-white rounded-3xl border border-slate-100 p-5 mt-4">
+        <div class="flex items-center gap-2 text-amber-700 text-sm font-semibold">
+            {{ icon('clock', 'w-4 h-4') }} Bayar sebelum {{ pesanan.batas_bayar | tanggal }}
+        </div>
+        <p class="text-sm text-muted mt-3">Transfer tepat sebesar <strong class="text-ink">{{ pesanan.total | rupiah }}</strong> ke:</p>
+        <div class="flex items-center justify-between gap-3 bg-soft rounded-2xl p-4 mt-2">
+            <div>
+                <p class="text-xs text-muted">{{ config.BANK_NAMA }} &middot; a.n. {{ config.BANK_ATAS_NAMA }}</p>
+                <p class="font-display text-lg font-extrabold tracking-wide">{{ config.BANK_NOREK }}</p>
+            </div>
+            <button type="button" data-copy="{{ config.BANK_NOREK }}" class="inline-flex items-center gap-1.5 text-brand text-sm font-semibold cursor-pointer">
+                {{ icon('copy', 'w-4 h-4') }} <span data-copy-label>Salin</span>
+            </button>
+        </div>
+        <p class="text-xs text-muted mt-3">Setelah transfer, unggah foto/screenshot bukti transfer di halaman detail pesanan.</p>
+    </section>
+    {% endif %}
+
+    <section class="bg-white rounded-3xl border border-slate-100 p-5 mt-4">
+        <div class="flex items-center justify-between mb-3">
+            <h2 class="font-semibold">Produk Dipesan</h2>
+            <span class="text-sm text-muted">{{ pesanan.items | length }} produk</span>
+        </div>
+        <ul class="space-y-3">
+            {% for item in pesanan.items %}
+            <li class="flex items-center gap-3 bg-soft/70 rounded-2xl p-3">
+                {{ foto_item(item, 'w-14 h-14') }}
+                <div class="flex-1 min-w-0">
+                    <p class="font-semibold leading-snug line-clamp-2">{{ item.nama_produk }}</p>
+                    <p class="text-xs text-muted">{{ item.merek }} &middot; Jumlah {{ item.jumlah }}</p>
+                </div>
+                <p class="font-bold whitespace-nowrap">{{ item.subtotal | rupiah }}</p>
+            </li>
+            {% endfor %}
+        </ul>
+    </section>
+
+    <div class="space-y-3 mt-6">
+        <a href="{{ url_for('pesanan_detail', kode=pesanan.kode) }}" class="w-full flex items-center justify-center gap-2 bg-brand hover:bg-brand-dark text-white font-medium py-3.5 rounded-full shadow-lg shadow-brand/25">
+            {{ icon('upload' if pesanan.status == 'menunggu_pembayaran' else 'receipt-text', 'w-5 h-5') }}
+            {{ 'Unggah Bukti Bayar' if pesanan.status == 'menunggu_pembayaran' else 'Lihat Detail Pesanan' }} {{ icon('chevron-right', 'w-4 h-4') }}
+        </a>
+        <a href="{{ url_for('jelajah') }}" class="w-full flex items-center justify-center gap-2 bg-white border border-slate-200 hover:bg-soft font-medium py-3.5 rounded-full">
+            {{ icon('store', 'w-5 h-5') }} Lanjut Belanja
+        </a>
+    </div>
+</div>
+{% endblock %}

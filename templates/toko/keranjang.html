@@ -97,13 +97,22 @@
             <span class="font-semibold">Total</span>
             <span class="font-display text-2xl font-extrabold text-brand">{{ ringkasan.subtotal | rupiah }}</span>
         </div>
+        {% if ringkasan.bisa_checkout %}
+        <a href="{{ url_for('checkout') }}"
+           class="mt-5 w-full flex items-center justify-between bg-brand hover:bg-brand-dark text-white font-medium px-5 py-3.5 rounded-full shadow-lg shadow-brand/25">
+            <span class="text-xs tracking-wide">{{ ringkasan.jumlah }} ITEM</span>
+            <span>Checkout</span>
+            {{ icon('arrow-right', 'w-5 h-5') }}
+        </a>
+        {% else %}
         <button type="button" disabled
                 class="mt-5 w-full flex items-center justify-between bg-brand/50 text-white font-medium px-5 py-3.5 rounded-full cursor-not-allowed">
             <span class="text-xs tracking-wide">{{ ringkasan.jumlah }} ITEM</span>
             <span>Checkout</span>
             {{ icon('arrow-right', 'w-5 h-5') }}
         </button>
-        <p class="text-xs text-muted text-center mt-2">Checkout & pembayaran sedang dikembangkan (sprint berikutnya).</p>
+        <p class="text-xs text-coral text-center mt-2">Hapus produk yang stoknya habis atau kurangi jumlahnya untuk lanjut.</p>
+        {% endif %}
     </aside>
 </div>
 {% endif %}
