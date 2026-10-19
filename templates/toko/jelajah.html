@@ -14,20 +14,20 @@
 
     {# Filter & urutan #}
     <details class="group mt-3">
-        <summary class="list-none inline-flex items-center gap-2 cursor-pointer select-none bg-brand text-white text-sm font-medium px-4 py-2.5 rounded-full">
+        <summary class="list-none inline-flex items-center gap-2 cursor-pointer select-none bg-brand text-white text-sm font-medium px-4 py-3 rounded-full">
             {{ icon('sliders-horizontal', 'w-4 h-4') }} Filter{{ ' (' ~ jumlah_filter ~ ')' if jumlah_filter }}
         </summary>
         <div class="mt-3 bg-white border border-slate-100 rounded-2xl p-4 grid grid-cols-2 md:grid-cols-5 gap-3 text-sm">
             <label class="col-span-1">
                 <span class="block font-semibold mb-1">Kategori</span>
-                <select name="kategori" class="w-full border border-slate-200 rounded-xl px-3 py-2.5 bg-white">
+                <select name="kategori" class="w-full border border-slate-200 rounded-xl px-3 py-3 bg-white">
                     <option value="">Semua</option>
                     {% for k in kategori_list %}<option value="{{ k }}" {{ 'selected' if f.kategori == k }}>{{ k }}</option>{% endfor %}
                 </select>
             </label>
             <label class="col-span-1">
                 <span class="block font-semibold mb-1">Merek</span>
-                <select name="merek" class="w-full border border-slate-200 rounded-xl px-3 py-2.5 bg-white">
+                <select name="merek" class="w-full border border-slate-200 rounded-xl px-3 py-3 bg-white">
                     <option value="">Semua</option>
                     {% for m in merek_list %}<option value="{{ m }}" {{ 'selected' if f.merek == m }}>{{ m }}</option>{% endfor %}
                 </select>
@@ -35,22 +35,22 @@
             <label>
                 <span class="block font-semibold mb-1">Harga min (Rp)</span>
                 <input type="number" name="min" min="0" step="1000" value="{{ f.min if f.min is not none }}" placeholder="0"
-                       class="w-full border border-slate-200 rounded-xl px-3 py-2.5">
+                       class="w-full border border-slate-200 rounded-xl px-3 py-3">
             </label>
             <label>
                 <span class="block font-semibold mb-1">Harga maks (Rp)</span>
                 <input type="number" name="max" min="0" step="1000" value="{{ f.max if f.max is not none }}" placeholder="Tanpa batas"
-                       class="w-full border border-slate-200 rounded-xl px-3 py-2.5">
+                       class="w-full border border-slate-200 rounded-xl px-3 py-3">
             </label>
             <label class="col-span-2 md:col-span-1">
                 <span class="block font-semibold mb-1">Urutkan</span>
-                <select name="urut" class="w-full border border-slate-200 rounded-xl px-3 py-2.5 bg-white">
+                <select name="urut" class="w-full border border-slate-200 rounded-xl px-3 py-3 bg-white">
                     {% for kode, (label, _) in urutan.items() %}<option value="{{ kode }}" {{ 'selected' if urut == kode }}>{{ label }}</option>{% endfor %}
                 </select>
             </label>
             <div class="col-span-2 md:col-span-5 flex gap-2 justify-end">
-                <a href="{{ url_for('jelajah', q=f.q) if f.q else url_for('jelajah') }}" class="px-4 py-2.5 rounded-full border border-slate-200 hover:bg-soft">Reset</a>
-                <button type="submit" class="px-5 py-2.5 rounded-full bg-brand hover:bg-brand-dark text-white font-medium cursor-pointer">Terapkan</button>
+                <a href="{{ url_for('jelajah', q=f.q) if f.q else url_for('jelajah') }}" class="px-4 py-3 rounded-full border border-slate-200 hover:bg-soft">Reset</a>
+                <button type="submit" class="px-5 py-3 rounded-full bg-brand hover:bg-brand-dark text-white font-medium cursor-pointer">Terapkan</button>
             </div>
         </div>
     </details>
@@ -79,10 +79,10 @@
         </div>
         <div class="flex gap-2">
             {% if halaman.has_prev %}
-            <a href="{{ url_for('jelajah', page=halaman.prev_num, **args_dasar) }}" class="inline-flex items-center gap-1 px-4 py-2.5 rounded-full bg-white border border-slate-200 text-sm hover:border-brand">{{ icon('chevron-left', 'w-4 h-4') }} Sebelumnya</a>
+            <a href="{{ url_for('jelajah', page=halaman.prev_num, **args_dasar) }}" class="inline-flex items-center gap-1 px-4 py-3 rounded-full bg-white border border-slate-200 text-sm hover:border-brand">{{ icon('chevron-left', 'w-4 h-4') }} Sebelumnya</a>
             {% endif %}
             {% if halaman.has_next %}
-            <a href="{{ url_for('jelajah', page=halaman.next_num, **args_dasar) }}" class="inline-flex items-center gap-1 px-4 py-2.5 rounded-full bg-brand-soft text-brand text-sm font-medium hover:bg-brand hover:text-white">Selanjutnya {{ icon('chevron-right', 'w-4 h-4') }}</a>
+            <a href="{{ url_for('jelajah', page=halaman.next_num, **args_dasar) }}" class="inline-flex items-center gap-1 px-4 py-3 rounded-full bg-brand-soft text-brand text-sm font-medium hover:bg-brand hover:text-white">Selanjutnya {{ icon('chevron-right', 'w-4 h-4') }}</a>
             {% endif %}
         </div>
     </nav>

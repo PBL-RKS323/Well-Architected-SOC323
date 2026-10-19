@@ -3,6 +3,27 @@
 Setiap perubahan dicatat di sini: apa yang berubah, alasannya, dan cara mengujinya.
 Format tanggal: YYYY-MM-DD (WIB).
 
+## [0.5.1] - 2026-10-19 - Audit Anti-Slop
+
+Tampilan diperiksa dengan aturan [antislop](https://github.com/miqdadbadjuber/anti-slop) agar tidak
+terlihat seperti template AI. Keputusan desain dicatat di `docs/DESIGN.md`.
+
+### Diubah
+- **Kontras warna (WCAG AA)**: biru `#2F80ED` menjadi `#1A68D1`, abu `#6B7280` menjadi `#636B78`,
+  merah `#F04438` menjadi `#C8291D`. Teks abu muda (`slate-400`) diganti abu yang lolos 4,5:1.
+- **Area sentuh minimal 44px** di HP: tombol + kartu produk, stepper jumlah, ikon header, hapus item,
+  salin, tab, paginasi, filter.
+- **Klaim tanpa data dihapus**: "PROMO MINGGU INI" menjadi "Diskon N%", "Dikirim ke seluruh Indonesia"
+  dan "estimasi 2-4 hari kerja" diganti info ongkir flat yang sebenarnya, "biasanya selesai dalam
+  beberapa jam" dihapus.
+- **Dekorasi dikurangi**: ikon sparkle & api, gradien banner, bayangan di semua kartu & tombol, animasi
+  zoom foto, panah di tombol (kecuali Checkout), label "AKSI/PERINGATAN" & "EKOSISTEM" di dasbor/beranda.
+- Dasbor admin: kartu Total Pendapatan jadi satu-satunya titik fokus (biru penuh).
+- Pilihan pengiriman & pembayaran di checkout menampilkan cincin fokus saat dipilih lewat keyboard.
+
+### Cara uji
+- `pytest -q` -> 95 passed.
+
 ## [0.5.0] - 2026-10-19 - Sprint 5: Checkout & Pesanan
 
 ### Ditambahkan

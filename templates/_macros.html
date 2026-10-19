@@ -4,7 +4,7 @@
 {% macro field(f, ikon=None) %}
 <div>
     {{ f.label(class="block text-sm font-semibold mb-1.5 text-ink") }}
-    {% set cls = "w-full bg-white border rounded-xl py-3 outline-none transition focus:border-brand focus:ring-4 focus:ring-brand/15 placeholder:text-slate-400 "
+    {% set cls = "w-full bg-white border rounded-xl py-3 outline-none transition focus:border-brand focus:ring-4 focus:ring-brand/15 placeholder:text-muted "
                  ~ ("border-coral " if f.errors else "border-slate-200 ")
                  ~ ("pl-11 " if ikon else "pl-4 ")
                  ~ ("pr-11" if f.type == "PasswordField" else "pr-4") %}
@@ -40,5 +40,5 @@
 {% endmacro %}
 
 {% macro tombol_utama(f, cls="") %}
-{{ f(class="w-full bg-brand hover:bg-brand-dark text-white font-medium py-3.5 rounded-full shadow-lg shadow-brand/25 cursor-pointer transition " ~ cls) }}
+{{ f(class="w-full bg-brand hover:bg-brand-dark text-white font-medium py-3.5 rounded-full cursor-pointer transition " ~ cls) }}
 {% endmacro %}

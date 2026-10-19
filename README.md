@@ -21,7 +21,7 @@ smartwatch, dan aksesoris). Dibangun dengan Flask dan database SQL, mengikuti po
 | Laporan transaksi, Midtrans (QRIS/e-wallet), login Google, ulasan, avatar, kelola akun | Berikutnya |
 
 Riwayat perubahan ada di [CHANGELOG.md](CHANGELOG.md), kontrol keamanan dan format log ada di
-[docs/KEAMANAN.md](docs/KEAMANAN.md).
+[docs/KEAMANAN.md](docs/KEAMANAN.md), arah desain dan alasannya ada di [docs/DESIGN.md](docs/DESIGN.md).
 
 ## Teknologi
 

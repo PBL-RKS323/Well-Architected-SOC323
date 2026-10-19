@@ -7,7 +7,7 @@
 
 {# Kartu produk dipakai di beranda, jelajah, dan produk terkait #}
 {% macro kartu(produk, cls="") %}
-<article class="group bg-white rounded-2xl p-3 flex flex-col border border-slate-100 shadow-[0_4px_20px_rgba(15,23,42,0.04)] {{ cls }}">
+<article class="bg-white rounded-2xl p-3 flex flex-col border border-slate-100 {{ cls }}">
     <a href="{{ url_for('produk_detail', produk_id=produk.id) }}" class="relative block rounded-xl bg-soft aspect-square overflow-hidden">
         {% if produk.stok == 0 %}
             <span class="absolute top-2 left-2 z-10 bg-ink/80 text-white text-[11px] font-semibold px-2 py-0.5 rounded-full">Stok habis</span>
@@ -15,7 +15,7 @@
             <span class="absolute top-2 left-2 z-10 bg-coral text-white text-[11px] font-bold px-2 py-0.5 rounded-full">-{{ produk.diskon_persen }}%</span>
         {% endif %}
         <img src="{{ url_for('static', filename='uploads/' ~ produk.gambar) }}" alt="{{ produk.nama_produk }}" loading="lazy"
-             class="w-full h-full object-cover transition duration-300 group-hover:scale-105">
+             class="w-full h-full object-cover">
     </a>
     <p class="text-[11px] font-semibold text-brand mt-3">{{ produk.merek }} &middot; {{ produk.kategori }}</p>
     <a href="{{ url_for('produk_detail', produk_id=produk.id) }}" class="mt-0.5">
@@ -34,15 +34,16 @@
             <form action="{{ url_for('keranjang_tambah', produk_id=produk.id) }}" method="POST">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <input type="hidden" name="next" value="{{ request.full_path.rstrip('?') }}">
+                {# Area sentuh 44px, lingkaran biru tetap 36px agar harga tidak terdorong di layar sempit #}
                 <button type="submit" aria-label="Tambah {{ produk.nama_produk }} ke keranjang"
-                        class="w-9 h-9 shrink-0 rounded-full bg-brand hover:bg-brand-dark text-white flex items-center justify-center shadow-md shadow-brand/30 cursor-pointer">
-                    {{ icon('plus', 'w-5 h-5') }}
+                        class="group/tambah w-11 h-11 -m-1 shrink-0 flex items-center justify-center cursor-pointer">
+                    <span class="w-9 h-9 rounded-full bg-brand group-hover/tambah:bg-brand-dark text-white flex items-center justify-center">{{ icon('plus', 'w-5 h-5') }}</span>
                 </button>
             </form>
             {% else %}
             <a href="{{ url_for('login', next=url_for('produk_detail', produk_id=produk.id)) }}" aria-label="Masuk untuk membeli {{ produk.nama_produk }}"
-               class="w-9 h-9 shrink-0 rounded-full bg-brand hover:bg-brand-dark text-white flex items-center justify-center shadow-md shadow-brand/30">
-                {{ icon('plus', 'w-5 h-5') }}
+               class="group/tambah w-11 h-11 -m-1 shrink-0 flex items-center justify-center">
+                <span class="w-9 h-9 rounded-full bg-brand group-hover/tambah:bg-brand-dark text-white flex items-center justify-center">{{ icon('plus', 'w-5 h-5') }}</span>
             </a>
             {% endif %}
         {% endif %}

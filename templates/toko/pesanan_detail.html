@@ -18,7 +18,7 @@
                     <p class="text-xs font-bold tracking-wider text-muted">NOMOR PESANAN</p>
                     <div class="flex items-center gap-2">
                         <h2 class="font-display text-lg font-extrabold">#{{ pesanan.kode }}</h2>
-                        <button type="button" data-copy="{{ pesanan.kode }}" aria-label="Salin nomor pesanan" class="text-muted hover:text-brand cursor-pointer">{{ icon('copy', 'w-4 h-4') }}<span data-copy-label class="sr-only">Salin</span></button>
+                        <button type="button" data-copy="{{ pesanan.kode }}" aria-label="Salin nomor pesanan" class="p-3 -m-3 text-muted hover:text-brand cursor-pointer">{{ icon('copy', 'w-5 h-5') }}<span data-copy-label class="sr-only">Salin</span></button>
                     </div>
                     <p class="text-sm text-muted">Dipesan {{ pesanan.created_at | tanggal }}</p>
                 </div>
@@ -50,13 +50,13 @@
                     <li class="flex gap-3">
                         <div class="flex flex-col items-center">
                             <span class="w-8 h-8 shrink-0 rounded-full flex items-center justify-center
-                                {{ 'bg-brand text-white' if selesai else ('bg-brand-soft text-brand ring-4 ring-brand-soft/50' if sekarang else 'bg-soft text-slate-400') }}">
+                                {{ 'bg-brand text-white' if selesai else ('bg-brand-soft text-brand ring-4 ring-brand-soft/50' if sekarang else 'bg-soft text-muted') }}">
                                 {% if selesai %}{{ icon('check', 'w-4 h-4') }}{% else %}<span class="text-xs font-bold">{{ loop.index }}</span>{% endif %}
                             </span>
                             {% if not loop.last %}<span class="w-0.5 flex-1 min-h-6 {{ 'bg-brand' if loop.index0 < posisi else 'bg-slate-100' }}"></span>{% endif %}
                         </div>
                         <div class="pb-5">
-                            <p class="font-semibold text-sm {{ 'text-slate-400' if not (selesai or sekarang) }}">{{ label }}</p>
+                            <p class="text-sm {{ 'font-semibold' if (selesai or sekarang) else 'text-muted' }}">{{ label }}</p>
                             {% set waktu = pesanan.waktu_status(kode) %}
                             {% if waktu and (selesai or sekarang) %}<p class="text-xs text-muted">{{ waktu | tanggal }}</p>{% endif %}
                             {% if sekarang and kode == 'dikirim' and pesanan.nomor_resi %}<p class="text-xs text-brand font-semibold mt-0.5">No. resi: {{ pesanan.nomor_resi }}</p>{% endif %}
@@ -84,7 +84,7 @@
                         <p class="text-xs text-muted">{{ config.BANK_NAMA }} &middot; a.n. {{ config.BANK_ATAS_NAMA }}</p>
                         <p class="font-display text-lg font-extrabold tracking-wide">{{ config.BANK_NOREK }}</p>
                     </div>
-                    <button type="button" data-copy="{{ config.BANK_NOREK }}" class="inline-flex items-center gap-1.5 text-brand text-sm font-semibold cursor-pointer">{{ icon('copy', 'w-4 h-4') }} <span data-copy-label>Salin</span></button>
+                    <button type="button" data-copy="{{ config.BANK_NOREK }}" class="inline-flex items-center gap-1.5 text-brand text-sm font-semibold px-2 min-h-11 cursor-pointer">{{ icon('copy', 'w-4 h-4') }} <span data-copy-label>Salin</span></button>
                 </div>
 
                 <form action="{{ url_for('pesanan_bayar', kode=pesanan.kode) }}" method="POST" enctype="multipart/form-data" class="mt-4">
@@ -95,7 +95,7 @@
                         <span class="text-xs text-muted">JPG atau PNG, maksimal 2 MB</span>
                         {{ form_bukti.bukti(accept="image/png,image/jpeg", class="block w-full max-w-xs text-xs text-muted file:mr-3 file:rounded-full file:border-0 file:bg-brand-soft file:px-4 file:py-2 file:text-brand file:font-semibold") }}
                     </label>
-                    {{ form_bukti.submit(class="mt-3 w-full bg-brand hover:bg-brand-dark text-white font-medium py-3.5 rounded-full shadow-lg shadow-brand/25 cursor-pointer") }}
+                    {{ form_bukti.submit(class="mt-3 w-full bg-brand hover:bg-brand-dark text-white font-medium py-3.5 rounded-full cursor-pointer") }}
                 </form>
             {% endif %}
             {% if pesanan.bukti_bayar and pesanan.status != 'menunggu_pembayaran' %}
@@ -171,13 +171,13 @@
         {% if pesanan.status == 'dikirim' %}
         <form action="{{ url_for('pesanan_terima', kode=pesanan.kode) }}" method="POST" data-confirm="Pastikan pesanan sudah kamu terima dengan baik. Lanjutkan?">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-            <button type="submit" class="w-full flex items-center justify-center gap-2 bg-brand hover:bg-brand-dark text-white font-medium py-3.5 rounded-full shadow-lg shadow-brand/25 cursor-pointer">{{ icon('circle-check', 'w-5 h-5') }} Pesanan Sudah Diterima</button>
+            <button type="submit" class="w-full flex items-center justify-center gap-2 bg-brand hover:bg-brand-dark text-white font-medium py-3.5 rounded-full cursor-pointer">{{ icon('circle-check', 'w-5 h-5') }} Pesanan Sudah Diterima</button>
         </form>
         {% endif %}
         {% if pesanan.status in ['selesai', 'dibatalkan'] %}
         <form action="{{ url_for('pesanan_beli_lagi', kode=pesanan.kode) }}" method="POST">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-            <button type="submit" class="w-full flex items-center justify-center gap-2 bg-brand hover:bg-brand-dark text-white font-medium py-3.5 rounded-full shadow-lg shadow-brand/25 cursor-pointer">{{ icon('rotate-ccw', 'w-5 h-5') }} Beli Lagi</button>
+            <button type="submit" class="w-full flex items-center justify-center gap-2 bg-brand hover:bg-brand-dark text-white font-medium py-3.5 rounded-full cursor-pointer">{{ icon('rotate-ccw', 'w-5 h-5') }} Beli Lagi</button>
         </form>
         {% endif %}
         {% if pesanan.status == 'menunggu_pembayaran' %}

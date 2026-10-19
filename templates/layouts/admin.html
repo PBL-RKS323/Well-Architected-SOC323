@@ -46,7 +46,7 @@
         <div class="lg:hidden bg-white border-b border-slate-100 px-4 py-3 flex items-center gap-2 overflow-x-auto scrollbar-none text-sm font-medium">
             <span class="font-display font-extrabold mr-2 whitespace-nowrap">{{ app_name }}</span>
             {% for endpoint, ic, label, active in menu %}
-            <a href="{{ url_for(endpoint) }}" class="whitespace-nowrap px-3 py-1.5 rounded-full {{ 'bg-brand text-white' if active else 'bg-soft text-muted' }}">{{ label }}{% if endpoint == 'admin_pesanan' and perlu_verifikasi %} <span class="font-bold {{ 'text-white' if active else 'text-coral' }}">({{ perlu_verifikasi }})</span>{% endif %}</a>
+            <a href="{{ url_for(endpoint) }}" class="whitespace-nowrap inline-flex items-center gap-1 px-4 min-h-11 rounded-full {{ 'bg-brand text-white' if active else 'bg-soft text-muted' }}">{{ label }}{% if endpoint == 'admin_pesanan' and perlu_verifikasi %} <span class="font-bold {{ 'text-white' if active else 'text-coral' }}">({{ perlu_verifikasi }})</span>{% endif %}</a>
             {% endfor %}
         </div>
 

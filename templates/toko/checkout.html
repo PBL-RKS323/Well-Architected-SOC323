@@ -20,7 +20,7 @@
             <div class="grid sm:grid-cols-2 gap-3">
                 {% for opsi in form.metode_pengiriman %}
                 {% set is_kurir = opsi.data == 'kurir' %}
-                <label class="relative flex gap-3 bg-white border-2 rounded-2xl p-4 cursor-pointer has-[:checked]:border-brand has-[:checked]:bg-brand-soft/40 border-slate-100">
+                <label class="relative flex gap-3 bg-white border-2 rounded-2xl p-4 cursor-pointer has-[:checked]:border-brand has-[:checked]:bg-brand-soft/40 has-[:focus-visible]:ring-4 has-[:focus-visible]:ring-brand/30 border-slate-100">
                     {{ opsi(class="peer sr-only") }}
                     <span class="w-11 h-11 shrink-0 rounded-full bg-brand-soft text-brand flex items-center justify-center">{{ icon('truck' if is_kurir else 'store', 'w-5 h-5') }}</span>
                     <span class="flex-1 min-w-0">
@@ -28,7 +28,7 @@
                             {{ opsi.label.text }}
                             <span class="text-[11px] font-bold px-2 py-0.5 rounded-full {{ 'bg-soft text-ink' if is_kurir else 'bg-emerald-50 text-emerald-700' }}">{{ ongkir_kurir | rupiah if is_kurir else 'GRATIS' }}</span>
                         </span>
-                        <span class="block text-sm text-muted mt-0.5">{{ 'Ongkir flat ke seluruh Indonesia, estimasi 2-4 hari kerja' if is_kurir else 'Ambil sendiri di toko setelah pesanan siap' }}</span>
+                        <span class="block text-sm text-muted mt-0.5">{{ 'Ongkir flat per pesanan, dikirim setelah pembayaran diterima' if is_kurir else 'Ambil sendiri di toko setelah pesanan siap' }}</span>
                     </span>
                     <span class="absolute top-4 right-4 hidden peer-checked:flex w-5 h-5 rounded-full bg-brand text-white items-center justify-center">{{ icon('check', 'w-3.5 h-3.5') }}</span>
                 </label>
@@ -93,7 +93,7 @@
             <h2 class="text-xs font-bold tracking-wider text-muted mb-2 px-1">METODE PEMBAYARAN</h2>
             <div class="space-y-3">
                 {% for opsi in form.metode_pembayaran %}
-                <label class="relative flex gap-3 bg-white border-2 rounded-2xl p-4 cursor-pointer has-[:checked]:border-brand border-slate-100">
+                <label class="relative flex gap-3 bg-white border-2 rounded-2xl p-4 cursor-pointer has-[:checked]:border-brand has-[:focus-visible]:ring-4 has-[:focus-visible]:ring-brand/30 border-slate-100">
                     {{ opsi(class="peer sr-only") }}
                     <span class="w-12 h-12 shrink-0 rounded-xl bg-brand-soft text-brand flex items-center justify-center">{{ icon('landmark', 'w-6 h-6') }}</span>
                     <span class="flex-1">
@@ -133,8 +133,8 @@
                 <span class="font-semibold">Total</span>
                 <span class="font-display text-2xl font-extrabold text-brand" data-kurir="{{ total_kurir | rupiah }}" data-ambil="{{ subtotal | rupiah }}">{{ (total_kurir if kurir else subtotal) | rupiah }}</span>
             </div>
-            <button type="submit" class="hidden lg:flex mt-5 w-full items-center justify-center gap-2 bg-brand hover:bg-brand-dark text-white font-medium px-5 py-3.5 rounded-full shadow-lg shadow-brand/25 cursor-pointer">
-                {{ icon('lock', 'w-5 h-5') }} Buat Pesanan {{ icon('arrow-right', 'w-5 h-5') }}
+            <button type="submit" class="hidden lg:flex mt-5 w-full items-center justify-center gap-2 bg-brand hover:bg-brand-dark text-white font-medium px-5 py-3.5 rounded-full cursor-pointer">
+                Buat Pesanan
             </button>
             <p class="hidden lg:block text-xs text-muted text-center mt-2">Bayar dalam {{ config.BATAS_BAYAR_JAM }} jam setelah pesanan dibuat.</p>
         </div>
@@ -149,8 +149,8 @@
             </div>
             {% if hemat %}<p class="text-xs font-medium text-brand">Hemat {{ hemat | rupiah }}</p>{% endif %}
         </div>
-        <button type="submit" class="w-full flex items-center justify-center gap-2 bg-brand hover:bg-brand-dark text-white font-medium py-3.5 rounded-full shadow-lg shadow-brand/25 cursor-pointer">
-            {{ icon('lock', 'w-5 h-5') }} Buat Pesanan {{ icon('arrow-right', 'w-5 h-5') }}
+        <button type="submit" class="w-full flex items-center justify-center gap-2 bg-brand hover:bg-brand-dark text-white font-medium py-3.5 rounded-full cursor-pointer">
+            Buat Pesanan
         </button>
     </div>
 </form>

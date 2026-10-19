@@ -43,7 +43,7 @@ def test_kartu_produk_punya_tombol_tambah_saat_login(client, produk_ids):
 def test_keranjang_kosong(client):
     login(client, "budi@tokoelektronik.id", CUSTOMER_PASSWORD)
     html = client.get("/keranjang").get_data(as_text=True)
-    assert "Keranjangmu masih kosong" in html and "Mulai Belanja" in html
+    assert "Keranjangmu masih kosong" in html and "Lihat Produk" in html
 
 
 def test_tambah_produk_dan_badge_jumlah(client, app, produk_ids):

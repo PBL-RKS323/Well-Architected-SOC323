@@ -4,7 +4,7 @@
 {% block title %}{{ produk.nama_produk }} - {{ app_name }}{% endblock %}
 {% block content %}
 <a href="{{ url_for('jelajah') }}" class="inline-flex items-center gap-2 text-sm font-medium text-muted hover:text-ink mb-4">
-    <span class="w-9 h-9 rounded-full bg-white border border-slate-100 flex items-center justify-center">{{ icon('arrow-left', 'w-4 h-4') }}</span>
+    <span class="w-11 h-11 rounded-full bg-white border border-slate-100 flex items-center justify-center">{{ icon('arrow-left', 'w-4 h-4') }}</span>
     Kembali
 </a>
 
@@ -12,10 +12,10 @@
     <div class="relative bg-white rounded-3xl p-4 border border-slate-100">
         <div class="absolute top-6 left-6 z-10 flex flex-col items-start gap-1.5">
             {% if produk.diskon_persen %}
-                <span class="inline-flex items-center gap-1 bg-coral text-white text-xs font-bold px-3 py-1 rounded-full">{{ icon('flame', 'w-3.5 h-3.5') }} DISKON {{ produk.diskon_persen }}%</span>
+                <span class="bg-coral text-white text-xs font-bold px-3 py-1 rounded-full">Diskon {{ produk.diskon_persen }}%</span>
             {% endif %}
             {% if 0 < produk.stok <= produk.STOK_MENIPIS %}
-                <span class="inline-flex items-center gap-1 bg-white text-brand text-xs font-semibold px-3 py-1 rounded-full shadow-sm">{{ icon('sparkles', 'w-3.5 h-3.5') }} Stok tinggal sedikit</span>
+                <span class="bg-white text-ink border border-slate-200 text-xs font-semibold px-3 py-1 rounded-full">Sisa {{ produk.stok }} unit</span>
             {% endif %}
         </div>
         <img src="{{ url_for('static', filename='uploads/' ~ produk.gambar) }}" alt="{{ produk.nama_produk }}"
@@ -48,25 +48,25 @@
                         <p class="font-semibold">Jumlah</p>
                         <p class="text-xs text-muted">Maksimal {{ maks }} unit per pesanan</p>
                     </div>
-                    <div class="flex items-center gap-1 bg-soft rounded-full p-1" data-qty>
-                        <button type="button" data-qty-step="-1" aria-label="Kurangi jumlah" class="w-9 h-9 rounded-full bg-white flex items-center justify-center cursor-pointer">{{ icon('minus', 'w-4 h-4') }}</button>
+                    <div class="flex items-center gap-1 bg-soft rounded-full p-0.5" data-qty>
+                        <button type="button" data-qty-step="-1" aria-label="Kurangi jumlah" class="w-11 h-11 rounded-full bg-white flex items-center justify-center cursor-pointer">{{ icon('minus', 'w-4 h-4') }}</button>
                         <input type="number" name="jumlah" value="1" min="1" max="{{ maks }}" aria-label="Jumlah"
                                class="w-10 text-center bg-transparent font-semibold outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none">
-                        <button type="button" data-qty-step="1" aria-label="Tambah jumlah" class="w-9 h-9 rounded-full bg-white flex items-center justify-center cursor-pointer">{{ icon('plus', 'w-4 h-4') }}</button>
+                        <button type="button" data-qty-step="1" aria-label="Tambah jumlah" class="w-11 h-11 rounded-full bg-white flex items-center justify-center cursor-pointer">{{ icon('plus', 'w-4 h-4') }}</button>
                     </div>
                 </div>
                 <div class="grid grid-cols-2 gap-3 mt-4">
-                    <button type="submit" class="inline-flex items-center justify-center gap-2 border-2 border-brand/20 hover:border-brand text-brand font-medium py-3 rounded-full cursor-pointer">
+                    <button type="submit" class="inline-flex items-center justify-center gap-2 border-2 border-brand/30 hover:border-brand text-brand font-medium py-3 rounded-full cursor-pointer">
                         {{ icon('shopping-bag', 'w-5 h-5') }} Keranjang
                     </button>
-                    <button type="submit" name="beli" value="1" class="inline-flex items-center justify-center gap-2 bg-brand hover:bg-brand-dark text-white font-medium py-3 rounded-full shadow-lg shadow-brand/25 cursor-pointer">
-                        Beli Sekarang {{ icon('arrow-right', 'w-4 h-4') }}
+                    <button type="submit" name="beli" value="1" class="inline-flex items-center justify-center gap-2 bg-brand hover:bg-brand-dark text-white font-medium py-3 rounded-full cursor-pointer">
+                        Beli Sekarang
                     </button>
                 </div>
             </form>
             {% else %}
-            <a href="{{ url_for('login', next=request.path) }}" class="mt-5 flex items-center justify-center gap-2 bg-brand hover:bg-brand-dark text-white font-medium py-3.5 rounded-full shadow-lg shadow-brand/25">
-                Masuk untuk membeli {{ icon('arrow-right', 'w-4 h-4') }}
+            <a href="{{ url_for('login', next=request.path) }}" class="mt-5 flex items-center justify-center gap-2 bg-brand hover:bg-brand-dark text-white font-medium py-3.5 rounded-full">
+                Masuk untuk membeli
             </a>
             {% endif %}
         {% endif %}
@@ -79,8 +79,8 @@
         <div class="mt-6 flex items-center gap-3 bg-white border border-slate-100 rounded-2xl p-4">
             <span class="w-10 h-10 shrink-0 rounded-full bg-brand-soft text-brand flex items-center justify-center">{{ icon('truck', 'w-5 h-5') }}</span>
             <div class="text-sm">
-                <p class="font-semibold">Dikirim ke seluruh Indonesia</p>
-                <p class="text-muted">Atau ambil langsung di toko tanpa ongkos kirim.</p>
+                <p class="font-semibold">Ongkir flat {{ config.ONGKIR_FLAT | rupiah }} per pesanan</p>
+                <p class="text-muted">Atau ambil sendiri di toko tanpa ongkos kirim.</p>
             </div>
         </div>
     </div>

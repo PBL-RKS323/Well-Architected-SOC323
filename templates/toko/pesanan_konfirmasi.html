@@ -6,7 +6,7 @@
 <div class="max-w-xl mx-auto">
     <div class="text-center">
         <span class="inline-flex w-28 h-28 rounded-full bg-brand-soft items-center justify-center">
-            <span class="w-20 h-20 rounded-full bg-brand text-white flex items-center justify-center shadow-lg shadow-brand/30">{{ icon('check', 'w-10 h-10') }}</span>
+            <span class="w-20 h-20 rounded-full bg-brand text-white flex items-center justify-center">{{ icon('check', 'w-10 h-10') }}</span>
         </span>
         <h1 class="font-display text-2xl md:text-3xl font-extrabold mt-5">Pesanan Berhasil Dibuat!</h1>
         <p class="text-muted mt-2">Terima kasih, {{ current_user.display_name }}. Selesaikan pembayaran agar pesananmu segera kami proses.</p>
@@ -19,7 +19,7 @@
                 <p class="font-display text-lg font-extrabold truncate">#{{ pesanan.kode }}</p>
             </div>
             <button type="button" data-copy="{{ pesanan.kode }}"
-                    class="inline-flex items-center gap-1.5 bg-brand-soft text-brand text-sm font-semibold px-4 py-2 rounded-full cursor-pointer">
+                    class="inline-flex items-center gap-1.5 bg-brand-soft text-brand text-sm font-semibold px-4 min-h-11 rounded-full cursor-pointer">
                 {{ icon('copy', 'w-4 h-4') }} <span data-copy-label>Salin</span>
             </button>
         </div>
@@ -54,7 +54,7 @@
                 <p class="text-xs text-muted">{{ config.BANK_NAMA }} &middot; a.n. {{ config.BANK_ATAS_NAMA }}</p>
                 <p class="font-display text-lg font-extrabold tracking-wide">{{ config.BANK_NOREK }}</p>
             </div>
-            <button type="button" data-copy="{{ config.BANK_NOREK }}" class="inline-flex items-center gap-1.5 text-brand text-sm font-semibold cursor-pointer">
+            <button type="button" data-copy="{{ config.BANK_NOREK }}" class="inline-flex items-center gap-1.5 text-brand text-sm font-semibold px-2 min-h-11 cursor-pointer">
                 {{ icon('copy', 'w-4 h-4') }} <span data-copy-label>Salin</span>
             </button>
         </div>
@@ -82,9 +82,9 @@
     </section>
 
     <div class="space-y-3 mt-6">
-        <a href="{{ url_for('pesanan_detail', kode=pesanan.kode) }}" class="w-full flex items-center justify-center gap-2 bg-brand hover:bg-brand-dark text-white font-medium py-3.5 rounded-full shadow-lg shadow-brand/25">
+        <a href="{{ url_for('pesanan_detail', kode=pesanan.kode) }}" class="w-full flex items-center justify-center gap-2 bg-brand hover:bg-brand-dark text-white font-medium py-3.5 rounded-full">
             {{ icon('upload' if pesanan.status == 'menunggu_pembayaran' else 'receipt-text', 'w-5 h-5') }}
-            {{ 'Unggah Bukti Bayar' if pesanan.status == 'menunggu_pembayaran' else 'Lihat Detail Pesanan' }} {{ icon('chevron-right', 'w-4 h-4') }}
+            {{ 'Unggah Bukti Bayar' if pesanan.status == 'menunggu_pembayaran' else 'Lihat Detail Pesanan' }}
         </a>
         <a href="{{ url_for('jelajah') }}" class="w-full flex items-center justify-center gap-2 bg-white border border-slate-200 hover:bg-soft font-medium py-3.5 rounded-full">
             {{ icon('store', 'w-5 h-5') }} Lanjut Belanja

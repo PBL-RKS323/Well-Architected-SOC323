@@ -11,27 +11,24 @@
     {% if items %}
     <form action="{{ url_for('keranjang_kosongkan') }}" method="POST" data-confirm="Kosongkan semua isi keranjang?">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-        <button type="submit" class="inline-flex items-center gap-1.5 text-sm text-muted hover:text-coral cursor-pointer">{{ icon('trash-2', 'w-4 h-4') }} Kosongkan</button>
+        <button type="submit" class="inline-flex items-center gap-1.5 text-sm text-muted hover:text-coral py-3 cursor-pointer">{{ icon('trash-2', 'w-4 h-4') }} Kosongkan</button>
     </form>
     {% endif %}
 </div>
 
 {% if not items %}
     <section class="text-center bg-white rounded-3xl border border-slate-100 px-6 py-12">
-        <div class="relative inline-flex">
-            <span class="w-28 h-28 rounded-full bg-brand-soft flex items-center justify-center text-brand">{{ icon('shopping-bag', 'w-12 h-12') }}</span>
-            <span class="absolute -top-1 -right-2 text-sun">{{ icon('sparkles', 'w-6 h-6') }}</span>
-        </div>
+        <span class="inline-flex w-28 h-28 rounded-full bg-brand-soft items-center justify-center text-brand">{{ icon('shopping-bag', 'w-12 h-12') }}</span>
         <h2 class="font-display text-2xl font-extrabold mt-6">Keranjangmu masih kosong</h2>
-        <p class="text-muted mt-2 max-w-sm mx-auto">Belum ada barang di keranjang. Yuk lihat gadget terbaru dari Apple, Samsung, dan Xiaomi!</p>
-        <a href="{{ url_for('jelajah') }}" class="inline-flex items-center gap-2 mt-6 bg-brand hover:bg-brand-dark text-white font-medium px-8 py-3.5 rounded-full shadow-lg shadow-brand/25">
-            Mulai Belanja {{ icon('arrow-right', 'w-4 h-4') }}
+        <p class="text-muted mt-2 max-w-sm mx-auto">Produk Apple, Samsung, dan Xiaomi bisa dilihat di halaman Jelajah.</p>
+        <a href="{{ url_for('jelajah') }}" class="inline-flex items-center gap-2 mt-6 bg-brand hover:bg-brand-dark text-white font-medium px-8 py-3.5 rounded-full">
+            Lihat Produk
         </a>
     </section>
 
     {% if rekomendasi %}
     <section class="mt-10">
-        <h2 class="flex items-center gap-2 font-display text-lg font-bold mb-3">{{ icon('sparkles', 'w-5 h-5 text-brand') }} Produk Pilihan</h2>
+        <h2 class="font-display text-lg font-bold mb-3">Produk Terbaru</h2>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-5">
             {% for p in rekomendasi %}{{ kartu(p) }}{% endfor %}
         </div>
@@ -51,7 +48,7 @@
                     <a href="{{ url_for('produk_detail', produk_id=p.id) }}" class="font-semibold leading-snug line-clamp-2 hover:text-brand">{{ p.nama_produk }}</a>
                     <form action="{{ url_for('keranjang_hapus', item_id=item.id) }}" method="POST">
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                        <button type="submit" aria-label="Hapus {{ p.nama_produk }}" class="p-1 text-muted hover:text-coral cursor-pointer">{{ icon('trash-2', 'w-5 h-5') }}</button>
+                        <button type="submit" aria-label="Hapus {{ p.nama_produk }}" class="p-3 -m-2 text-muted hover:text-coral cursor-pointer">{{ icon('trash-2', 'w-5 h-5') }}</button>
                     </form>
                 </div>
                 <p class="text-xs text-muted">{{ p.merek }} &middot; {{ p.kategori }}</p>
@@ -62,19 +59,20 @@
                     <p class="text-xs font-semibold text-amber-700 mt-1">Stok tersisa {{ p.stok }}, kurangi jumlahnya.</p>
                 {% endif %}
 
-                <div class="mt-auto pt-2 flex items-end justify-between gap-2">
+                {# flex-wrap: di layar sempit stepper turun ke bawah harga, bukan bertabrakan #}
+                <div class="mt-auto pt-2 flex flex-wrap items-end justify-between gap-2">
                     <div>
                         <p class="font-bold whitespace-nowrap {{ 'text-coral' if p.diskon_persen }}">{{ p.harga | rupiah }}</p>
                         {% if p.diskon_persen %}<p class="text-xs text-muted line-through">{{ p.harga_normal | rupiah }}</p>{% endif %}
                     </div>
                     {% if p.stok > 0 %}
-                    <form action="{{ url_for('keranjang_ubah', item_id=item.id) }}" method="POST" class="flex items-center gap-1 bg-soft rounded-full p-1">
+                    <form action="{{ url_for('keranjang_ubah', item_id=item.id) }}" method="POST" class="flex items-center gap-1 bg-soft rounded-full p-0.5">
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                         <button type="submit" name="jumlah" value="{{ item.jumlah - 1 }}" aria-label="Kurangi jumlah {{ p.nama_produk }}"
-                                class="w-8 h-8 rounded-full bg-white flex items-center justify-center cursor-pointer">{{ icon('minus', 'w-4 h-4') }}</button>
+                                class="w-11 h-11 rounded-full bg-white flex items-center justify-center cursor-pointer">{{ icon('minus', 'w-4 h-4') }}</button>
                         <span class="w-7 text-center text-sm font-semibold" aria-label="Jumlah">{{ item.jumlah }}</span>
                         <button type="submit" name="jumlah" value="{{ item.jumlah + 1 }}" aria-label="Tambah jumlah {{ p.nama_produk }}"
-                                class="w-8 h-8 rounded-full bg-white flex items-center justify-center cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                                class="w-11 h-11 rounded-full bg-white flex items-center justify-center cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
                                 {{ 'disabled' if item.jumlah >= item.batas }}>{{ icon('plus', 'w-4 h-4') }}</button>
                     </form>
                     {% endif %}
@@ -89,7 +87,7 @@
         <dl class="space-y-2.5 text-sm">
             <div class="flex justify-between"><dt class="text-muted">Subtotal ({{ ringkasan.jumlah }} item)</dt><dd class="font-medium">{{ ringkasan.subtotal | rupiah }}</dd></div>
             {% if ringkasan.hemat %}
-            <div class="flex justify-between"><dt class="text-muted">Hemat dari diskon</dt><dd class="font-medium text-emerald-600">-{{ ringkasan.hemat | rupiah }}</dd></div>
+            <div class="flex justify-between"><dt class="text-muted">Hemat dari diskon</dt><dd class="font-medium text-emerald-700">-{{ ringkasan.hemat | rupiah }}</dd></div>
             {% endif %}
             <div class="flex justify-between"><dt class="text-muted">Ongkos kirim</dt><dd class="text-muted">Dipilih saat checkout</dd></div>
         </dl>
@@ -99,7 +97,7 @@
         </div>
         {% if ringkasan.bisa_checkout %}
         <a href="{{ url_for('checkout') }}"
-           class="mt-5 w-full flex items-center justify-between bg-brand hover:bg-brand-dark text-white font-medium px-5 py-3.5 rounded-full shadow-lg shadow-brand/25">
+           class="mt-5 w-full flex items-center justify-between bg-brand hover:bg-brand-dark text-white font-medium px-5 py-3.5 rounded-full">
             <span class="text-xs tracking-wide">{{ ringkasan.jumlah }} ITEM</span>
             <span>Checkout</span>
             {{ icon('arrow-right', 'w-5 h-5') }}

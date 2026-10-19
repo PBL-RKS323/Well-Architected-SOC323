@@ -110,7 +110,7 @@ def test_diskon_tampil_di_katalog_dan_detail(client, app):
         assert redmi.diskon_persen == 14
     assert "-14%" in client.get("/jelajah").get_data(as_text=True)
     html = client.get(f"/produk/{redmi.id}").get_data(as_text=True)
-    assert "DISKON 14%" in html and "Rp 4.999.000" in html
+    assert "Diskon 14%" in html and "Rp 4.999.000" in html
 
 
 def test_harga_normal_harus_lebih_tinggi(client):
@@ -123,8 +123,9 @@ def test_harga_normal_harus_lebih_tinggi(client):
 def test_beranda_menampilkan_produk_unggulan_diskon(client):
     _isi_katalog(client)
     html = client.get("/").get_data(as_text=True)
-    assert "PROMO MINGGU INI" in html
-    unggulan = html.split("PROMO MINGGU INI", 1)[1]
+    # Label hanya fakta diskon, bukan klaim periode promo yang tidak ada datanya
+    assert "PROMO MINGGU INI" not in html
+    unggulan = html.split("Diskon 14%", 1)[1]
     assert unggulan.index("Redmi Note 14") < unggulan.index("Belanja per Kategori")
 
 

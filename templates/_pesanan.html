@@ -33,7 +33,7 @@
 {% macro info_status(pesanan) %}
 {% set info = {
     'menunggu_pembayaran': ('wallet', 'Menunggu pembayaran', 'Bayar sebelum ' ~ (pesanan.batas_bayar | tanggal)),
-    'menunggu_verifikasi': ('hourglass', 'Bukti bayar sedang diperiksa', 'Biasanya selesai dalam beberapa jam'),
+    'menunggu_verifikasi': ('hourglass', 'Bukti bayar sedang diperiksa', 'Admin mencocokkan bukti dengan rekening toko'),
     'diproses': ('package', 'Pesanan sedang dikemas', 'Pembayaran sudah kami terima'),
     'dikirim': ('truck', 'Pesanan dalam perjalanan', ('Resi ' ~ pesanan.nomor_resi) if pesanan.nomor_resi else 'Kurir sedang mengantar pesananmu'),
     'siap_diambil': ('store', 'Siap diambil di toko', 'Tunjukkan kode pesanan saat mengambil'),

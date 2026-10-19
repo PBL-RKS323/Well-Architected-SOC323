@@ -16,14 +16,14 @@
     <nav class="flex gap-2 overflow-x-auto scrollbar-none pb-1 mb-5 text-sm font-medium">
         {% for nama, label in [('semua', 'Semua'), ('aktif', 'Aktif'), ('selesai', 'Selesai'), ('dibatalkan', 'Dibatalkan')] %}
         <a href="{{ url_for('pesanan', tab=nama, q=q or None) }}"
-           class="whitespace-nowrap px-4 py-2 rounded-full {{ 'bg-brand text-white' if tab == nama else 'bg-white text-muted hover:text-ink' }}">
-            {{ label }} <span class="{{ 'text-white/80' if tab == nama else 'text-slate-400' }}">({{ jumlah_tab[nama] }})</span>
+           class="whitespace-nowrap inline-flex items-center gap-1 px-4 min-h-11 rounded-full {{ 'bg-brand text-white' if tab == nama else 'bg-white text-muted hover:text-ink' }}">
+            {{ label }} <span>({{ jumlah_tab[nama] }})</span>
         </a>
         {% endfor %}
     </nav>
 
     {% for p in halaman.items %}
-    <article class="bg-white rounded-3xl border border-slate-100 p-5 mb-4 shadow-[0_4px_20px_rgba(15,23,42,0.04)]">
+    <article class="bg-white rounded-3xl border border-slate-100 p-5 mb-4">
         <div class="flex flex-wrap items-start justify-between gap-x-3 gap-y-2">
             <div>
                 <h2 class="font-display text-lg font-extrabold">#{{ p.kode }}</h2>
@@ -88,7 +88,7 @@
         {% else %}
             <h2 class="font-display text-xl font-extrabold mt-5">Belum ada pesanan</h2>
             <p class="text-muted mt-2">Pesanan yang kamu buat akan muncul di sini.</p>
-            <a href="{{ url_for('jelajah') }}" class="inline-flex items-center gap-2 mt-5 bg-brand hover:bg-brand-dark text-white font-medium px-7 py-3 rounded-full">Mulai Belanja {{ icon('arrow-right', 'w-4 h-4') }}</a>
+            <a href="{{ url_for('jelajah') }}" class="inline-flex items-center gap-2 mt-5 bg-brand hover:bg-brand-dark text-white font-medium px-7 py-3 rounded-full">Lihat Produk</a>
         {% endif %}
     </section>
     {% endfor %}
@@ -98,7 +98,7 @@
         {% for n in halaman.iter_pages() %}
             {% if n %}
             <a href="{{ url_for('pesanan', tab=tab, q=q or None, page=n) }}"
-               class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold {{ 'bg-brand text-white' if n == halaman.page else 'bg-white hover:bg-brand-soft' }}">{{ n }}</a>
+               class="w-11 h-11 rounded-full flex items-center justify-center text-sm font-semibold {{ 'bg-brand text-white' if n == halaman.page else 'bg-white hover:bg-brand-soft' }}">{{ n }}</a>
             {% else %}<span class="px-1 text-muted">…</span>{% endif %}
         {% endfor %}
     </nav>
