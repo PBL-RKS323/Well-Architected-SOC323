@@ -15,7 +15,8 @@ smartwatch, dan aksesoris). Dibangun dengan Flask dan database SQL, mengikuti po
 | Pengaturan akun (ubah nama, email & kata sandi) | Selesai |
 | Tampilan sesuai desain Figma (mobile-first, admin desktop) | Selesai |
 | Cari & filter katalog, detail produk, profil | Selesai |
-| Cart, checkout, bukti bayar, riwayat & status pesanan, ulasan, avatar, kelola akun, login Google, Midtrans | Berikutnya |
+| Keranjang belanja | Selesai |
+| Checkout, bukti bayar, riwayat & status pesanan, ulasan, avatar, kelola akun, login Google, Midtrans | Berikutnya |
 
 Riwayat perubahan ada di [CHANGELOG.md](CHANGELOG.md), kontrol keamanan dan format log ada di
 [docs/KEAMANAN.md](docs/KEAMANAN.md).
@@ -117,6 +118,7 @@ Pengujian memakai database SQLite sementara di memori, jadi tidak menyentuh data
 | `/register` | Tamu | Daftar akun customer |
 | `/login` | Tamu | Login |
 | `/logout` | Login | Logout (POST) |
+| `/keranjang` | Login | Keranjang belanja (tambah/ubah/hapus lewat POST) |
 | `/profil` | Login | Profil akun |
 | `/pengaturan` | Login | Ubah nama, email & kata sandi |
 | `/admin` | Admin | Dashboard admin |

@@ -3,6 +3,39 @@
 Setiap perubahan dicatat di sini: apa yang berubah, alasannya, dan cara mengujinya.
 Format tanggal: YYYY-MM-DD (WIB).
 
+## [0.4.0] - 2026-10-19 - Sprint 4: Keranjang Belanja
+
+### Ditambahkan
+- Tabel `keranjang_item` (satu baris per user + produk, disimpan di database, tidak hilang saat
+  logout).
+- Tambah ke keranjang dari kartu produk (tombol +) dan dari halaman detail (pilih jumlah,
+  tombol Keranjang / Beli Sekarang).
+- Halaman **Keranjang** (`/keranjang`) sesuai desain: versi kosong dengan rekomendasi produk,
+  versi berisi dengan stepper jumlah, hapus item, kosongkan keranjang, ringkasan subtotal dan
+  hemat dari diskon.
+- Badge jumlah item di ikon keranjang (header) dan menu Keranjang di navigasi bawah.
+- Peringatan di keranjang jika stok habis atau stok kurang dari jumlah yang dipilih.
+
+### Aturan
+- Jumlah per produk maksimal 5 dan tidak boleh melebihi stok.
+- Produk dengan stok 0 tidak bisa ditambahkan.
+- Menghapus produk (admin) ikut menghapus produk itu dari semua keranjang.
+- Tombol Checkout masih nonaktif (dikerjakan di sprint berikutnya).
+
+### Keamanan
+- Semua aksi keranjang wajib login, lewat POST + token CSRF.
+- Item keranjang hanya bisa diubah pemiliknya (cek `user_id`, mencegah IDOR).
+- Input jumlah divalidasi di server (bukan angka, negatif, atau terlalu besar ditolak/dibatasi).
+- Redirect setelah tambah ke keranjang hanya ke path internal.
+
+### Diperbaiki
+- Tombol + di kartu produk sempat tetap tampil sebagai link login walau sudah login (macro
+  Jinja yang di-import tidak membawa variabel template). Sekarang memakai `g.user`.
+
+### Cara uji
+- `flask db upgrade` (membuat tabel `keranjang_item`).
+- `pytest -q` → 70 passed.
+
 ## [0.3.0] - 2026-10-19 - Sprint 3: Tampilan Sesuai Desain Figma
 
 ### Ditambahkan

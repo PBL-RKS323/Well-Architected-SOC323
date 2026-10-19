@@ -37,6 +37,40 @@
             {{ 'Stok habis' if produk.stok == 0 else 'Stok tersedia: ' ~ produk.stok }}
         </p>
 
+        {% if produk.stok > 0 %}
+            {% if current_user %}
+            {% set maks = [produk.stok, maks_per_produk] | min %}
+            <form action="{{ url_for('keranjang_tambah', produk_id=produk.id) }}" method="POST" class="mt-5 bg-white border border-slate-100 rounded-2xl p-4">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="next" value="{{ request.path }}">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="font-semibold">Jumlah</p>
+                        <p class="text-xs text-muted">Maksimal {{ maks }} unit per pesanan</p>
+                    </div>
+                    <div class="flex items-center gap-1 bg-soft rounded-full p-1" data-qty>
+                        <button type="button" data-qty-step="-1" aria-label="Kurangi jumlah" class="w-9 h-9 rounded-full bg-white flex items-center justify-center cursor-pointer">{{ icon('minus', 'w-4 h-4') }}</button>
+                        <input type="number" name="jumlah" value="1" min="1" max="{{ maks }}" aria-label="Jumlah"
+                               class="w-10 text-center bg-transparent font-semibold outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none">
+                        <button type="button" data-qty-step="1" aria-label="Tambah jumlah" class="w-9 h-9 rounded-full bg-white flex items-center justify-center cursor-pointer">{{ icon('plus', 'w-4 h-4') }}</button>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 mt-4">
+                    <button type="submit" class="inline-flex items-center justify-center gap-2 border-2 border-brand/20 hover:border-brand text-brand font-medium py-3 rounded-full cursor-pointer">
+                        {{ icon('shopping-bag', 'w-5 h-5') }} Keranjang
+                    </button>
+                    <button type="submit" name="beli" value="1" class="inline-flex items-center justify-center gap-2 bg-brand hover:bg-brand-dark text-white font-medium py-3 rounded-full shadow-lg shadow-brand/25 cursor-pointer">
+                        Beli Sekarang {{ icon('arrow-right', 'w-4 h-4') }}
+                    </button>
+                </div>
+            </form>
+            {% else %}
+            <a href="{{ url_for('login', next=request.path) }}" class="mt-5 flex items-center justify-center gap-2 bg-brand hover:bg-brand-dark text-white font-medium py-3.5 rounded-full shadow-lg shadow-brand/25">
+                Masuk untuk membeli {{ icon('arrow-right', 'w-4 h-4') }}
+            </a>
+            {% endif %}
+        {% endif %}
+
         <section class="mt-6">
             <h2 class="font-display text-lg font-bold">Ringkasan</h2>
             <p class="text-muted leading-relaxed mt-2 whitespace-pre-line">{{ produk.deskripsi or 'Belum ada deskripsi untuk produk ini.' }}</p>

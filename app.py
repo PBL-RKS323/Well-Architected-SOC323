@@ -11,12 +11,14 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 load_dotenv()
 
 from config import Config  # noqa: E402  (dibaca setelah .env dimuat)
-from controllers import auth_controller, admin_controller, produk_controller, toko_controller, akun_controller  # noqa: E402,E501
+from controllers import (auth_controller, admin_controller, produk_controller, toko_controller,  # noqa: E402
+                         akun_controller, keranjang_controller)
 from forms.auth_form import PASSWORD_POLICY, PASSWORD_POLICY_MESSAGE  # noqa: E402
 from helpers.security_logger import init_security_logger, log_event  # noqa: E402
 from middlewares.auth_middleware import init_auth_middleware  # noqa: E402
 from models import db  # noqa: E402
 from models.produk import Produk  # noqa: E402,F401  (wajib diimpor agar terbaca oleh migrasi)
+from models.keranjang import KeranjangItem  # noqa: E402
 from models.user import User  # noqa: E402
 
 migrate = Migrate()
@@ -52,7 +54,9 @@ def create_app(config_class=Config):
 
     @app.context_processor
     def inject_globals():
-        return {"app_name": app.config["APP_NAME"], "current_user": g.get("user")}
+        user = g.get("user")
+        return {"app_name": app.config["APP_NAME"], "current_user": user,
+                "cart_count": keranjang_controller.jumlah_item(user)}
 
     @app.after_request
     def security_headers(response):
@@ -98,6 +102,27 @@ def register_routes(app):
     @app.route("/logout", methods=["POST"])
     def logout():
         return auth_controller.logout()
+
+    # --- KERANJANG (wajib login) ---
+    @app.route("/keranjang")
+    def keranjang():
+        return keranjang_controller.index()
+
+    @app.route("/keranjang/tambah/<int:produk_id>", methods=["POST"])
+    def keranjang_tambah(produk_id):
+        return keranjang_controller.tambah(produk_id)
+
+    @app.route("/keranjang/<int:item_id>/ubah", methods=["POST"])
+    def keranjang_ubah(item_id):
+        return keranjang_controller.ubah(item_id)
+
+    @app.route("/keranjang/<int:item_id>/hapus", methods=["POST"])
+    def keranjang_hapus(item_id):
+        return keranjang_controller.hapus(item_id)
+
+    @app.route("/keranjang/kosongkan", methods=["POST"])
+    def keranjang_kosongkan():
+        return keranjang_controller.kosongkan()
 
     # --- PROFIL & PENGATURAN AKUN (semua user yang login) ---
     @app.route("/profil")

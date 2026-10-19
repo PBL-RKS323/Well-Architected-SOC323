@@ -8,6 +8,7 @@ from helpers.image_security import upload_secure_image, delete_image
 from helpers.security_logger import log_event
 from middlewares.auth_middleware import admin_required
 from models import db
+from models.keranjang import KeranjangItem
 from models.produk import Produk
 
 
@@ -91,6 +92,7 @@ def destroy(produk_id):
     """[DELETE] Hapus produk beserta file gambarnya"""
     produk = db.get_or_404(Produk, produk_id)
     delete_image(produk.gambar, current_app.config["UPLOAD_FOLDER"])
+    KeranjangItem.query.filter_by(produk_id=produk.id).delete()
     db.session.delete(produk)
     db.session.commit()
 

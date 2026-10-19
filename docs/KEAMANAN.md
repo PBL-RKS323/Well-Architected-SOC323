@@ -6,7 +6,7 @@ Acuan: OWASP Top 10 2025, alur SSDLC (rencana → kode → uji → monitor) per 
 
 | Risiko | Kontrol yang diterapkan | Lokasi |
 |---|---|---|
-| A01 Broken Access Control | Middleware default-deny, cek role admin dari database tiap request, decorator `admin_required`, aksi ubah data hanya lewat POST | `middlewares/auth_middleware.py` |
+| A01 Broken Access Control | Middleware default-deny, item keranjang dicek kepemilikannya (anti IDOR), cek role admin dari database tiap request, decorator `admin_required`, aksi ubah data hanya lewat POST | `middlewares/auth_middleware.py` |
 | A02 Security Misconfiguration | `SECRET_KEY` & `DATABASE_URL` wajib dari `.env` (aplikasi menolak jalan tanpa itu), debug mati secara default, header keamanan (CSP, X-Frame-Options, nosniff, Referrer-Policy), halaman error tanpa detail teknis | `config.py`, `app.py` |
 | A03 Software Supply Chain Failures | Versi dependensi dikunci di `requirements.txt` | `requirements.txt` |
 | A04 Cryptographic Failures | Kata sandi di-hash (Werkzeug scrypt), cookie sesi HttpOnly + SameSite=Lax, opsi `SESSION_COOKIE_SECURE` untuk HTTPS | `models/user.py`, `config.py` |
@@ -67,5 +67,5 @@ Konfigurasi Wazuh agent (contoh `ossec.conf` di server web):
 
 - [x] Rencana: daftar fitur ATS dan ancaman utamanya (brute force, akses admin tanpa izin, upload berbahaya, XSS, CSRF)
 - [x] Kode: kontrol di tabel OWASP di atas
-- [x] Uji: 55 tes otomatis (`pytest -q`), termasuk uji negatif (akses ditolak, file palsu, password lemah)
+- [x] Uji: 70 tes otomatis (`pytest -q`), termasuk uji negatif (akses ditolak, file palsu, password lemah)
 - [x] Monitor: log keamanan siap dikirim ke Wazuh

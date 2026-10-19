@@ -2,6 +2,7 @@ from flask import render_template, request
 from sqlalchemy import case, or_, select
 
 from models import db
+from models.keranjang import KeranjangItem
 from models.produk import Produk
 
 PER_HALAMAN = 12
@@ -93,4 +94,5 @@ def detail(produk_id):
     produk = db.get_or_404(Produk, produk_id)
     terkait = (Produk.query.filter(Produk.merek == produk.merek, Produk.id != produk.id)
                .order_by(Produk.created_at.desc()).limit(4).all())
-    return render_template("toko/detail.html", produk=produk, terkait=terkait)
+    return render_template("toko/detail.html", produk=produk, terkait=terkait,
+                           maks_per_produk=KeranjangItem.MAKS_PER_PRODUK)

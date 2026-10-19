@@ -17,6 +17,12 @@
 
         <div class="flex items-center gap-1">
             <a href="{{ url_for('jelajah') }}" aria-label="Cari produk" class="p-2.5 rounded-full hover:bg-soft">{{ icon('search', 'w-5 h-5') }}</a>
+            <a href="{{ url_for('keranjang') }}" aria-label="Keranjang ({{ cart_count }} item)" class="relative p-2.5 rounded-full hover:bg-soft">
+                {{ icon('shopping-bag', 'w-5 h-5') }}
+                {% if cart_count %}
+                    <span data-cart-count class="absolute top-1 right-0.5 min-w-4 h-4 px-1 rounded-full bg-coral text-white text-[10px] font-bold flex items-center justify-center">{{ cart_count }}</span>
+                {% endif %}
+            </a>
             {% if current_user %}
                 <a href="{{ url_for('profil') }}" class="hidden md:flex items-center gap-2 ml-2 pl-3 border-l border-slate-200 text-sm font-medium hover:text-brand">
                     {{ icon('user', 'w-5 h-5') }} {{ current_user.display_name }}
@@ -41,10 +47,11 @@
 
 {# Navigasi bawah khusus layar HP #}
 <nav class="md:hidden fixed bottom-0 inset-x-0 z-30 bg-white border-t border-slate-100 shadow-[0_-4px_16px_rgba(15,23,42,0.04)]">
-    <div class="grid grid-cols-3 text-[11px] font-medium">
+    <div class="grid grid-cols-4 text-[11px] font-medium">
         {% set items = [
             ('beranda', 'store', 'Beranda', ['beranda']),
             ('jelajah', 'layout-grid', 'Jelajah', ['jelajah', 'produk_detail']),
+            ('keranjang', 'shopping-bag', 'Keranjang', ['keranjang']),
             ('profil', 'user', 'Profil', ['profil', 'pengaturan']),
         ] %}
         {% for endpoint, ic, label, active in items %}
