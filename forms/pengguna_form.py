@@ -31,7 +31,28 @@ class TambahPenggunaForm(FlaskForm):
             raise ValidationError("Email sudah terdaftar!")
 
 
-AKSI_PENGGUNA = ["ubah_peran", "nonaktifkan", "aktifkan", "buka_kunci"]
+class EditPenggunaForm(FlaskForm):
+    """Admin membetulkan nama/email akun orang lain (mis. salah ketik saat dibuat)."""
+    nama_lengkap = StringField("Nama Lengkap", validators=[
+        DataRequired(message="Nama lengkap wajib diisi."),
+        Length(min=3, max=100, message="Nama lengkap harus 3-100 karakter."),
+        Regexp(NAMA_POLICY, message="Nama hanya boleh berisi huruf, spasi, titik, tanda hubung, dan apostrof."),
+    ])
+    email = StringField("Email", validators=[
+        DataRequired(message="Email wajib diisi."), Email(message="Format email tidak valid."), Length(max=100),
+    ])
+    submit = SubmitField("Simpan Data")
+
+    def __init__(self, *args, user_id=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.user_id = user_id
+
+    def validate_email(self, field):
+        if User.query.filter(User.email == field.data.strip().lower(), User.id != self.user_id).first():
+            raise ValidationError("Email sudah dipakai akun lain!")
+
+
+AKSI_PENGGUNA = ["ubah_peran", "nonaktifkan", "aktifkan", "buka_kunci", "reset_password"]
 
 
 class AksiPenggunaForm(FlaskForm):

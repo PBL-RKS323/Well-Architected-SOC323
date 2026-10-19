@@ -1,4 +1,5 @@
 import os
+import re
 
 from conftest import login, read_log, produk_data, ADMIN_PASSWORD, CUSTOMER_PASSWORD
 from models import db
@@ -205,3 +206,58 @@ def test_cli_buat_pengguna_simpan_password_di_file_privat(app, tmp_path):
     gagal = runner.invoke(args=["buat-pengguna", "--nama", "Lain", "--email", "intan@neteye.my.id", "--peran", "staf"])
     assert gagal.exit_code != 0 and "sudah terdaftar" in gagal.output
     assert runner.invoke(args=["buat-pengguna", "--nama", "X", "--email", "x@y.id", "--peran", "dewa"]).exit_code != 0
+
+
+# --- EDIT DATA & RESET KATA SANDI OLEH ADMIN ---
+
+def test_admin_edit_nama_dan_email_pengguna(app, client):
+    login(client, "admin@tokoelektronik.id", ADMIN_PASSWORD)
+    with app.app_context():
+        budi_id = User.query.filter_by(username="budi").one().id
+    html = client.post(f"/admin/pengguna/{budi_id}/edit",
+                       data={"data-nama_lengkap": "Budi", "data-email": "admin@tokoelektronik.id"}).get_data(as_text=True)
+    assert "Email sudah dipakai akun lain" in html
+
+    client.post(f"/admin/pengguna/{budi_id}/edit",
+                data={"data-nama_lengkap": "Budi Santoso Putra", "data-email": "Budi.Baru@Neteye.my.id"})
+    u = _user(app, budi_id)
+    assert u.nama_lengkap == "Budi Santoso Putra" and u.email == "budi.baru@neteye.my.id"
+    assert "USER_UPDATED" in read_log(app) and "fields=nama,email" in read_log(app)
+    assert login(app.test_client(), "budi.baru@neteye.my.id", CUSTOMER_PASSWORD).status_code == 302
+
+
+def test_admin_reset_password_tampil_sekali_dan_mengakhiri_sesi(app):
+    budi_hp, admin = app.test_client(), app.test_client()
+    login(budi_hp, "budi@tokoelektronik.id", CUSTOMER_PASSWORD)
+    login(admin, "admin@tokoelektronik.id", ADMIN_PASSWORD)
+    with app.app_context():
+        budi_id = User.query.filter_by(username="budi").one().id
+
+    resp = admin.post(f"/admin/pengguna/{budi_id}/aksi", data={"aksi": "reset_password"})
+    assert resp.headers["Cache-Control"] == "no-store"
+    password = re.search(r'data-copy="([^"]+)"', resp.get_data(as_text=True)).group(1)
+    assert _user(app, budi_id).check_password(password) and not _user(app, budi_id).check_password(CUSTOMER_PASSWORD)
+    assert password not in admin.get(f"/admin/pengguna/{budi_id}").get_data(as_text=True)  # hanya sekali
+    assert password not in read_log(app) and "USER_PASSWORD_RESET" in read_log(app)
+
+    assert "/login" in budi_hp.get("/profil").headers["Location"]  # sesi lama berakhir
+    assert login(budi_hp, "budi@tokoelektronik.id", password).status_code == 302
+
+
+def test_admin_tidak_bisa_reset_atau_edit_akun_sendiri(app, client):
+    login(client, "admin@tokoelektronik.id", ADMIN_PASSWORD)
+    with app.app_context():
+        admin_id = User.query.filter_by(username="admin").one().id
+    client.post(f"/admin/pengguna/{admin_id}/aksi", data={"aksi": "reset_password"})
+    client.post(f"/admin/pengguna/{admin_id}/edit", data={"data-nama_lengkap": "Ganti", "data-email": "x@neteye.my.id"})
+    u = _user(app, admin_id)
+    assert u.check_password(ADMIN_PASSWORD) and u.email == "admin@tokoelektronik.id"
+
+
+def test_staf_tidak_bisa_reset_password_orang_lain(app, client):
+    _buat(app, "staf", User.ROLE_STAF)
+    login(client, "staf@tokoelektronik.id", STAF_PASSWORD)
+    with app.app_context():
+        budi_id = User.query.filter_by(username="budi").one().id
+    client.post(f"/admin/pengguna/{budi_id}/aksi", data={"aksi": "reset_password"})
+    assert _user(app, budi_id).check_password(CUSTOMER_PASSWORD)

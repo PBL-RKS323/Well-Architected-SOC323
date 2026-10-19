@@ -61,6 +61,8 @@ Contoh:
 | `USER_CREATED` / `USER_ROLE_CHANGED` | WARNING | Admin membuat akun / mengubah peran (`role_from`, `role_to`) |
 | `USER_DEACTIVATED` / `USER_ACTIVATED` | WARNING | Admin menonaktifkan / mengaktifkan akun |
 | `USER_UNLOCKED` | INFO | Admin membuka kunci login akun |
+| `USER_UPDATED` | WARNING | Admin mengubah nama/email akun lain (`fields=`) |
+| `USER_PASSWORD_RESET` | WARNING | Admin mereset kata sandi akun lain (kata sandi tidak pernah ditulis ke log) |
 | `AVATAR_CHANGED` / `AVATAR_REMOVED` | INFO | User mengganti / menghapus foto profil |
 | `REVIEW_CREATE` / `REVIEW_UPDATE` | INFO | Pembeli menulis / mengubah ulasan (`rating`) |
 | `REVIEW_REJECTED` | WARNING | Akun yang belum menyelesaikan pembelian mencoba mengulas (`reason=not_purchased`) |

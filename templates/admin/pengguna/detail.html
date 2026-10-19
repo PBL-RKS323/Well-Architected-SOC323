@@ -1,6 +1,6 @@
 {% extends 'layouts/admin.html' %}
 {% from '_icons.html' import icon %}
-{% from '_macros.html' import avatar %}
+{% from '_macros.html' import avatar, field %}
 {% from '_pesanan.html' import badge_status %}
 {% block title %}{{ user.display_name }} - Pengguna - {{ app_name }}{% endblock %}
 {% block content %}
@@ -32,6 +32,32 @@
     </section>
 
     <div class="xl:col-span-2 space-y-5">
+        {% if password_baru %}
+        {# Tampil sekali saja setelah reset; tidak disimpan di sesi maupun database #}
+        <section class="bg-amber-50 border border-amber-200 rounded-2xl p-6" role="status">
+            <h2 class="font-display text-lg font-bold">Kata sandi sementara untuk {{ user.display_name }}</h2>
+            <div class="mt-3 flex flex-wrap items-center gap-3">
+                <code class="font-mono text-lg font-bold bg-white border border-amber-200 rounded-xl px-4 py-2 select-all break-all">{{ password_baru }}</code>
+                <button type="button" data-copy="{{ password_baru }}" class="inline-flex items-center gap-1.5 min-h-11 px-4 rounded-full bg-white border border-amber-200 text-sm font-semibold cursor-pointer">{{ icon('copy', 'w-4 h-4') }} <span data-copy-label>Salin</span></button>
+            </div>
+            <p class="text-sm text-amber-900 mt-3">Kata sandi ini hanya tampil sekali. Kirim lewat pesan pribadi dan minta pemilik akun langsung menggantinya di Pengaturan. Sesi login lamanya sudah berakhir.</p>
+        </section>
+        {% endif %}
+
+        {% if not diri_sendiri %}
+        <section class="bg-white border border-slate-100 rounded-2xl p-6">
+            <h2 class="font-display text-lg font-bold">Data Akun</h2>
+            <form action="{{ url_for('admin_pengguna_edit', user_id=user.id) }}" method="POST" class="mt-4" novalidate data-kirim-sekali>
+                {{ data_form.hidden_tag() }}
+                <div class="grid sm:grid-cols-2 gap-4">
+                    {{ field(data_form.nama_lengkap, 'user', autocomplete='off') }}
+                    {{ field(data_form.email, 'mail', autocomplete='off') }}
+                </div>
+                <button type="submit" class="mt-4 min-h-11 bg-brand hover:bg-brand-dark text-white font-medium px-6 rounded-full cursor-pointer">Simpan Data</button>
+            </form>
+        </section>
+        {% endif %}
+
         <section class="bg-white border border-slate-100 rounded-2xl p-6">
             <h2 class="font-display text-lg font-bold">Hak Akses</h2>
             {% if diri_sendiri %}
@@ -71,6 +97,8 @@
                 {% if user.is_locked() or user.failed_login_attempts %}
                 <button type="submit" name="aksi" value="buka_kunci" class="min-h-11 inline-flex items-center gap-2 border border-slate-200 hover:border-brand hover:text-brand font-medium px-5 rounded-full cursor-pointer">{{ icon('lock', 'w-4 h-4') }} Buka Kunci Login</button>
                 {% endif %}
+                <button type="submit" name="aksi" value="reset_password" class="min-h-11 inline-flex items-center gap-2 border border-slate-200 hover:border-brand hover:text-brand font-medium px-5 rounded-full cursor-pointer"
+                        data-confirm-click="Reset kata sandi {{ user.display_name }}? Kata sandi lamanya langsung tidak berlaku dan sesi login-nya berakhir.">{{ icon('rotate-ccw', 'w-4 h-4') }} Reset Kata Sandi</button>
             </form>
             <p class="text-xs text-muted mt-3">Akun tidak dihapus agar riwayat pesanan tetap utuh. Akun nonaktif tidak bisa login.</p>
         </section>

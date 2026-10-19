@@ -3,6 +3,18 @@
 Setiap perubahan dicatat di sini: apa yang berubah, alasannya, dan cara mengujinya.
 Format tanggal: YYYY-MM-DD (WIB).
 
+## [0.8.1] - 2026-10-20 - Kelola Akun Lebih Lengkap, Carousel Otomatis
+
+### Ditambahkan
+- Kelola Pengguna: admin bisa mengubah nama/email akun lain dan **mereset kata sandi** (kata sandi sementara
+  acak, tampil sekali di halaman dengan `Cache-Control: no-store`, sesi lama pemilik akun langsung berakhir).
+  Akun sendiri tetap lewat Pengaturan. Event `USER_UPDATED`, `USER_PASSWORD_RESET`.
+- Perintah `flask buat-pengguna` untuk membuat akun anggota tim dari server (kata sandi ke file chmod 600).
+- Carousel beranda berputar otomatis tiap 3 detik dengan animasi geser dan tombol jeda.
+
+### Diperbaiki
+- File statis diberi versi (`?v=`) agar browser tidak memakai `app.js` lama dari cache.
+
 ## [0.8.0] - 2026-10-20 - Laporan Transaksi, Ulasan Produk, Foto Profil
 
 Melengkapi 3 kebutuhan OUTPUT PBL 1 yang tersisa (no. 3, 7-8, 9).

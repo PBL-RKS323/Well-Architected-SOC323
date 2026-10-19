@@ -1,7 +1,6 @@
 import logging
 import os
 import re
-import secrets
 
 import click
 from dotenv import load_dotenv
@@ -18,6 +17,7 @@ from controllers import (auth_controller, admin_controller, produk_controller, t
                          admin_pengguna_controller, alamat_controller, ulasan_controller,
                          admin_laporan_controller)
 from forms.auth_form import PASSWORD_POLICY, PASSWORD_POLICY_MESSAGE, NAMA_POLICY  # noqa: E402
+from helpers.kata_sandi import buat_kata_sandi_sementara  # noqa: E402
 from helpers.katalog_contoh import isi_katalog  # noqa: E402
 from helpers.security_logger import init_security_logger, log_event  # noqa: E402
 from helpers.waktu import format_tanggal, format_hari  # noqa: E402
@@ -329,6 +329,10 @@ def register_routes(app):
     def admin_pengguna_aksi(user_id):
         return admin_pengguna_controller.aksi(user_id)
 
+    @app.route("/admin/pengguna/<int:user_id>/edit", methods=["POST"])
+    def admin_pengguna_edit(user_id):
+        return admin_pengguna_controller.edit(user_id)
+
 
 def register_error_handlers(app):
     @app.errorhandler(CSRFError)
@@ -402,10 +406,7 @@ def register_commands(app):
         if User.query.filter_by(email=email).first():
             raise click.ClickException(f"Email {email} sudah terdaftar.")
 
-        while True:  # acak sampai memenuhi kebijakan kata sandi (huruf besar, kecil, angka, simbol)
-            password = secrets.token_urlsafe(9) + secrets.choice("!#$%*?") + str(secrets.randbelow(10))
-            if re.match(PASSWORD_POLICY, password):
-                break
+        password = buat_kata_sandi_sementara()
         user = User(username=auth_controller._buat_username(email), nama_lengkap=nama, email=email, role=peran)
         user.set_password(password)
         db.session.add(user)
