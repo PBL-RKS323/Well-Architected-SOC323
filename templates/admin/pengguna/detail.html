@@ -1,5 +1,6 @@
 {% extends 'layouts/admin.html' %}
 {% from '_icons.html' import icon %}
+{% from '_macros.html' import avatar %}
 {% from '_pesanan.html' import badge_status %}
 {% block title %}{{ user.display_name }} - Pengguna - {{ app_name }}{% endblock %}
 {% block content %}
@@ -9,7 +10,7 @@
 <div class="grid xl:grid-cols-3 gap-5 items-start">
     <section class="bg-white border border-slate-100 rounded-2xl p-6">
         <div class="flex items-center gap-4">
-            <span class="w-14 h-14 shrink-0 rounded-full bg-brand-soft text-brand text-lg font-bold flex items-center justify-center">{{ user.initials }}</span>
+            {{ avatar(user, 'w-14 h-14 text-lg') }}
             <div class="min-w-0">
                 <h1 class="font-display text-xl font-extrabold truncate">{{ user.display_name }}</h1>
                 <p class="text-sm text-muted break-all">{{ user.email }}</p>

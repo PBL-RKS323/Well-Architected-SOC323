@@ -7,6 +7,7 @@ from middlewares.auth_middleware import izin_required
 from models import db
 from models.pesanan import Pesanan, PesananItem
 from models.produk import Produk
+from models.ulasan import Ulasan
 from models.user import User
 
 
@@ -46,6 +47,7 @@ def dashboard():
         "perlu_verifikasi": Pesanan.query.filter_by(status=Pesanan.MENUNGGU_VERIFIKASI).count(),
         "perlu_dikirim": Pesanan.query.filter_by(status=Pesanan.DIPROSES).count(),
         "stok_menipis": Produk.query.filter(Produk.stok <= Produk.STOK_MENIPIS).count(),
+        "ulasan_belum_dibalas": Ulasan.query.filter(Ulasan.balasan.is_(None)).count(),
     }
     stok_menipis = (Produk.query.filter(Produk.stok <= Produk.STOK_MENIPIS)
                     .order_by(Produk.stok.asc(), Produk.nama_produk.asc()).limit(5).all())

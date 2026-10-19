@@ -13,17 +13,19 @@ load_dotenv()
 from config import Config  # noqa: E402  (dibaca setelah .env dimuat)
 from controllers import (auth_controller, admin_controller, produk_controller, toko_controller,  # noqa: E402
                          akun_controller, keranjang_controller, pesanan_controller, admin_pesanan_controller,
-                         admin_pengguna_controller, alamat_controller)
+                         admin_pengguna_controller, alamat_controller, ulasan_controller,
+                         admin_laporan_controller)
 from forms.auth_form import PASSWORD_POLICY, PASSWORD_POLICY_MESSAGE  # noqa: E402
 from helpers.katalog_contoh import isi_katalog  # noqa: E402
 from helpers.security_logger import init_security_logger, log_event  # noqa: E402
-from helpers.waktu import format_tanggal  # noqa: E402
+from helpers.waktu import format_tanggal, format_hari  # noqa: E402
 from middlewares.auth_middleware import init_auth_middleware  # noqa: E402
 from models import db  # noqa: E402
 from models.produk import Produk  # noqa: E402,F401  (wajib diimpor agar terbaca oleh migrasi)
 from models.keranjang import KeranjangItem  # noqa: E402,F401
 from models.pesanan import Pesanan, PesananItem, PesananRiwayat  # noqa: E402,F401
 from models.alamat import Alamat  # noqa: E402,F401
+from models.ulasan import Ulasan  # noqa: E402,F401
 from models.user import User  # noqa: E402
 
 migrate = Migrate()
@@ -61,6 +63,10 @@ def create_app(config_class=Config):
     @app.template_filter("tanggal")
     def tanggal(value, jam=True):
         return format_tanggal(value, jam)
+
+    @app.template_filter("tanggal_singkat")
+    def tanggal_singkat(value):
+        return format_hari(value)
 
     @app.context_processor
     def inject_globals():
@@ -105,6 +111,15 @@ def register_routes(app):
     @app.route("/produk/<int:produk_id>")
     def produk_detail(produk_id):
         return toko_controller.detail(produk_id)
+
+    # --- ULASAN (pembeli yang pesanannya sudah selesai) ---
+    @app.route("/produk/<int:produk_id>/ulasan", methods=["POST"])
+    def ulasan_simpan(produk_id):
+        return ulasan_controller.simpan(produk_id)
+
+    @app.route("/produk/<int:produk_id>/ulasan/hapus", methods=["POST"])
+    def ulasan_hapus(produk_id):
+        return ulasan_controller.hapus_milik_sendiri(produk_id)
 
     @app.route("/kredit-foto")
     def kredit_foto():
@@ -202,6 +217,14 @@ def register_routes(app):
     def pengaturan_password():
         return akun_controller.ubah_password()
 
+    @app.route("/pengaturan/foto", methods=["POST"])
+    def pengaturan_foto():
+        return akun_controller.ubah_avatar()
+
+    @app.route("/pengaturan/foto/hapus", methods=["POST"])
+    def pengaturan_foto_hapus():
+        return akun_controller.hapus_avatar()
+
     # --- ALAMAT TERSIMPAN (pelanggan) ---
     @app.route("/alamat")
     def alamat():
@@ -255,6 +278,28 @@ def register_routes(app):
     @app.route("/admin/pesanan/<int:pesanan_id>/status", methods=["POST"])
     def admin_pesanan_status(pesanan_id):
         return admin_pesanan_controller.ubah_status(pesanan_id)
+
+    # --- ULASAN: moderasi & balasan toko (izin kelola_produk) ---
+    @app.route("/admin/ulasan")
+    def admin_ulasan():
+        return ulasan_controller.index()
+
+    @app.route("/admin/ulasan/<int:ulasan_id>/balas", methods=["POST"])
+    def admin_ulasan_balas(ulasan_id):
+        return ulasan_controller.balas(ulasan_id)
+
+    @app.route("/admin/ulasan/<int:ulasan_id>/hapus", methods=["POST"])
+    def admin_ulasan_hapus(ulasan_id):
+        return ulasan_controller.hapus(ulasan_id)
+
+    # --- LAPORAN TRANSAKSI (izin lihat_laporan, hanya admin) ---
+    @app.route("/admin/laporan")
+    def admin_laporan():
+        return admin_laporan_controller.index()
+
+    @app.route("/admin/laporan/csv")
+    def admin_laporan_csv():
+        return admin_laporan_controller.ekspor_csv()
 
     # --- KELOLA PENGGUNA (izin kelola_user, hanya admin) ---
     @app.route("/admin/pengguna")

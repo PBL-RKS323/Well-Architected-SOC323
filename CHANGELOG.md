@@ -3,6 +3,28 @@
 Setiap perubahan dicatat di sini: apa yang berubah, alasannya, dan cara mengujinya.
 Format tanggal: YYYY-MM-DD (WIB).
 
+## [0.8.0] - 2026-10-20 - Laporan Transaksi, Ulasan Produk, Foto Profil
+
+Melengkapi 3 kebutuhan OUTPUT PBL 1 yang tersisa (no. 3, 7-8, 9).
+
+### Ditambahkan
+- **Laporan transaksi** (`/admin/laporan`, izin baru `lihat_laporan`, khusus admin): rentang tanggal (preset
+  7/30 hari, bulan ini, bulan lalu, tahun ini, atau tanggal bebas, maks. 1 tahun), pendapatan, pesanan lunas &
+  tingkat konversi, rata-rata per pesanan, barang terjual, grafik pendapatan per hari/bulan, status pesanan,
+  produk terlaris, penjualan per merek, daftar transaksi, dan **unduh CSV** (aman dari formula injection).
+- **Ulasan produk**: rating 1-5 + komentar di halaman produk, ringkasan rating & sebaran bintang. Hanya pembeli
+  yang pesanannya sudah selesai yang bisa mengulas, satu ulasan per produk (bisa diubah/dihapus). Tautan
+  "Beri ulasan" di detail pesanan selesai.
+- **Moderasi ulasan** (`/admin/ulasan`, admin & staf): balas ulasan (tampil sebagai "Balasan Elektronik Store"),
+  hapus ulasan yang melanggar, filter belum dibalas / rating rendah.
+- **Foto profil**: unggah di Pengaturan, dipotong persegi 256 px, metadata EXIF dibuang. Avatar tampil di
+  header, profil, ulasan, dan panel admin (inisial jika belum ada foto).
+- Dasbor: tombol Laporan Transaksi, kartu "Ulasan belum dibalas". Staf tidak lagi melihat angka pendapatan.
+- Dependensi baru: Pillow 12.3.0.
+
+### Cara uji
+- `flask db upgrade` (tabel `ulasan`, kolom `users.avatar`), `pytest -q` -> 132 passed.
+
 ## [0.7.0] - 2026-10-19 - RBAC, Kelola Pengguna, Alamat Saya
 
 ### Ditambahkan

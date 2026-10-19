@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% from '_icons.html' import icon %}
+{% from '_macros.html' import avatar %}
 {% block body_class %}pb-20 md:pb-0{% endblock %}
 {% block body %}
 {% set ep = request.endpoint %}
@@ -29,7 +30,7 @@
             {% endif %}
             {% if current_user %}
                 <a href="{{ url_for('profil') }}" class="hidden md:flex items-center gap-2 ml-2 pl-3 border-l border-slate-200 text-sm font-medium hover:text-brand">
-                    {{ icon('user', 'w-5 h-5') }} {{ current_user.display_name }}
+                    {{ avatar(current_user, 'w-8 h-8 text-xs') }} {{ current_user.display_name }}
                 </a>
             {% else %}
                 <a href="{{ url_for('login') }}" class="hidden md:inline-flex ml-2 bg-brand hover:bg-brand-dark text-white text-sm font-medium px-5 py-3 rounded-full">Masuk</a>

@@ -1,5 +1,5 @@
 {% extends 'layouts/admin.html' if current_user.is_staf_toko() else 'layouts/toko.html' %}
-{% from '_macros.html' import field, tombol_utama %}
+{% from '_macros.html' import field, tombol_utama, avatar %}
 {% from '_icons.html' import icon %}
 {% from '_akun.html' import area_akun %}
 {% block title %}Pengaturan Akun - {{ app_name }}{% endblock %}
@@ -17,6 +17,29 @@
     <p class="text-muted text-sm mt-1 mb-6">{{ current_user.display_name }} &middot; {{ current_user.email }}</p>
 
     <div class="grid md:grid-cols-2 gap-5">
+        <section id="foto" class="bg-white p-6 rounded-2xl border border-slate-100 md:col-span-2 scroll-mt-32">
+            <h2 class="font-display text-lg font-bold mb-4">Foto Profil</h2>
+            <div class="flex flex-col sm:flex-row sm:items-center gap-5">
+                {{ avatar(current_user, 'w-20 h-20 font-display text-2xl font-extrabold') }}
+                <form method="POST" action="{{ url_for('pengaturan_foto') }}" enctype="multipart/form-data" class="flex-1 min-w-0" novalidate data-kirim-sekali>
+                    {{ avatar_form.hidden_tag() }}
+                    {{ avatar_form.avatar.label(class="block text-sm font-semibold mb-1.5") }}
+                    <div class="flex flex-col sm:flex-row gap-3">
+                        {{ avatar_form.avatar(accept="image/jpeg,image/png", class="flex-1 min-w-0 text-sm text-muted file:mr-3 file:min-h-11 file:px-4 file:rounded-full file:border-0 file:bg-brand-soft file:text-brand file:font-semibold file:cursor-pointer") }}
+                        {{ avatar_form.submit(class="sm:w-auto bg-brand hover:bg-brand-dark text-white font-medium px-6 py-3 rounded-full cursor-pointer") }}
+                    </div>
+                    <p class="text-xs text-muted mt-2">JPG atau PNG, maksimal 2 MB. Foto dipotong persegi dan data lokasi (EXIF) di dalam foto dihapus.</p>
+                    {% for error in avatar_form.avatar.errors %}<span class="text-coral text-xs block mt-1.5">{{ error }}</span>{% endfor %}
+                </form>
+                {% if current_user.avatar %}
+                <form method="POST" action="{{ url_for('pengaturan_foto_hapus') }}" data-confirm="Hapus foto profil?">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="inline-flex items-center gap-2 min-h-11 px-4 rounded-full text-sm font-semibold text-coral hover:bg-red-50 cursor-pointer">{{ icon('trash-2', 'w-4 h-4') }} Hapus foto</button>
+                </form>
+                {% endif %}
+            </div>
+        </section>
+
         <section class="bg-white p-6 rounded-2xl border border-slate-100 md:col-span-2">
             <h2 class="font-display text-lg font-bold mb-4">Nama Tampilan</h2>
             <form method="POST" action="{{ url_for('pengaturan_nama') }}" class="flex flex-col sm:flex-row gap-3 sm:items-end" novalidate>

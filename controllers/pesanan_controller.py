@@ -14,6 +14,7 @@ from models.alamat import Alamat
 from models.keranjang import KeranjangItem
 from models.pesanan import Pesanan, PesananItem, PesananRiwayat
 from models.produk import Produk
+from models.ulasan import Ulasan
 
 PER_HALAMAN = 10
 TAB = {
@@ -179,7 +180,11 @@ def index():
 def detail(kode):
     Pesanan.batalkan_kedaluwarsa()
     pesanan = _pesanan_milik_user(kode)
-    return render_template("toko/pesanan_detail.html", pesanan=pesanan, form_bukti=BuktiBayarForm())
+    sudah_diulas = set()
+    if pesanan.status == Pesanan.SELESAI:
+        sudah_diulas = {pid for (pid,) in db.session.query(Ulasan.produk_id).filter_by(user_id=g.user.id)}
+    return render_template("toko/pesanan_detail.html", pesanan=pesanan, form_bukti=BuktiBayarForm(),
+                           sudah_diulas=sudah_diulas)
 
 
 @pelanggan_required

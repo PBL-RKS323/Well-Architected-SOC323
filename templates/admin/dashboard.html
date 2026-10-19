@@ -8,14 +8,24 @@
         <h1 class="font-display text-3xl font-extrabold">{{ sapaan }}, {{ admin.display_name }}</h1>
         <p class="text-muted mt-1">Dashboard Admin &middot; perkembangan terkini di toko hari ini.</p>
     </div>
-    <a href="{{ url_for('admin_produk_tambah') }}" class="inline-flex items-center gap-2 bg-brand hover:bg-brand-dark text-white font-medium px-5 py-3 rounded-full">
-        {{ icon('plus', 'w-5 h-5') }} Tambah Produk
-    </a>
+    <div class="flex flex-wrap gap-3">
+        {% if current_user.punya_izin('lihat_laporan') %}
+        <a href="{{ url_for('admin_laporan') }}" class="inline-flex items-center gap-2 bg-white border border-slate-200 hover:border-brand hover:text-brand font-medium px-5 py-3 rounded-full">
+            {{ icon('chart-column', 'w-5 h-5') }} Laporan Transaksi
+        </a>
+        {% endif %}
+        <a href="{{ url_for('admin_produk_tambah') }}" class="inline-flex items-center gap-2 bg-brand hover:bg-brand-dark text-white font-medium px-5 py-3 rounded-full">
+            {{ icon('plus', 'w-5 h-5') }} Tambah Produk
+        </a>
+    </div>
 </div>
 
 <div class="grid grid-cols-2 xl:grid-cols-4 gap-4 lg:gap-5 mb-8">
+    {% set kartu_utama = ('Total Pendapatan', stats.pendapatan | rupiah, 'banknote', 'bg-brand-soft text-brand', 'dari ' ~ stats.pesanan_lunas ~ ' pesanan lunas')
+        if current_user.punya_izin('lihat_laporan')
+        else ('Pesanan Lunas', stats.pesanan_lunas, 'circle-check', 'bg-brand-soft text-brand', 'pembayaran sudah diterima') %}
     {% set kartu_stat = [
-        ('Total Pendapatan', stats.pendapatan | rupiah, 'banknote', 'bg-brand-soft text-brand', 'dari ' ~ stats.pesanan_lunas ~ ' pesanan lunas'),
+        kartu_utama,
         ('Total Pesanan', stats.total_pesanan, 'shopping-bag', 'bg-peach text-coral', 'tidak termasuk yang batal'),
         ('Customer Terdaftar', stats.total_customer, 'users', 'bg-amber-100 text-amber-700', 'akun pelanggan'),
         ('Total Produk', stats.total_produk, 'package', 'bg-brand-soft text-brand', 'di katalog'),
@@ -37,16 +47,17 @@
     <section class="xl:col-span-2">
         <h2 class="font-display text-lg font-bold">Status Operasional Toko</h2>
         <p class="text-sm text-muted mb-4">Pesanan dan stok yang perlu ditindaklanjuti.</p>
-        <div class="grid sm:grid-cols-3 gap-4">
+        <div class="grid grid-cols-2 gap-3 sm:gap-4">
             {% set operasional = [
                 ('wallet', 'bg-brand-soft text-brand', stats.perlu_verifikasi, 'Pesanan', 'Menunggu verifikasi pembayaran', 'Tinjau Bukti', url_for('admin_pesanan', tab='verifikasi'), 'text-brand'),
                 ('truck', 'bg-brand-soft text-brand', stats.perlu_dikirim, 'Pesanan', 'Sudah dibayar, perlu dikemas & dikirim', 'Proses Pesanan', url_for('admin_pesanan', tab='diproses'), 'text-brand'),
                 ('triangle-alert', 'bg-red-50 text-coral', stats.stok_menipis, 'Produk', 'Stok menipis (5 unit atau kurang) / habis', 'Restok Sekarang', url_for('admin_produk'), 'text-coral'),
+                ('message-square', 'bg-amber-100 text-amber-700', stats.ulasan_belum_dibalas, 'Ulasan', 'Ulasan pelanggan yang belum dibalas toko', 'Balas Ulasan', url_for('admin_ulasan', filter='belum_dibalas'), 'text-brand'),
             ] %}
             {% for ic, warna, angka, satuan, ket, link_label, link, warna_link in operasional %}
-            <div class="bg-white border border-slate-100 rounded-2xl p-5 flex flex-col">
+            <div class="bg-white border border-slate-100 rounded-2xl p-4 sm:p-5 flex flex-col">
                 <span class="w-10 h-10 rounded-xl flex items-center justify-center {{ warna }}">{{ icon(ic, 'w-5 h-5') }}</span>
-                <p class="font-display text-2xl font-extrabold mt-4">{{ angka }} {{ satuan }}</p>
+                <p class="font-display text-xl sm:text-2xl font-extrabold mt-4">{{ angka }} {{ satuan }}</p>
                 <p class="text-sm text-muted mt-1 flex-1">{{ ket }}</p>
                 <a href="{{ link }}" class="flex items-center min-h-11 mt-3 border-t border-slate-100 text-sm font-semibold {{ warna_link }}">{{ link_label }}</a>
             </div>
@@ -64,7 +75,7 @@
                     <span class="block font-semibold truncate">{{ t.nama_produk }}</span>
                     <span class="block text-xs text-muted">{{ t.terjual }} terjual &middot; {{ t.merek }}</span>
                 </span>
-                <span class="font-semibold whitespace-nowrap">{{ t.pendapatan | rupiah }}</span>
+                {% if current_user.punya_izin('lihat_laporan') %}<span class="font-semibold whitespace-nowrap">{{ t.pendapatan | rupiah }}</span>{% endif %}
             </li>
             {% else %}
             <li class="py-8 text-center text-sm text-muted">Belum ada pesanan lunas.</li>

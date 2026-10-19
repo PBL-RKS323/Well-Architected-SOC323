@@ -1,10 +1,12 @@
-from flask import render_template, request, current_app
+from flask import render_template, request, current_app, g
 from sqlalchemy import case, or_, select
 
+from forms.ulasan_form import UlasanForm
 from helpers.katalog_contoh import baca_katalog
 from models import db
 from models.keranjang import KeranjangItem
 from models.produk import Produk
+from models.ulasan import Ulasan
 
 PER_HALAMAN = 12
 URUTAN = {
@@ -92,12 +94,29 @@ def jelajah():
     )
 
 
-def detail(produk_id):
+def detail(produk_id, ulasan_form=None):
     produk = db.get_or_404(Produk, produk_id)
     terkait = (Produk.query.filter(Produk.merek == produk.merek, Produk.id != produk.id)
                .order_by(Produk.created_at.desc()).limit(4).all())
+
+    # Ulasan: terbaru dulu, sebagian saja kecuali pengunjung memilih "lihat semua"
+    semua_ulasan = request.args.get("ulasan") == "semua"
+    query_ulasan = Ulasan.query.filter_by(produk_id=produk.id).order_by(Ulasan.created_at.desc())
+    daftar_ulasan = query_ulasan.all() if semua_ulasan else query_ulasan.limit(Ulasan.TAMPIL_AWAL).all()
+
+    # Form hanya untuk pembeli yang pesanannya sudah selesai; ulasan lama otomatis terisi untuk diubah
+    ulasan_saya, boleh_ulas = None, False
+    if g.user is not None and g.user.punya_izin("belanja"):
+        ulasan_saya = Ulasan.query.filter_by(produk_id=produk.id, user_id=g.user.id).first()
+        boleh_ulas = Ulasan.boleh_mengulas(g.user, produk.id)
+    if ulasan_form is None and boleh_ulas:
+        ulasan_form = UlasanForm(formdata=None, obj=ulasan_saya)
+
     return render_template("toko/detail.html", produk=produk, terkait=terkait,
-                           maks_per_produk=KeranjangItem.MAKS_PER_PRODUK)
+                           maks_per_produk=KeranjangItem.MAKS_PER_PRODUK,
+                           ringkasan_ulasan=Ulasan.ringkasan(produk.id), daftar_ulasan=daftar_ulasan,
+                           semua_ulasan=semua_ulasan, ulasan_saya=ulasan_saya, boleh_ulas=boleh_ulas,
+                           ulasan_form=ulasan_form)
 
 
 def kredit_foto():

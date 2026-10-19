@@ -24,9 +24,10 @@ class User(db.Model):
     #   kelola_produk  : tambah, ubah, hapus produk
     #   kelola_pesanan : verifikasi pembayaran & ubah status pesanan, lihat bukti bayar
     #   kelola_user    : daftar akun, ubah peran, aktif/nonaktif, buka kunci
-    #   belanja        : keranjang, checkout, pesanan sendiri, alamat
+    #   lihat_laporan  : laporan transaksi & ekspor CSV (data keuangan seluruh toko)
+    #   belanja        : keranjang, checkout, pesanan sendiri, alamat, ulasan
     IZIN = {
-        ROLE_ADMIN: {"panel", "kelola_produk", "kelola_pesanan", "kelola_user"},
+        ROLE_ADMIN: {"panel", "kelola_produk", "kelola_pesanan", "kelola_user", "lihat_laporan"},
         ROLE_STAF: {"panel", "kelola_produk", "kelola_pesanan"},
         ROLE_CUSTOMER: {"belanja"},
     }
@@ -43,6 +44,8 @@ class User(db.Model):
     # Akun nonaktif tidak bisa login dan sesinya langsung tidak berlaku (pengganti hapus akun,
     # agar riwayat pesanan tetap utuh)
     aktif = db.Column(db.Boolean, nullable=False, default=True, server_default=db.true())
+    # Nama file foto profil di static/uploads/avatar (sudah di-encode ulang tanpa metadata EXIF)
+    avatar = db.Column(db.String(255), nullable=True)
     created_at = db.Column(db.DateTime, nullable=False, default=utcnow)
 
     def set_password(self, password):

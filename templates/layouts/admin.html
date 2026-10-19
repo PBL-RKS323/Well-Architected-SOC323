@@ -1,19 +1,25 @@
 {% extends 'base.html' %}
 {% from '_icons.html' import icon %}
+{% from '_macros.html' import avatar %}
 {% block body %}
 {% set ep = request.endpoint or '' %}
-{# Menu panel disaring sesuai izin peran (RBAC): (izin, endpoint, ikon, label sidebar, label HP, aktif) #}
+{# Menu panel disaring sesuai izin peran (RBAC): (izin, endpoint, ikon, label sidebar, label HP, aktif).
+   Label HP None = tidak masuk navigasi bawah HP (maks. 6 ikon); di HP dibuka dari pintasan di Dasbor. #}
 {% set semua_menu = [
     ('panel', 'admin_dashboard', 'layout-dashboard', 'Dasbor', 'Dasbor', ep == 'admin_dashboard'),
     ('kelola_produk', 'admin_produk', 'package', 'Produk', 'Produk', ep.startswith('admin_produk')),
     ('kelola_pesanan', 'admin_pesanan', 'shopping-bag', 'Pesanan', 'Pesanan', ep.startswith('admin_pesanan')),
+    ('kelola_produk', 'admin_ulasan', 'message-square', 'Ulasan', None, ep.startswith('admin_ulasan')),
+    ('lihat_laporan', 'admin_laporan', 'chart-column', 'Laporan', None, ep.startswith('admin_laporan')),
     ('kelola_user', 'admin_pengguna', 'users', 'Pengguna', 'Pengguna', ep.startswith('admin_pengguna')),
     ('panel', 'pengaturan', 'settings', 'Pengaturan', 'Akun', ep == 'pengaturan'),
     ('panel', 'beranda', 'store', 'Lihat Toko', 'Toko', false),
 ] %}
 {% set menu = [] %}
+{% set menu_hp = [] %}
 {% for izin, endpoint, ic, label, label_hp, active in semua_menu if current_user.punya_izin(izin) %}
     {% set _ = menu.append((endpoint, ic, label, label_hp, active)) %}
+    {% if label_hp %}{% set _ = menu_hp.append((endpoint, ic, label, label_hp, active)) %}{% endif %}
 {% endfor %}
 <div class="min-h-screen lg:flex">
     <aside class="hidden lg:flex lg:flex-col w-64 shrink-0 bg-white border-r border-slate-100 p-5 sticky top-0 h-screen">
@@ -35,7 +41,7 @@
             {% endfor %}
         </nav>
         <div class="mt-auto flex items-center gap-3 p-3 rounded-xl border border-slate-100">
-            <span class="w-9 h-9 rounded-full bg-brand-soft text-brand flex items-center justify-center">{{ icon('user', 'w-5 h-5') }}</span>
+            {{ avatar(current_user, 'w-9 h-9 text-xs') }}
             <span class="flex-1 min-w-0">
                 <span class="block text-sm font-semibold truncate">{{ current_user.display_name }}</span>
                 <span class="block text-xs text-muted">{{ current_user.label_role }}</span>
@@ -74,7 +80,7 @@
                     <span class="block text-sm font-semibold">{{ current_user.display_name }}</span>
                     <span class="block text-xs text-muted">{{ current_user.label_role }}</span>
                 </span>
-                <span class="w-10 h-10 rounded-full bg-brand text-white flex items-center justify-center">{{ icon('user', 'w-5 h-5') }}</span>
+                {{ avatar(current_user, 'w-10 h-10 text-sm') }}
             </div>
         </header>
 
@@ -87,8 +93,8 @@
 
 {# Navigasi bawah admin di HP: semua menu terlihat tanpa digeser #}
 <nav class="lg:hidden fixed bottom-0 inset-x-0 z-30 bg-white border-t border-slate-100 shadow-[0_-4px_16px_rgba(15,23,42,0.04)]">
-    <div class="grid {{ 'grid-cols-6' if menu | length == 6 else 'grid-cols-5' }} text-[11px] font-medium">
-        {% for endpoint, ic, _, label, active in menu %}
+    <div class="grid {{ 'grid-cols-6' if menu_hp | length == 6 else 'grid-cols-5' }} text-[11px] font-medium">
+        {% for endpoint, ic, _, label, active in menu_hp %}
         <a href="{{ url_for(endpoint) }}" class="relative flex flex-col items-center gap-1 py-2.5 {{ 'text-brand' if active else 'text-muted' }}">
             {{ icon(ic, 'w-6 h-6') }}<span>{{ label }}</span>
             {% if endpoint == 'admin_pesanan' and perlu_verifikasi %}

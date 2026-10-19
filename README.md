@@ -5,20 +5,26 @@ smartwatch, dan aksesoris). Dibangun dengan Flask dan database SQL, mengikuti po
 
 ## Status Fitur
 
-| Fitur | Status |
-|---|---|
-| Login + logging keamanan (login sukses/gagal, akses area admin) | Selesai |
-| Register customer | Selesai |
-| Manajemen produk / CRUD (khusus admin) | Selesai |
-| Halaman utama / katalog produk | Selesai |
-| Dashboard admin dasar | Selesai |
-| Pengaturan akun (ubah nama, email & kata sandi) | Selesai |
-| Tampilan sesuai desain Figma (mobile-first, admin desktop) | Selesai |
-| Cari & filter katalog, detail produk, profil | Selesai |
-| Keranjang belanja | Selesai |
-| Checkout (kurir ongkir flat / ambil di toko), transfer bank + unggah bukti bayar | Selesai |
-| Pesanan Saya + lacak status, verifikasi pembayaran & update status oleh admin | Selesai |
-| Laporan transaksi, Midtrans (QRIS/e-wallet), login Google, ulasan, avatar, kelola akun | Berikutnya |
+Kebutuhan fungsional minimal dari *OUTPUT PBL 1* (RKS 304) sudah terpenuhi semua:
+
+| No | Kebutuhan | Halaman | Status |
+|---|---|---|---|
+| 1 | Admin kelola data barang (tambah, edit, hapus) | `/admin/produk` | Selesai |
+| 2 | Admin kelola akun pengguna | `/admin/pengguna` | Selesai |
+| 3 | Admin lihat laporan ringkasan transaksi | `/admin/laporan` (+ unduh CSV) | Selesai |
+| 4 | Admin lihat & setujui bukti bayar | `/admin/pesanan` | Selesai |
+| 5 | Customer registrasi, login, logout | `/register`, `/login` | Selesai |
+| 6 | Customer cari & filter katalog | `/jelajah` | Selesai |
+| 7 | Customer lihat detail barang dengan ulasan | `/produk/<id>` | Selesai |
+| 8 | Customer beri ulasan & komentar | `/produk/<id>#ulasan` | Selesai |
+| 9 | Customer kelola profil & upload foto avatar | `/profil`, `/pengaturan` | Selesai |
+| 10 | Customer masukkan barang ke cart | `/keranjang` | Selesai |
+| 11 | Customer checkout | `/checkout` | Selesai |
+| 12 | Customer upload bukti bayar | `/pesanan/<kode>` | Selesai |
+| 13 | Customer lihat riwayat pesanan | `/pesanan` | Selesai |
+
+Tambahan: RBAC 3 peran (Admin, Staf Toko, Pelanggan), alamat tersimpan, balasan toko untuk ulasan,
+log keamanan untuk Wazuh. Rencana berikutnya: Midtrans Sandbox (QRIS/e-wallet), login Google.
 
 Riwayat perubahan ada di [CHANGELOG.md](CHANGELOG.md), kontrol keamanan dan format log ada di
 [docs/KEAMANAN.md](docs/KEAMANAN.md), arah desain dan alasannya ada di [docs/DESIGN.md](docs/DESIGN.md).
@@ -136,7 +142,8 @@ pytest -q
 |---|---|---|
 | `/` | Semua | Beranda: produk unggulan, kategori, ekosistem brand |
 | `/jelajah` | Semua | Semua produk + cari, filter, urutkan |
-| `/produk/<id>` | Semua | Detail produk |
+| `/produk/<id>` | Semua | Detail produk + ulasan pembeli |
+| `/produk/<id>/ulasan` | Pembeli (pesanan selesai) | Tulis / ubah ulasan (POST) |
 | `/register` | Tamu | Daftar akun customer |
 | `/login` | Tamu | Login |
 | `/logout` | Login | Logout (POST) |
@@ -146,7 +153,8 @@ pytest -q
 | `/pesanan/<kode>` | Pemilik | Detail, lacak status, unggah bukti bayar, batalkan, konfirmasi diterima |
 | `/pesanan/<kode>/bukti` | Pemilik / Admin | Gambar bukti bayar (tidak bisa diakses publik) |
 | `/profil` | Login | Profil akun |
-| `/pengaturan` | Login | Ubah nama, email & kata sandi |
+| `/pengaturan` | Login | Foto profil, ubah nama, email & kata sandi |
+| `/alamat` | Pelanggan | Alamat tersimpan (maks. 5, satu alamat utama) |
 | `/admin` | Admin | Dashboard admin |
 | `/admin/produk` | Admin | Daftar produk |
 | `/admin/produk/tambah` | Admin | Tambah produk |
@@ -154,3 +162,6 @@ pytest -q
 | `/admin/produk/<id>/hapus` | Admin | Hapus produk (POST) |
 | `/admin/pesanan` | Admin | Daftar pesanan per status + pencarian |
 | `/admin/pesanan/<id>` | Admin | Detail pesanan, cek bukti bayar, terima/tolak, kirim (resi), siap diambil, selesai, batalkan |
+| `/admin/ulasan` | Admin / Staf | Balas & hapus ulasan |
+| `/admin/laporan` | Admin | Laporan transaksi per rentang tanggal, unduh CSV |
+| `/admin/pengguna` | Admin | Kelola akun: tambah staf, ubah peran, nonaktifkan, buka kunci |

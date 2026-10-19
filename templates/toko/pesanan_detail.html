@@ -124,6 +124,12 @@
                     <div class="flex-1 min-w-0">
                         <p class="font-semibold leading-snug line-clamp-2">{{ item.nama_produk }}</p>
                         <p class="text-sm text-muted">{{ item.jumlah }} &times; <span class="whitespace-nowrap">{{ item.harga | rupiah }}</span></p>
+                        {% if pesanan.status == 'selesai' and item.produk %}
+                        <a href="{{ url_for('produk_detail', produk_id=item.produk_id, _anchor='form-ulasan' if item.produk_id not in sudah_diulas else 'ulasan') }}"
+                           class="inline-flex items-center gap-1.5 min-h-11 text-sm font-semibold text-brand">
+                            {{ icon('star', 'w-4 h-4') }} {{ 'Lihat ulasanmu' if item.produk_id in sudah_diulas else 'Beri ulasan' }}
+                        </a>
+                        {% endif %}
                     </div>
                     <p class="font-bold whitespace-nowrap">{{ item.subtotal | rupiah }}</p>
                 </li>

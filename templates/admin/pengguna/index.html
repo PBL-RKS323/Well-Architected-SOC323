@@ -1,5 +1,6 @@
 {% extends 'layouts/admin.html' %}
 {% from '_icons.html' import icon %}
+{% from '_macros.html' import avatar %}
 {% block title %}Pengguna - {{ app_name }}{% endblock %}
 
 {% macro status(u) %}
@@ -43,7 +44,7 @@
         {% for u in halaman.items %}
         <li>
             <a href="{{ url_for('admin_pengguna_detail', user_id=u.id) }}" class="flex items-center gap-3 px-4 py-4 hover:bg-soft/50">
-                <span class="w-11 h-11 shrink-0 rounded-full bg-brand-soft text-brand text-sm font-bold flex items-center justify-center">{{ u.initials }}</span>
+                {{ avatar(u, 'w-11 h-11 text-sm') }}
                 <span class="min-w-0 flex-1">
                     <span class="block font-semibold truncate">{{ u.display_name }}</span>
                     <span class="block text-xs text-muted truncate">{{ u.email }}</span>
@@ -64,7 +65,7 @@
                 <tr class="hover:bg-soft/50">
                     <td class="px-5 py-3">
                         <div class="flex items-center gap-3">
-                            <span class="w-9 h-9 shrink-0 rounded-full bg-brand-soft text-brand text-xs font-bold flex items-center justify-center">{{ u.initials }}</span>
+                            {{ avatar(u, 'w-9 h-9 text-xs') }}
                             <span class="min-w-0"><span class="block font-semibold">{{ u.display_name }}{{ ' (kamu)' if u.id == current_user.id }}</span><span class="block text-xs text-muted">{{ u.email }}</span></span>
                         </div>
                     </td>

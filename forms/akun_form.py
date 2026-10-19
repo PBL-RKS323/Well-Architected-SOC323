@@ -1,5 +1,6 @@
 from flask import g
 from flask_wtf import FlaskForm
+from flask_wtf.file import FileField, FileRequired, FileAllowed
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired, Email, Length, EqualTo, Regexp, ValidationError
 
@@ -49,3 +50,11 @@ class UbahPasswordForm(FlaskForm):
         EqualTo("password_baru", message="Konfirmasi kata sandi tidak cocok."),
     ])
     submit = SubmitField("Simpan Kata Sandi")
+
+
+class AvatarForm(FlaskForm):
+    avatar = FileField("Pilih Foto Baru", validators=[
+        FileRequired(message="Pilih foto terlebih dahulu."),
+        FileAllowed(["jpg", "jpeg", "png"], message="Foto profil harus berupa gambar JPG atau PNG."),
+    ])
+    submit = SubmitField("Simpan Foto")

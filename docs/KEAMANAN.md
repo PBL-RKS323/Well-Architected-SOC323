@@ -10,8 +10,8 @@ Acuan: OWASP Top 10 2025, alur SSDLC (rencana → kode → uji → monitor) per 
 | A02 Security Misconfiguration | `SECRET_KEY` & `DATABASE_URL` wajib dari `.env` (aplikasi menolak jalan tanpa itu), debug mati secara default, header keamanan (CSP, X-Frame-Options, nosniff, Referrer-Policy), halaman error tanpa detail teknis | `config.py`, `app.py` |
 | A03 Software Supply Chain Failures | Versi dependensi dikunci di `requirements.txt` | `requirements.txt` |
 | A04 Cryptographic Failures | Kata sandi di-hash (Werkzeug scrypt), cookie sesi HttpOnly + SameSite=Lax, opsi `SESSION_COOKIE_SECURE` untuk HTTPS | `models/user.py`, `config.py` |
-| A05 Injection | Query lewat ORM SQLAlchemy (terparameter), wildcard `%`/`_` di kata kunci pencarian di-escape, parameter filter divalidasi terhadap daftar yang diizinkan, output Jinja2 auto-escape (XSS), input divalidasi WTForms | `models/`, `forms/` |
-| A06 Insecure Design | Role customer tidak bisa dipilih saat register, harga & ongkir dihitung ulang di server (bukan dari form), stok dipotong atomik saat checkout (tidak bisa minus walau checkout bersamaan), status pesanan hanya boleh pindah sesuai tabel transisi, maks. 3 pesanan belum lunas per akun (termasuk yang bukti bayarnya belum diverifikasi) dan batal otomatis setelah 24 jam (stok tidak bisa "ditahan"), pengiriman ganda checkout (klik dua kali) ditolak, kode pesanan acak, upload gambar diperiksa isi biner, nama file acak | `models/pesanan.py`, `controllers/`, `helpers/image_security.py` |
+| A05 Injection | Query lewat ORM SQLAlchemy (terparameter), wildcard `%`/`_` di kata kunci pencarian di-escape, parameter filter & tanggal laporan divalidasi terhadap daftar/format yang diizinkan, output Jinja2 auto-escape (XSS, termasuk isi ulasan), input divalidasi WTForms, sel CSV laporan yang diawali `= + - @` diberi awalan `'` (CSV/formula injection) | `models/`, `forms/` |
+| A06 Insecure Design | Role customer tidak bisa dipilih saat register, harga & ongkir dihitung ulang di server (bukan dari form), stok dipotong atomik saat checkout (tidak bisa minus walau checkout bersamaan), status pesanan hanya boleh pindah sesuai tabel transisi, maks. 3 pesanan belum lunas per akun (termasuk yang bukti bayarnya belum diverifikasi) dan batal otomatis setelah 24 jam (stok tidak bisa "ditahan"), pengiriman ganda checkout (klik dua kali) ditolak, kode pesanan acak, upload gambar diperiksa isi biner, nama file acak, ulasan hanya dari pembeli yang pesanannya selesai (anti ulasan palsu, satu ulasan per produk per akun), foto profil di-encode ulang tanpa EXIF (lokasi GPS tidak bocor) | `models/pesanan.py`, `controllers/`, `helpers/image_security.py` |
 | A07 Authentication Failures | Kebijakan kata sandi kuat, ganti email/kata sandi wajib konfirmasi kata sandi lama, penguncian akun 5x gagal, pesan error login generik, sesi dibersihkan saat login (anti session fixation), sesi berakhir saat browser ditutup (atau 7 hari jika "Ingat saya"), ganti kata sandi membuat sesi di perangkat lain tidak berlaku (sidik hash kata sandi disimpan di sesi), CSRF di semua form | `controllers/auth_controller.py` |
 | A08 Software or Data Integrity Failures | Token CSRF global, file upload divalidasi sebelum disimpan | `app.py`, `helpers/image_security.py` |
 | A09 Security Logging and Alerting Failures | Log audit ke `logs/security.log`, format seragam untuk Wazuh, karakter baris baru dinetralkan (anti log injection) | `helpers/security_logger.py` |
@@ -61,6 +61,12 @@ Contoh:
 | `USER_CREATED` / `USER_ROLE_CHANGED` | WARNING | Admin membuat akun / mengubah peran (`role_from`, `role_to`) |
 | `USER_DEACTIVATED` / `USER_ACTIVATED` | WARNING | Admin menonaktifkan / mengaktifkan akun |
 | `USER_UNLOCKED` | INFO | Admin membuka kunci login akun |
+| `AVATAR_CHANGED` / `AVATAR_REMOVED` | INFO | User mengganti / menghapus foto profil |
+| `REVIEW_CREATE` / `REVIEW_UPDATE` | INFO | Pembeli menulis / mengubah ulasan (`rating`) |
+| `REVIEW_REJECTED` | WARNING | Akun yang belum menyelesaikan pembelian mencoba mengulas (`reason=not_purchased`) |
+| `REVIEW_REPLY` | INFO | Staf membalas ulasan |
+| `REVIEW_DELETE` | INFO / WARNING | Ulasan dihapus pemiliknya (INFO) atau staf (WARNING, `by=staff`) |
+| `REPORT_EXPORTED` | WARNING | Admin mengunduh CSV laporan transaksi (`date_from`, `date_to`, `rows`): pantau unduhan massal |
 
 ## RBAC (Role-Based Access Control)
 
@@ -70,7 +76,8 @@ Contoh:
 | kelola_produk | ya | ya | - |
 | kelola_pesanan (verifikasi bayar, status, lihat bukti) | ya | ya | - |
 | kelola_user | ya | - | - |
-| belanja (keranjang, checkout, pesanan & alamat sendiri) | - | - | ya |
+| lihat_laporan (laporan transaksi, CSV, angka pendapatan di dasbor) | ya | - | - |
+| belanja (keranjang, checkout, pesanan & alamat sendiri, ulasan) | - | - | ya |
 
 Dicek dua lapis: middleware untuk semua `/admin` (izin `panel`) dan `izin_required(...)` di tiap
 controller. Peran dibaca dari database setiap request, jadi perubahan peran langsung berlaku.
@@ -103,3 +110,14 @@ Konfigurasi Wazuh agent (contoh `ossec.conf` di server web):
   dengan UPDATE bersyarat (anti race condition), batas waktu bayar 24 jam, maks. 3 pesanan belum dibayar
 - [x] Uji: 95 tes otomatis, lulus di SQLite dan PostgreSQL (`TEST_DATABASE_URL` ke database khusus uji)
 - [x] Monitor: event pesanan & pembayaran baru di tabel log di atas
+
+## Checklist SSDLC: Laporan, Ulasan, Avatar
+
+- [x] Rencana: ancaman utama = ulasan palsu/spam, XSS lewat komentar, file berbahaya atau foto yang membocorkan
+  lokasi (EXIF GPS), kebocoran data keuangan ke staf, CSV laporan yang menjalankan rumus saat dibuka di Excel,
+  pengambilan data transaksi massal
+- [x] Kode: syarat pesanan selesai + unique constraint per produk per akun, Jinja autoescape, foto profil dicek
+  magic number lalu di-encode ulang dengan Pillow (EXIF terbuang, batas 40 juta piksel), izin `lihat_laporan`
+  khusus admin, sel CSV dinetralkan, ekspor dicatat `REPORT_EXPORTED`
+- [x] Uji: `tests/test_ulasan_avatar_laporan.py` (14 tes), lulus di SQLite dan PostgreSQL
+- [x] Monitor: event ulasan, avatar, dan ekspor laporan di tabel log di atas

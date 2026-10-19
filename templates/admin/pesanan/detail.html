@@ -1,5 +1,6 @@
 {% extends 'layouts/admin.html' %}
 {% from '_icons.html' import icon %}
+{% from '_macros.html' import avatar %}
 {% from '_pesanan.html' import badge_status, foto_item %}
 {% block title %}Pesanan #{{ pesanan.kode }} - {{ app_name }}{% endblock %}
 {% block content %}
@@ -123,7 +124,7 @@
         <section class="bg-white border border-slate-100 rounded-2xl p-5 text-sm">
             <h2 class="font-display text-lg font-bold mb-3">Pelanggan</h2>
             <div class="flex items-center gap-3">
-                <span class="w-10 h-10 rounded-full bg-brand-soft text-brand text-sm font-bold flex items-center justify-center">{{ pesanan.user.initials }}</span>
+                {{ avatar(pesanan.user, 'w-10 h-10 text-sm') }}
                 <span class="min-w-0"><span class="block font-semibold">{{ pesanan.user.display_name }}</span><span class="block text-muted truncate">{{ pesanan.user.email }}</span></span>
             </div>
             <h3 class="font-semibold mt-5 mb-1">{{ 'Alamat Pengiriman' if pesanan.metode_pengiriman == 'kurir' else 'Diambil oleh' }}</h3>

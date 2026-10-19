@@ -21,3 +21,8 @@ def format_tanggal(dt, jam=True):
         return "-"
     teks = f"{dt.day} {BULAN[dt.month - 1]} {dt.year}"
     return f"{teks}, {dt:%H.%M} WIB" if jam else teks
+
+
+def format_hari(tgl):
+    """Tanggal tanpa jam untuk objek date, contoh: 1 Okt 2026"""
+    return f"{tgl.day} {BULAN[tgl.month - 1]} {tgl.year}"

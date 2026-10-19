@@ -51,3 +51,13 @@
     <h1 class="font-display text-xl md:text-2xl font-extrabold px-12 text-center">{{ judul }}</h1>
 </div>
 {% endmacro %}
+
+{# Foto profil bulat, atau inisial nama jika belum ada foto. cls = ukuran + ukuran teks inisial.
+   alt kosong karena nama pengguna selalu tampil di sebelahnya. #}
+{% macro avatar(user, cls="w-11 h-11 text-sm") %}
+{%- if user.avatar -%}
+<img src="{{ url_for('static', filename='uploads/avatar/' ~ user.avatar) }}" alt="" class="{{ cls }} shrink-0 rounded-full object-cover bg-soft">
+{%- else -%}
+<span class="{{ cls }} shrink-0 rounded-full bg-brand-soft text-brand font-bold flex items-center justify-center" aria-hidden="true">{{ user.initials }}</span>
+{%- endif -%}
+{% endmacro %}

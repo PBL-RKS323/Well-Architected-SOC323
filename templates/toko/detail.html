@@ -1,6 +1,7 @@
 {% extends 'layouts/toko.html' %}
 {% from '_icons.html' import icon %}
-{% from '_produk.html' import kartu %}
+{% from '_produk.html' import kartu, bintang %}
+{% from '_macros.html' import avatar %}
 {% block title %}{{ produk.nama_produk }} - {{ app_name }}{% endblock %}
 {% block content %}
 <a href="{{ url_for('jelajah') }}" class="inline-flex items-center gap-2 text-sm font-medium text-muted hover:text-ink mb-4">
@@ -25,6 +26,13 @@
     <div class="mt-6 md:mt-0">
         <span class="inline-block bg-brand-soft text-brand-dark text-xs font-semibold px-2.5 py-1 rounded-md">{{ produk.merek }} &middot; {{ produk.kategori }}</span>
         <h1 class="font-display text-2xl md:text-3xl font-extrabold leading-tight mt-3">{{ produk.nama_produk }}</h1>
+        {% if ringkasan_ulasan.jumlah %}
+        <a href="#ulasan" class="inline-flex items-center gap-2 mt-2 text-sm min-h-11">
+            {{ bintang(ringkasan_ulasan.rata) }}
+            <span class="font-semibold">{{ ringkasan_ulasan.rata }}</span>
+            <span class="text-muted">({{ ringkasan_ulasan.jumlah }} ulasan)</span>
+        </a>
+        {% endif %}
 
         {# whitespace-nowrap + flex-wrap: harga tidak terpotong jadi "Rp" / angka; harga coret turun ke baris baru jika sempit #}
         <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1 mt-4">
@@ -90,6 +98,116 @@
         </div>
     </div>
 </div>
+
+
+{# ===== ULASAN PEMBELI ===== #}
+<section id="ulasan" class="mt-12 scroll-mt-32">
+    <h2 class="font-display text-lg md:text-xl font-bold">Ulasan Pembeli</h2>
+    <p class="text-sm text-muted mb-4">Ulasan hanya bisa ditulis oleh pembeli yang pesanannya sudah selesai.</p>
+
+    <div class="lg:grid lg:grid-cols-[20rem_minmax(0,1fr)] lg:gap-8 lg:items-start">
+        <aside class="space-y-4">
+            {# Ringkasan rating #}
+            <div class="bg-white border border-slate-100 rounded-2xl p-5">
+                {% if ringkasan_ulasan.jumlah %}
+                <div class="flex items-center gap-4">
+                    <p class="font-display text-5xl font-extrabold">{{ ringkasan_ulasan.rata }}</p>
+                    <div>
+                        {{ bintang(ringkasan_ulasan.rata, 'w-5 h-5') }}
+                        <p class="text-sm text-muted mt-1">dari {{ ringkasan_ulasan.jumlah }} ulasan</p>
+                    </div>
+                </div>
+                <ul class="mt-4 space-y-1.5 text-sm">
+                    {% for n, jumlah in ringkasan_ulasan.sebaran.items() %}
+                    <li class="flex items-center gap-2">
+                        <span class="w-3 text-muted">{{ n }}</span>
+                        <span class="flex-1 h-2 rounded-full bg-soft overflow-hidden"><span class="block h-full bg-amber-400 rounded-full" style="width: {{ (jumlah / ringkasan_ulasan.jumlah * 100) | round | int }}%"></span></span>
+                        <span class="w-6 text-right text-muted">{{ jumlah }}</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p class="font-semibold">Belum ada ulasan</p>
+                <p class="text-sm text-muted mt-1">Jadilah yang pertama mengulas setelah membeli produk ini.</p>
+                {% endif %}
+            </div>
+
+            {# Form ulasan / keterangan sesuai status pengunjung #}
+            {% if ulasan_form %}
+            <form id="form-ulasan" method="POST" action="{{ url_for('ulasan_simpan', produk_id=produk.id) }}" class="bg-white border border-slate-100 rounded-2xl p-5 scroll-mt-32" novalidate data-kirim-sekali>
+                {{ ulasan_form.hidden_tag() }}
+                <h3 class="font-display font-bold">{{ 'Ubah Ulasanmu' if ulasan_saya else 'Tulis Ulasan' }}</h3>
+                <fieldset class="mt-3">
+                    <legend class="text-sm font-semibold mb-1">Rating</legend>
+                    {# Urutan terbalik (5..1) + flex-row-reverse: bintang yang dipilih dan semua di kirinya ikut menyala #}
+                    <div class="flex flex-row-reverse justify-end gap-1 [&>input:checked~label]:text-amber-400 [&>label:hover]:text-amber-300 [&>label:hover~label]:text-amber-300 [&>input:focus-visible+label]:ring-2 [&>input:focus-visible+label]:ring-brand/50">
+                        {% for opsi in ulasan_form.rating | reverse %}
+                        {{ opsi(class="sr-only") }}
+                        <label for="{{ opsi.id }}" class="w-11 h-11 rounded-full flex items-center justify-center text-slate-200 cursor-pointer" title="{{ opsi.label.text }}">
+                            {{ icon('star', 'w-8 h-8 fill-current') }}<span class="sr-only">{{ opsi.label.text }}</span>
+                        </label>
+                        {% endfor %}
+                    </div>
+                    {% for error in ulasan_form.rating.errors %}<span class="text-coral text-xs block mt-1">{{ error }}</span>{% endfor %}
+                </fieldset>
+                <div class="mt-3">
+                    {{ ulasan_form.komentar.label(class="block text-sm font-semibold mb-1.5") }}
+                    {{ ulasan_form.komentar(rows=4, maxlength=1000, placeholder="Ceritakan pengalamanmu memakai produk ini",
+                        class="w-full bg-white border rounded-xl px-4 py-3 outline-none focus:border-brand focus:ring-4 focus:ring-brand/15 placeholder:text-muted " ~ ('border-coral' if ulasan_form.komentar.errors else 'border-slate-200')) }}
+                    {% for error in ulasan_form.komentar.errors %}<span class="text-coral text-xs block mt-1">{{ error }}</span>{% endfor %}
+                </div>
+                <button type="submit" class="mt-4 w-full bg-brand hover:bg-brand-dark text-white font-medium py-3 rounded-full cursor-pointer">{{ 'Simpan Perubahan' if ulasan_saya else 'Kirim Ulasan' }}</button>
+            </form>
+            {% elif not current_user %}
+            <a href="{{ url_for('login', next=request.path) }}" class="flex items-center justify-center min-h-11 bg-white border border-slate-100 rounded-2xl p-4 text-sm font-semibold text-brand">Masuk untuk menulis ulasan</a>
+            {% elif current_user.punya_izin('belanja') %}
+            <p class="flex gap-3 bg-white border border-slate-100 rounded-2xl p-4 text-sm text-muted">
+                <span class="text-brand shrink-0">{{ icon('info', 'w-5 h-5') }}</span>
+                Kamu bisa menulis ulasan setelah membeli produk ini dan pesanannya selesai (status "Selesai").
+            </p>
+            {% endif %}
+        </aside>
+
+        {# Daftar ulasan #}
+        <div class="mt-6 lg:mt-0 bg-white border border-slate-100 rounded-2xl px-5">
+            {% for u in daftar_ulasan %}
+            <article class="py-5 {{ '' if loop.last else 'border-b border-slate-100' }}">
+                <div class="flex items-center gap-3">
+                    {{ avatar(u.user, 'w-10 h-10 text-xs') }}
+                    <div class="min-w-0 flex-1">
+                        <p class="font-semibold truncate">{{ u.user.display_name }}{% if ulasan_saya and u.id == ulasan_saya.id %} <span class="text-xs font-medium text-brand">(ulasanmu)</span>{% endif %}</p>
+                        <p class="text-xs text-muted">{{ u.created_at | tanggal(false) }}{{ ' · diubah' if u.diubah }}</p>
+                    </div>
+                    {{ bintang(u.rating) }}
+                </div>
+                {% if u.komentar %}<p class="mt-3 leading-relaxed whitespace-pre-line break-words">{{ u.komentar }}</p>{% endif %}
+                {% if u.balasan %}
+                <div class="mt-3 bg-soft rounded-xl p-4 text-sm">
+                    <p class="font-semibold flex items-center gap-1.5">{{ icon('store', 'w-4 h-4 text-brand') }} Balasan {{ app_name }}</p>
+                    <p class="mt-1 text-muted leading-relaxed whitespace-pre-line break-words">{{ u.balasan }}</p>
+                </div>
+                {% endif %}
+                {% if ulasan_saya and u.id == ulasan_saya.id %}
+                <div class="flex flex-wrap gap-2 mt-3 text-sm">
+                    <a href="#form-ulasan" class="inline-flex items-center gap-1.5 min-h-11 px-4 rounded-full border border-slate-200 hover:border-brand hover:text-brand font-medium">{{ icon('pencil', 'w-4 h-4') }} Ubah</a>
+                    <form method="POST" action="{{ url_for('ulasan_hapus', produk_id=produk.id) }}" data-confirm="Hapus ulasanmu untuk produk ini?">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="inline-flex items-center gap-1.5 min-h-11 px-4 rounded-full text-coral hover:bg-red-50 font-medium cursor-pointer">{{ icon('trash-2', 'w-4 h-4') }} Hapus</button>
+                    </form>
+                </div>
+                {% elif current_user and current_user.punya_izin('kelola_produk') %}
+                <a href="{{ url_for('admin_ulasan') }}" class="inline-flex items-center gap-1.5 min-h-11 mt-2 text-sm font-semibold text-brand">{{ icon('reply', 'w-4 h-4') }} {{ 'Ubah balasan' if u.balasan else 'Balas' }} di panel</a>
+                {% endif %}
+            </article>
+            {% else %}
+            <p class="py-10 text-center text-muted">Belum ada ulasan untuk produk ini.</p>
+            {% endfor %}
+            {% if not semua_ulasan and ringkasan_ulasan.jumlah > daftar_ulasan | length %}
+            <a href="{{ url_for('produk_detail', produk_id=produk.id, ulasan='semua', _anchor='ulasan') }}" class="flex items-center justify-center min-h-11 border-t border-slate-100 py-3 text-sm font-semibold text-brand">Lihat semua {{ ringkasan_ulasan.jumlah }} ulasan</a>
+            {% endif %}
+        </div>
+    </div>
+</section>
 
 {% if terkait %}
 <section class="mt-12">

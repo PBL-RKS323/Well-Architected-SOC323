@@ -1,3 +1,4 @@
+{% from '_macros.html' import avatar %}
 {% from '_pesanan.html' import badge_status, foto_item %}
 
 {# Daftar pesanan untuk dasbor dan halaman Pesanan admin: kartu di HP/tablet, tabel di desktop #}
@@ -49,7 +50,7 @@
                 <td class="px-5 py-3"><a href="{{ url_for('admin_pesanan_detail', pesanan_id=p.id) }}" class="font-semibold text-brand hover:underline whitespace-nowrap">#{{ p.kode }}</a></td>
                 <td class="px-5 py-3">
                     <div class="flex items-center gap-3">
-                        <span class="w-9 h-9 shrink-0 rounded-full bg-brand-soft text-brand text-xs font-bold flex items-center justify-center">{{ p.user.initials }}</span>
+                        {{ avatar(p.user, 'w-9 h-9 text-xs') }}
                         <span class="min-w-0"><span class="block font-semibold truncate max-w-44">{{ p.user.display_name }}</span><span class="block text-xs text-muted truncate max-w-44">{{ p.user.email }}</span></span>
                     </div>
                 </td>
