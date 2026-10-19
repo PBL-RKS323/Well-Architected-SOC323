@@ -6,7 +6,7 @@ from controllers.toko_controller import _escape_like
 from forms.produk_form import FormProduk
 from helpers.image_security import upload_secure_image, delete_image
 from helpers.security_logger import log_event
-from middlewares.auth_middleware import admin_required
+from middlewares.auth_middleware import izin_required
 from models import db
 from models.keranjang import KeranjangItem
 from models.pesanan import PesananItem
@@ -28,7 +28,7 @@ def _tolak_upload(filename):
     flash("File gambar ditolak! Pastikan file benar-benar JPG/PNG dan ukurannya maksimal 2 MB.", "danger")
 
 
-@admin_required
+@izin_required("kelola_produk")
 def index():
     """[READ] Daftar produk di panel admin, bisa dicari berdasarkan nama/merek"""
     q = request.args.get("q", "").strip()[:100]
@@ -40,7 +40,7 @@ def index():
     return render_template("admin/produk/index.html", produk_list=daftar_produk, q=q)
 
 
-@admin_required
+@izin_required("kelola_produk")
 def create():
     """[CREATE] Form tambah produk dan penyimpanannya"""
     form = FormProduk()
@@ -65,7 +65,7 @@ def create():
     return render_template("admin/produk/form.html", form=form, mode="tambah")
 
 
-@admin_required
+@izin_required("kelola_produk")
 def edit(produk_id):
     """[UPDATE] Form ubah produk dan penyimpanannya"""
     produk = db.get_or_404(Produk, produk_id)
@@ -88,7 +88,7 @@ def edit(produk_id):
     return render_template("admin/produk/form.html", form=form, mode="edit", produk=produk)
 
 
-@admin_required
+@izin_required("kelola_produk")
 def destroy(produk_id):
     """[DELETE] Hapus produk beserta file gambarnya"""
     produk = db.get_or_404(Produk, produk_id)

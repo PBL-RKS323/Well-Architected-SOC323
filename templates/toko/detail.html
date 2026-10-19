@@ -39,9 +39,9 @@
         </p>
 
         {% if produk.stok > 0 %}
-            {% if current_user and current_user.is_admin() %}
+            {% if current_user and current_user.is_staf_toko() %}
             <p class="mt-5 text-sm text-muted bg-white border border-slate-100 rounded-2xl p-4">
-                Kamu masuk sebagai admin. Untuk mencoba membeli, gunakan akun pelanggan.
+                Kamu masuk sebagai {{ current_user.label_role | lower }}. Untuk mencoba membeli, gunakan akun pelanggan.
             </p>
             {% elif current_user %}
             {% set maks = [produk.stok, maks_per_produk] | min %}

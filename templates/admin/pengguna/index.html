@@ -1,0 +1,95 @@
+{% extends 'layouts/admin.html' %}
+{% from '_icons.html' import icon %}
+{% block title %}Pengguna - {{ app_name }}{% endblock %}
+
+{% macro status(u) %}
+{% if not u.aktif %}<span class="text-sm font-semibold text-coral">Nonaktif</span>
+{% elif u.is_locked() %}<span class="text-sm font-semibold text-amber-700">Terkunci</span>
+{% else %}<span class="text-sm font-semibold text-emerald-700">Aktif</span>{% endif %}
+{% endmacro %}
+
+{% block content %}
+<div class="flex flex-wrap items-end justify-between gap-4 mb-6">
+    <div>
+        <h1 class="font-display text-2xl lg:text-3xl font-extrabold">Pengguna</h1>
+        <p class="text-muted mt-1">Kelola akun pelanggan, staf, dan admin beserta hak aksesnya.</p>
+    </div>
+    <a href="{{ url_for('admin_pengguna_tambah') }}" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-brand hover:bg-brand-dark text-white font-medium px-5 py-3 rounded-full">
+        {{ icon('user-plus', 'w-5 h-5') }} Tambah Pengguna
+    </a>
+</div>
+
+<form method="GET" class="lg:hidden relative mb-4">
+    <input type="hidden" name="tab" value="{{ tab }}">
+    <span class="absolute left-4 top-1/2 -translate-y-1/2 text-muted">{{ icon('search', 'w-4 h-4') }}</span>
+    <input type="search" name="q" value="{{ q }}" maxlength="100" placeholder="Cari nama atau email..." aria-label="Cari pengguna"
+           class="w-full bg-white border border-slate-100 rounded-full pl-11 pr-4 py-3 text-sm">
+</form>
+
+<nav class="flex flex-wrap gap-2 mb-4 text-sm font-medium" aria-label="Filter peran">
+    {% for nama, label in tabs.items() %}
+    <a href="{{ url_for('admin_pengguna', tab=nama, q=q or None) }}"
+       class="inline-flex items-center gap-1 px-4 min-h-11 rounded-full {{ 'bg-brand text-white' if tab == nama else 'bg-white text-muted hover:text-ink' }}">
+        {{ label }} <span class="text-xs font-semibold px-1.5 py-0.5 rounded-full {{ 'bg-white/20' if tab == nama else 'bg-soft' }}">{{ jumlah_tab[nama] }}</span>
+    </a>
+    {% endfor %}
+</nav>
+
+<section class="bg-white border border-slate-100 rounded-2xl overflow-hidden">
+    {% if not halaman.items %}
+    <p class="px-5 py-10 text-center text-muted">Tidak ada pengguna untuk filter ini.</p>
+    {% else %}
+    <ul class="lg:hidden divide-y divide-slate-100">
+        {% for u in halaman.items %}
+        <li>
+            <a href="{{ url_for('admin_pengguna_detail', user_id=u.id) }}" class="flex items-center gap-3 px-4 py-4 hover:bg-soft/50">
+                <span class="w-11 h-11 shrink-0 rounded-full bg-brand-soft text-brand text-sm font-bold flex items-center justify-center">{{ u.initials }}</span>
+                <span class="min-w-0 flex-1">
+                    <span class="block font-semibold truncate">{{ u.display_name }}</span>
+                    <span class="block text-xs text-muted truncate">{{ u.email }}</span>
+                    <span class="flex gap-3 mt-0.5 text-xs"><span class="font-medium">{{ u.label_role }}</span>{{ status(u) }}</span>
+                </span>
+                <span class="text-muted">{{ icon('chevron-right', 'w-5 h-5') }}</span>
+            </a>
+        </li>
+        {% endfor %}
+    </ul>
+    <div class="hidden lg:block">
+        <table class="w-full text-sm">
+            <thead class="bg-soft text-muted text-xs uppercase tracking-wide text-left">
+                <tr><th class="px-5 py-3">Pengguna</th><th class="px-5 py-3">Peran</th><th class="px-5 py-3">Status</th><th class="px-5 py-3">Bergabung</th><th class="px-5 py-3"></th></tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+            {% for u in halaman.items %}
+                <tr class="hover:bg-soft/50">
+                    <td class="px-5 py-3">
+                        <div class="flex items-center gap-3">
+                            <span class="w-9 h-9 shrink-0 rounded-full bg-brand-soft text-brand text-xs font-bold flex items-center justify-center">{{ u.initials }}</span>
+                            <span class="min-w-0"><span class="block font-semibold">{{ u.display_name }}{{ ' (kamu)' if u.id == current_user.id }}</span><span class="block text-xs text-muted">{{ u.email }}</span></span>
+                        </div>
+                    </td>
+                    <td class="px-5 py-3">{{ u.label_role }}</td>
+                    <td class="px-5 py-3">{{ status(u) }}</td>
+                    <td class="px-5 py-3 text-muted whitespace-nowrap">{{ u.created_at | tanggal(false) }}</td>
+                    <td class="px-5 py-3 text-right"><a href="{{ url_for('admin_pengguna_detail', user_id=u.id) }}" class="inline-flex items-center min-h-11 px-4 rounded-full border border-slate-200 hover:border-brand hover:text-brand">Kelola</a></td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+    <div class="flex flex-wrap items-center justify-between gap-3 px-5 py-4 border-t border-slate-100 text-sm text-muted">
+        <span>Menampilkan {{ halaman.items | length }} dari {{ halaman.total }} pengguna</span>
+        {% if halaman.pages > 1 %}
+        <nav class="flex items-center gap-1" aria-label="Halaman">
+            {% for n in halaman.iter_pages() %}
+                {% if n %}
+                <a href="{{ url_for('admin_pengguna', tab=tab, q=q or None, page=n) }}"
+                   class="w-11 h-11 rounded-full flex items-center justify-center font-semibold {{ 'bg-brand text-white' if n == halaman.page else 'hover:bg-soft text-ink' }}">{{ n }}</a>
+                {% else %}<span class="px-1">…</span>{% endif %}
+            {% endfor %}
+        </nav>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

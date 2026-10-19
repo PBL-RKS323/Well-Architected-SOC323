@@ -14,7 +14,22 @@ class User(db.Model):
     __tablename__ = "users"
 
     ROLE_ADMIN = "admin"
+    ROLE_STAF = "staf"
     ROLE_CUSTOMER = "customer"
+    LABEL_ROLE = {ROLE_ADMIN: "Admin", ROLE_STAF: "Staf Toko", ROLE_CUSTOMER: "Pelanggan"}
+
+    # RBAC: hak akses ditentukan izin per peran, bukan nama peran. Kode selalu mengecek
+    # punya_izin(...), jadi menambah/mengubah peran cukup di tabel ini.
+    #   panel          : masuk panel /admin (dasbor)
+    #   kelola_produk  : tambah, ubah, hapus produk
+    #   kelola_pesanan : verifikasi pembayaran & ubah status pesanan, lihat bukti bayar
+    #   kelola_user    : daftar akun, ubah peran, aktif/nonaktif, buka kunci
+    #   belanja        : keranjang, checkout, pesanan sendiri, alamat
+    IZIN = {
+        ROLE_ADMIN: {"panel", "kelola_produk", "kelola_pesanan", "kelola_user"},
+        ROLE_STAF: {"panel", "kelola_produk", "kelola_pesanan"},
+        ROLE_CUSTOMER: {"belanja"},
+    }
 
     id = db.Column(db.Integer, primary_key=True)
     # username = identitas internal (dipakai di log), nama_lengkap = nama yang tampil di halaman
@@ -25,6 +40,9 @@ class User(db.Model):
     role = db.Column(db.String(20), nullable=False, default=ROLE_CUSTOMER)
     failed_login_attempts = db.Column(db.Integer, nullable=False, default=0)
     locked_until = db.Column(db.DateTime, nullable=True)
+    # Akun nonaktif tidak bisa login dan sesinya langsung tidak berlaku (pengganti hapus akun,
+    # agar riwayat pesanan tetap utuh)
+    aktif = db.Column(db.Boolean, nullable=False, default=True, server_default=db.true())
     created_at = db.Column(db.DateTime, nullable=False, default=utcnow)
 
     def set_password(self, password):
@@ -43,8 +61,19 @@ class User(db.Model):
     def check_dummy_password(password):
         check_password_hash(_DUMMY_HASH, password)
 
+    def punya_izin(self, izin):
+        return izin in self.IZIN.get(self.role, set())
+
     def is_admin(self):
         return self.role == self.ROLE_ADMIN
+
+    def is_staf_toko(self):
+        """Admin atau staf: pengguna panel toko (tidak berbelanja)."""
+        return self.punya_izin("panel")
+
+    @property
+    def label_role(self):
+        return self.LABEL_ROLE.get(self.role, self.role)
 
     @property
     def display_name(self):

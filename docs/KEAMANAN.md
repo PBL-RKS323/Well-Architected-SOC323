@@ -57,7 +57,23 @@ Contoh:
 | `ORDER_STATUS_CHANGE` | INFO | Status pesanan berubah (dikirim, siap diambil, selesai) |
 | `ORDER_CANCELLED` | INFO / WARNING | Pesanan dibatalkan pelanggan (INFO) atau admin (WARNING) |
 | `ORDER_INVALID_TRANSITION` | WARNING | Admin mencoba aksi yang tidak sah untuk status pesanan saat itu (indikasi request dimanipulasi) |
-| `SESSION_INVALIDATED` | WARNING | Sesi lama dipakai setelah kata sandi akun diganti (sesi otomatis ditolak) |
+| `SESSION_INVALIDATED` | WARNING | Sesi lama dipakai setelah kata sandi diganti atau akun dinonaktifkan (`reason=`) |
+| `USER_CREATED` / `USER_ROLE_CHANGED` | WARNING | Admin membuat akun / mengubah peran (`role_from`, `role_to`) |
+| `USER_DEACTIVATED` / `USER_ACTIVATED` | WARNING | Admin menonaktifkan / mengaktifkan akun |
+| `USER_UNLOCKED` | INFO | Admin membuka kunci login akun |
+
+## RBAC (Role-Based Access Control)
+
+| Izin | Admin | Staf Toko | Pelanggan |
+|---|---|---|---|
+| panel (dasbor `/admin`) | ya | ya | - |
+| kelola_produk | ya | ya | - |
+| kelola_pesanan (verifikasi bayar, status, lihat bukti) | ya | ya | - |
+| kelola_user | ya | - | - |
+| belanja (keranjang, checkout, pesanan & alamat sendiri) | - | - | ya |
+
+Dicek dua lapis: middleware untuk semua `/admin` (izin `panel`) dan `izin_required(...)` di tiap
+controller. Peran dibaca dari database setiap request, jadi perubahan peran langsung berlaku.
 
 Jika aplikasi berjalan di belakang Nginx, isi `TRUST_PROXY=1` agar `src_ip` berisi IP asli
 klien, bukan IP Nginx.

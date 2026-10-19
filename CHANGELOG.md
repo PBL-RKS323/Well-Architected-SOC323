@@ -3,6 +3,23 @@
 Setiap perubahan dicatat di sini: apa yang berubah, alasannya, dan cara mengujinya.
 Format tanggal: YYYY-MM-DD (WIB).
 
+## [0.7.0] - 2026-10-19 - RBAC, Kelola Pengguna, Alamat Saya
+
+### Ditambahkan
+- **RBAC**: peran Admin, Staf Toko, Pelanggan dengan daftar izin di `User.IZIN` (panel, kelola_produk,
+  kelola_pesanan, kelola_user, belanja). Decorator `izin_required(...)` menggantikan `admin_required`;
+  menu panel tampil sesuai izin.
+- **Kelola Pengguna** (`/admin/pengguna`, khusus izin kelola_user): daftar & cari, tambah akun staf/admin,
+  ubah peran, nonaktifkan/aktifkan, buka kunci login. Admin tidak bisa mengubah/menonaktifkan dirinya
+  sendiri dan minimal harus ada satu admin aktif.
+- **Alamat Saya** (`/alamat`): simpan sampai 5 alamat, satu alamat utama. Checkout otomatis memakai alamat
+  utama, bisa pilih alamat lain, dan ada opsi "Simpan alamat ini".
+- Kolom `users.aktif`: akun nonaktif tidak bisa login dan sesinya langsung berakhir.
+- Event log: `USER_CREATED`, `USER_ROLE_CHANGED`, `USER_DEACTIVATED`, `USER_ACTIVATED`, `USER_UNLOCKED`.
+
+### Cara uji
+- `flask db upgrade` (tabel `alamat`, kolom `users.aktif`), `pytest -q` -> 118 passed.
+
 ## [0.6.0] - 2026-10-19 - Review Keamanan, Tampilan HP & Desktop, Katalog 17 Produk
 
 ### Diperbaiki (cacat logika & keamanan)

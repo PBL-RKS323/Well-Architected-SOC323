@@ -3,7 +3,8 @@
 {% block body_class %}pb-20 md:pb-0{% endblock %}
 {% block body %}
 {% set ep = request.endpoint %}
-{% set is_admin = current_user and current_user.is_admin() %}
+{# Admin & staf (pengguna panel) tidak berbelanja: keranjang/pesanan diganti link Panel #}
+{% set is_admin = current_user and current_user.is_staf_toko() %}
 <header class="sticky top-0 z-30 bg-white border-b border-slate-100">
     <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between gap-4 md:gap-8">
         <a href="{{ url_for('beranda') }}" class="shrink-0 font-display font-extrabold text-xl tracking-tight text-ink">{{ app_name }}</a>

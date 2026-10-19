@@ -3,7 +3,7 @@ from datetime import datetime
 from flask import render_template, g
 
 from helpers.security_logger import WIB
-from middlewares.auth_middleware import admin_required
+from middlewares.auth_middleware import izin_required
 from models import db
 from models.pesanan import Pesanan, PesananItem
 from models.produk import Produk
@@ -32,7 +32,7 @@ def _produk_terlaris(limit=3):
             .order_by(pendapatan.desc()).limit(limit).all())
 
 
-@admin_required
+@izin_required("panel")
 def dashboard():
     Pesanan.batalkan_kedaluwarsa()
     lunas = Pesanan.query.filter(Pesanan.status.in_(Pesanan.STATUS_LUNAS))

@@ -10,6 +10,7 @@ from helpers.image_security import upload_secure_image, delete_image
 from helpers.security_logger import log_event
 from middlewares.auth_middleware import pelanggan_required
 from models import db, utcnow
+from models.alamat import Alamat
 from models.keranjang import KeranjangItem
 from models.pesanan import Pesanan, PesananItem, PesananRiwayat
 from models.produk import Produk
@@ -39,17 +40,31 @@ def _ongkir(metode):
     return current_app.config["ONGKIR_FLAT"] if metode == Pesanan.KURIR else 0
 
 
-def _prefill_alamat(form):
-    """Isi form dengan data pesanan terakhir agar pelanggan tidak mengetik ulang alamat."""
+def _prefill_alamat(form, daftar_alamat):
+    """Isi form alamat agar pelanggan tidak mengetik ulang. Urutan sumber: alamat yang dipilih (?alamat=id),
+    alamat utama, lalu pesanan kurir terakhir. Mengembalikan id alamat tersimpan yang dipakai (atau None)."""
+    dipilih = request.args.get("alamat", type=int)
+    sumber = next((a for a in daftar_alamat if a.id == dipilih), None) or \
+        next((a for a in daftar_alamat if a.utama), None) or \
+        (Pesanan.query.filter_by(user_id=g.user.id, metode_pengiriman=Pesanan.KURIR)
+         .order_by(Pesanan.created_at.desc()).first())
     form.nama_penerima.data = g.user.nama_lengkap or None
-    terakhir = (Pesanan.query.filter_by(user_id=g.user.id, metode_pengiriman=Pesanan.KURIR)
-                .order_by(Pesanan.created_at.desc()).first())
-    if terakhir:
-        form.nama_penerima.data = terakhir.nama_penerima
-        form.telepon.data = terakhir.telepon
-        form.alamat.data = terakhir.alamat
-        form.kota.data = terakhir.kota
-        form.kode_pos.data = terakhir.kode_pos
+    if sumber is None:
+        return None
+    for kolom in ("nama_penerima", "telepon", "alamat", "kota", "kode_pos"):
+        getattr(form, kolom).data = getattr(sumber, kolom)
+    return sumber.id if isinstance(sumber, Alamat) else None
+
+
+def _simpan_alamat_baru(form, daftar_alamat):
+    """Checkbox "Simpan alamat ini": tambahkan ke Alamat Saya jika belum ada yang sama dan kuota belum penuh."""
+    sama = any(a.alamat == form.alamat.data and a.kode_pos == form.kode_pos.data for a in daftar_alamat)
+    if sama or len(daftar_alamat) >= Alamat.MAKS_PER_USER:
+        return
+    alamat = Alamat(user_id=g.user.id, label=f"Alamat {len(daftar_alamat) + 1}", nama_penerima=form.nama_penerima.data,
+                    telepon=form.telepon.data, alamat=form.alamat.data, kota=form.kota.data,
+                    kode_pos=form.kode_pos.data, utama=not daftar_alamat)
+    db.session.add(alamat)
 
 
 @pelanggan_required
@@ -66,9 +81,11 @@ def checkout():
     form = CheckoutForm()
     subtotal = sum(i.subtotal for i in items)
     hemat = sum((i.produk.harga_normal - i.produk.harga) * i.jumlah for i in items if i.produk.diskon_persen)
+    daftar_alamat = Alamat.milik(g.user.id).all()
+    alamat_dipakai = None
 
     if request.method == "GET":
-        _prefill_alamat(form)
+        alamat_dipakai = _prefill_alamat(form, daftar_alamat)
 
     if form.validate_on_submit():
         # Pesanan yang bukti bayarnya belum diverifikasi ikut dihitung, supaya batas ini tidak bisa
@@ -118,6 +135,8 @@ def checkout():
 
         pesanan.riwayat.append(PesananRiwayat(status=Pesanan.MENUNGGU_PEMBAYARAN, oleh="pelanggan",
                                               keterangan="Pesanan dibuat"))
+        if kurir and form.simpan_alamat.data:
+            _simpan_alamat_baru(form, daftar_alamat)
         db.session.commit()
 
         log_event("ORDER_CREATE", user_id=g.user.id, kode=pesanan.kode, total=int(pesanan.total),
@@ -125,7 +144,8 @@ def checkout():
         return redirect(url_for("pesanan_konfirmasi", kode=pesanan.kode))
 
     return render_template("toko/checkout.html", form=form, items=items, subtotal=subtotal, hemat=hemat,
-                           ongkir_kurir=_ongkir(Pesanan.KURIR))
+                           ongkir_kurir=_ongkir(Pesanan.KURIR), daftar_alamat=daftar_alamat,
+                           alamat_dipakai=alamat_dipakai)
 
 
 @pelanggan_required
@@ -200,9 +220,9 @@ def unggah_bukti(kode):
 
 
 def bukti(kode):
-    """Menampilkan bukti bayar hanya untuk pemilik pesanan dan admin."""
+    """Menampilkan bukti bayar hanya untuk pemilik pesanan dan peran dengan izin kelola_pesanan."""
     pesanan = Pesanan.query.filter_by(kode=kode).first_or_404()
-    if pesanan.user_id != g.user.id and not g.user.is_admin():
+    if pesanan.user_id != g.user.id and not g.user.punya_izin("kelola_pesanan"):
         log_event("ACCESS_DENIED", logging.WARNING, user_id=g.user.id, username=g.user.username,
                   resource="bukti_bayar", kode=kode)
         abort(404)

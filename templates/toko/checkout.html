@@ -1,6 +1,6 @@
 {% extends 'layouts/toko.html' %}
 {% from '_icons.html' import icon %}
-{% from '_macros.html' import field, judul_halaman %}
+{% from '_macros.html' import field, checkbox, judul_halaman %}
 {% block title %}Checkout - {{ app_name }}{% endblock %}
 {% block content %}
 {% set kurir = form.metode_pengiriman.data != 'ambil' %}
@@ -53,11 +53,27 @@
                     {{ field(form.telepon, 'phone', placeholder='081234567890', autocomplete='tel', inputmode='tel') }}
                 </div>
                 <div data-show-for="kurir" class="{{ '' if kurir else 'hidden' }} space-y-4">
+                    {% if daftar_alamat %}
+                    {# Pilih alamat tersimpan: memuat ulang halaman dengan ?alamat=id (tanpa JavaScript) #}
+                    <div>
+                        <p class="text-sm font-semibold mb-1.5">Alamat tersimpan</p>
+                        <div class="flex flex-wrap gap-2 text-sm">
+                            {% for a in daftar_alamat %}
+                            <a href="{{ url_for('checkout', alamat=a.id) }}"
+                               class="inline-flex items-center gap-1.5 min-h-11 px-4 rounded-full border {{ 'border-brand bg-brand-soft text-brand font-semibold' if a.id == alamat_dipakai else 'border-slate-200 hover:border-brand' }}">
+                                {{ icon('map-pin', 'w-4 h-4') }} {{ a.label }}
+                            </a>
+                            {% endfor %}
+                            <a href="{{ url_for('alamat') }}" class="inline-flex items-center min-h-11 px-3 text-brand font-medium">Kelola</a>
+                        </div>
+                    </div>
+                    {% endif %}
                     {{ field(form.alamat, rows=3, placeholder='Nama jalan, nomor rumah, RT/RW, kelurahan, kecamatan', autocomplete='street-address') }}
                     <div class="grid grid-cols-3 gap-4">
                         <div class="col-span-2">{{ field(form.kota, placeholder='Kota Batam', autocomplete='address-level2') }}</div>
                         {{ field(form.kode_pos, placeholder='29461', inputmode='numeric', maxlength=5, autocomplete='postal-code') }}
                     </div>
+                    {% if not alamat_dipakai %}{{ checkbox(form.simpan_alamat) }}{% endif %}
                 </div>
                 {{ field(form.catatan, placeholder='Contoh: titip ke satpam') }}
             </div>

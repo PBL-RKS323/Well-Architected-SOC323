@@ -1,0 +1,29 @@
+{% extends 'layouts/admin.html' %}
+{% from '_icons.html' import icon %}
+{% from '_macros.html' import field, tombol_utama %}
+{% block title %}Tambah Pengguna - {{ app_name }}{% endblock %}
+{% block content %}
+<a href="{{ url_for('admin_pengguna') }}" class="inline-flex items-center gap-2 min-h-11 text-sm font-medium text-muted hover:text-ink mb-2">{{ icon('arrow-left', 'w-4 h-4') }} Semua pengguna</a>
+<div class="max-w-xl">
+    <h1 class="font-display text-2xl lg:text-3xl font-extrabold">Tambah Pengguna</h1>
+    <p class="text-muted mt-1 mb-6">Untuk membuat akun staf atau admin. Pelanggan mendaftar sendiri lewat halaman Daftar.</p>
+
+    <form method="POST" novalidate class="bg-white border border-slate-100 rounded-2xl p-6 space-y-4">
+        {{ form.hidden_tag() }}
+        {{ field(form.nama_lengkap, ikon='user', autocomplete='off') }}
+        {{ field(form.email, ikon='mail', autocomplete='off', placeholder='nama@email.com') }}
+        <div>
+            {{ form.peran.label(class="block text-sm font-semibold mb-1.5") }}
+            {{ form.peran(class="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 outline-none focus:border-brand focus:ring-4 focus:ring-brand/15") }}
+            <ul class="text-xs text-muted mt-2 space-y-1">
+                <li><strong class="text-ink">Staf Toko</strong>: kelola produk dan pesanan.</li>
+                <li><strong class="text-ink">Admin</strong>: semua izin staf, ditambah kelola pengguna.</li>
+                <li><strong class="text-ink">Pelanggan</strong>: belanja, tidak bisa membuka panel.</li>
+            </ul>
+        </div>
+        {{ field(form.password, ikon='lock', autocomplete='new-password') }}
+        <p class="text-xs text-muted -mt-2">Minimal 8 karakter, ada huruf besar, huruf kecil, angka, dan simbol. Minta pengguna menggantinya setelah login pertama.</p>
+        {{ tombol_utama(form.submit) }}
+    </form>
+</div>
+{% endblock %}

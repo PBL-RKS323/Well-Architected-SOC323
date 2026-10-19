@@ -5,11 +5,20 @@
    Pakai: {% call area_akun('pesanan') %} ...isi... {% endcall %}
    g.user dipakai karena macro yang di-import tidak membawa variabel template. #}
 {% macro area_akun(aktif) %}
+{% if g.user.punya_izin('belanja') %}
 {% set menu = [
     ('profil', 'user', 'Profil'),
-    ('admin_dashboard', 'layout-dashboard', 'Panel Admin') if g.user.is_admin() else ('pesanan', 'receipt-text', 'Pesanan Saya'),
+    ('pesanan', 'receipt-text', 'Pesanan Saya'),
+    ('alamat', 'map-pin', 'Alamat Saya'),
     ('pengaturan', 'shield-check', 'Pengaturan & Keamanan'),
 ] %}
+{% else %}
+{% set menu = [
+    ('profil', 'user', 'Profil'),
+    ('admin_dashboard', 'layout-dashboard', 'Panel Toko'),
+    ('pengaturan', 'shield-check', 'Pengaturan & Keamanan'),
+] %}
+{% endif %}
 <div class="lg:grid lg:grid-cols-[16rem_minmax(0,1fr)] lg:gap-8 lg:items-start">
     <aside class="hidden lg:block sticky top-32 bg-white rounded-2xl border border-slate-100 p-4">
         <div class="flex items-center gap-3 px-2 pb-4 mb-2 border-b border-slate-100">

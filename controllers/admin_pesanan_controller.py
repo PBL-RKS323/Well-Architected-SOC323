@@ -5,7 +5,7 @@ from flask import render_template, redirect, url_for, flash, request, g
 from controllers.toko_controller import _escape_like
 from forms.pesanan_form import AksiPesananForm
 from helpers.security_logger import log_event
-from middlewares.auth_middleware import admin_required
+from middlewares.auth_middleware import izin_required
 from models import db
 from models.pesanan import Pesanan
 from models.user import User
@@ -37,7 +37,7 @@ def jumlah_perlu_verifikasi():
     return Pesanan.query.filter_by(status=Pesanan.MENUNGGU_VERIFIKASI).count()
 
 
-@admin_required
+@izin_required("kelola_pesanan")
 def index():
     Pesanan.batalkan_kedaluwarsa()
     tab = request.args.get("tab", "semua")
@@ -59,13 +59,13 @@ def index():
     return render_template("admin/pesanan/index.html", halaman=halaman, tab=tab, tabs=TAB, q=q, jumlah_tab=jumlah_tab)
 
 
-@admin_required
+@izin_required("kelola_pesanan")
 def detail(pesanan_id):
     pesanan = db.get_or_404(Pesanan, pesanan_id)
     return render_template("admin/pesanan/detail.html", pesanan=pesanan, form=AksiPesananForm())
 
 
-@admin_required
+@izin_required("kelola_pesanan")
 def ubah_status(pesanan_id):
     pesanan = db.get_or_404(Pesanan, pesanan_id)
     form = AksiPesananForm()

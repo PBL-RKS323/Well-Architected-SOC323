@@ -20,7 +20,7 @@ def _render(nama_form=None, email_form=None, password_form=None):
 
 def profil():
     pesanan_terbaru, ringkasan = [], {}
-    if not g.user.is_admin():
+    if g.user.punya_izin("belanja"):
         milik = Pesanan.query.filter_by(user_id=g.user.id)
         pesanan_terbaru = milik.order_by(Pesanan.created_at.desc()).limit(3).all()
         ringkasan = {

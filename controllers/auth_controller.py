@@ -62,7 +62,7 @@ def register():
 
 def login():
     if g.user:
-        return redirect(url_for("admin_dashboard" if g.user.is_admin() else "beranda"))
+        return redirect(url_for("admin_dashboard" if g.user.is_staf_toko() else "beranda"))
 
     form = LoginForm()
     if form.validate_on_submit():
@@ -76,6 +76,12 @@ def login():
             return render_template("auth/login.html", form=form)
 
         if user and user.check_password(form.password.data):
+            # Pesan khusus hanya setelah kata sandi benar, agar tidak membocorkan status akun ke orang lain
+            if not user.aktif:
+                log_event("LOGIN_BLOCKED", logging.WARNING, email=email, user_id=user.id, reason="account_disabled")
+                flash("Akun ini dinonaktifkan. Hubungi admin toko.", "danger")
+                return render_template("auth/login.html", form=form)
+
             user.reset_failed_login()
             db.session.commit()
 
@@ -86,7 +92,7 @@ def login():
             flash(f"Selamat datang, {user.display_name}!", "success")
 
             next_url = _safe_next_url(request.args.get("next"))
-            if user.is_admin():
+            if user.is_staf_toko():
                 return redirect(next_url or url_for("admin_dashboard"))
             return redirect(next_url or url_for("beranda"))
 

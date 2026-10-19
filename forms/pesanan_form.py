@@ -2,7 +2,7 @@ import re
 
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileRequired, FileAllowed
-from wtforms import StringField, TextAreaField, RadioField, SubmitField
+from wtforms import StringField, TextAreaField, RadioField, SubmitField, BooleanField
 from wtforms.validators import DataRequired, InputRequired, Length, Regexp, Optional, AnyOf, ValidationError
 
 from forms.auth_form import NAMA_POLICY
@@ -39,6 +39,7 @@ class CheckoutForm(FlaskForm):
     kota = StringField("Kota / Kabupaten", filters=[_rapikan], validators=[
         Length(max=60, message="Nama kota maksimal 60 karakter.")])
     kode_pos = StringField("Kode Pos", filters=[_rapikan])
+    simpan_alamat = BooleanField("Simpan alamat ini ke Alamat Saya")
     catatan = StringField("Catatan untuk Penjual (opsional)", filters=[_rapikan], validators=[
         Optional(), Length(max=200, message="Catatan maksimal 200 karakter.")])
     metode_pembayaran = RadioField("Metode Pembayaran", default=Pesanan.TRANSFER,

@@ -12,7 +12,8 @@ load_dotenv()
 
 from config import Config  # noqa: E402  (dibaca setelah .env dimuat)
 from controllers import (auth_controller, admin_controller, produk_controller, toko_controller,  # noqa: E402
-                         akun_controller, keranjang_controller, pesanan_controller, admin_pesanan_controller)
+                         akun_controller, keranjang_controller, pesanan_controller, admin_pesanan_controller,
+                         admin_pengguna_controller, alamat_controller)
 from forms.auth_form import PASSWORD_POLICY, PASSWORD_POLICY_MESSAGE  # noqa: E402
 from helpers.katalog_contoh import isi_katalog  # noqa: E402
 from helpers.security_logger import init_security_logger, log_event  # noqa: E402
@@ -22,6 +23,7 @@ from models import db  # noqa: E402
 from models.produk import Produk  # noqa: E402,F401  (wajib diimpor agar terbaca oleh migrasi)
 from models.keranjang import KeranjangItem  # noqa: E402,F401
 from models.pesanan import Pesanan, PesananItem, PesananRiwayat  # noqa: E402,F401
+from models.alamat import Alamat  # noqa: E402,F401
 from models.user import User  # noqa: E402
 
 migrate = Migrate()
@@ -65,7 +67,7 @@ def create_app(config_class=Config):
         user = g.get("user")
         data = {"app_name": app.config["APP_NAME"], "current_user": user,
                 "cart_count": keranjang_controller.jumlah_item(user), "kategori_nav": Produk.KATEGORI}
-        if user is not None and user.is_admin():
+        if user is not None and user.punya_izin("kelola_pesanan"):
             data["perlu_verifikasi"] = admin_pesanan_controller.jumlah_perlu_verifikasi()
         return data
 
@@ -200,6 +202,27 @@ def register_routes(app):
     def pengaturan_password():
         return akun_controller.ubah_password()
 
+    # --- ALAMAT TERSIMPAN (pelanggan) ---
+    @app.route("/alamat")
+    def alamat():
+        return alamat_controller.index()
+
+    @app.route("/alamat/tambah", methods=["POST"])
+    def alamat_tambah():
+        return alamat_controller.tambah()
+
+    @app.route("/alamat/<int:alamat_id>/edit", methods=["GET", "POST"])
+    def alamat_edit(alamat_id):
+        return alamat_controller.edit(alamat_id)
+
+    @app.route("/alamat/<int:alamat_id>/hapus", methods=["POST"])
+    def alamat_hapus(alamat_id):
+        return alamat_controller.hapus(alamat_id)
+
+    @app.route("/alamat/<int:alamat_id>/utama", methods=["POST"])
+    def alamat_utama(alamat_id):
+        return alamat_controller.jadikan_utama(alamat_id)
+
     # --- ADMIN ---
     @app.route("/admin")
     def admin_dashboard():
@@ -232,6 +255,23 @@ def register_routes(app):
     @app.route("/admin/pesanan/<int:pesanan_id>/status", methods=["POST"])
     def admin_pesanan_status(pesanan_id):
         return admin_pesanan_controller.ubah_status(pesanan_id)
+
+    # --- KELOLA PENGGUNA (izin kelola_user, hanya admin) ---
+    @app.route("/admin/pengguna")
+    def admin_pengguna():
+        return admin_pengguna_controller.index()
+
+    @app.route("/admin/pengguna/tambah", methods=["GET", "POST"])
+    def admin_pengguna_tambah():
+        return admin_pengguna_controller.tambah()
+
+    @app.route("/admin/pengguna/<int:user_id>")
+    def admin_pengguna_detail(user_id):
+        return admin_pengguna_controller.detail(user_id)
+
+    @app.route("/admin/pengguna/<int:user_id>/aksi", methods=["POST"])
+    def admin_pengguna_aksi(user_id):
+        return admin_pengguna_controller.aksi(user_id)
 
 
 def register_error_handlers(app):
