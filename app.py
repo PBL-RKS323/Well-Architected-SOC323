@@ -1,4 +1,5 @@
 import logging
+import os
 import re
 
 import click
@@ -67,6 +68,15 @@ def create_app(config_class=Config):
     @app.template_filter("tanggal_singkat")
     def tanggal_singkat(value):
         return format_hari(value)
+
+    @app.url_defaults
+    def versi_file_statis(endpoint, values):
+        """Nginx menyimpan file statis di cache browser 7 hari. Menambah ?v=<waktu ubah file> membuat
+        URL berganti setiap file diperbarui, jadi pengunjung langsung memakai app.js versi terbaru."""
+        if endpoint == "static" and "filename" in values and "v" not in values:
+            path = os.path.join(app.static_folder, values["filename"])
+            if os.path.isfile(path):
+                values["v"] = int(os.path.getmtime(path))
 
     @app.context_processor
     def inject_globals():
