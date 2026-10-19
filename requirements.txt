@@ -6,6 +6,9 @@ email-validator==2.3.0
 python-dotenv==1.2.4
 puremagic==2.2.0
 Pillow==12.3.0  # encode ulang foto profil (buang EXIF)
+Flask-Mail==0.10.0  # kirim kode OTP lewat email (Gmail SMTP)
+Authlib==1.9.1  # login dengan Google (OAuth 2.0 / OpenID Connect)
+requests==2.34.2  # dipakai Authlib untuk menghubungi Google
 # Driver database: pilih sesuai server yang dipakai (DATABASE_URL di .env)
 PyMySQL==1.2.3
 psycopg2-binary==2.9.13

@@ -63,6 +63,15 @@ Contoh:
 | `USER_UNLOCKED` | INFO | Admin membuka kunci login akun |
 | `USER_UPDATED` | WARNING | Admin mengubah nama/email akun lain (`fields=`) |
 | `USER_PASSWORD_RESET` | WARNING | Admin mereset kata sandi akun lain (kata sandi tidak pernah ditulis ke log) |
+| `OTP_SENT` | INFO | Kode OTP dikirim ke email (`purpose=reset_password/verifikasi_email/login`); kode tidak pernah ditulis ke log |
+| `OTP_FAILED` / `OTP_LOCKED` | WARNING | Kode salah / hangus setelah 5x salah (indikasi tebak kode) |
+| `OTP_THROTTLED` | WARNING | Permintaan kode terlalu cepat / lebih dari 5 per jam |
+| `LOGIN_PENDING_OTP` | INFO | Kata sandi benar, menunggu kode dari email |
+| `EMAIL_VERIFIED` | INFO | Pendaftar baru memverifikasi email |
+| `PASSWORD_RESET_REQUESTED` | WARNING | Permintaan lupa kata sandi (`known=0` = email tidak terdaftar, indikasi pemindaian) |
+| `PASSWORD_RESET_OTP` | WARNING | Kata sandi diganti lewat kode email |
+| `EMAIL_FAILED` | ERROR | Email gagal dikirim (SMTP) |
+| `GOOGLE_LOGIN_FAILED` | WARNING | Login Google gagal/ditolak (`reason=`, mis. `panel_account`, `email_not_verified`) |
 | `AVATAR_CHANGED` / `AVATAR_REMOVED` | INFO | User mengganti / menghapus foto profil |
 | `REVIEW_CREATE` / `REVIEW_UPDATE` | INFO | Pembeli menulis / mengubah ulasan (`rating`) |
 | `REVIEW_REJECTED` | WARNING | Akun yang belum menyelesaikan pembelian mencoba mengulas (`reason=not_purchased`) |
@@ -123,3 +132,13 @@ Konfigurasi Wazuh agent (contoh `ossec.conf` di server web):
   khusus admin, sel CSV dinetralkan, ekspor dicatat `REPORT_EXPORTED`
 - [x] Uji: `tests/test_ulasan_avatar_laporan.py` (14 tes), lulus di SQLite dan PostgreSQL
 - [x] Monitor: event ulasan, avatar, dan ekspor laporan di tabel log di atas
+
+## Checklist SSDLC: Login Google & OTP Email
+
+- [x] Rencana: ancaman = tebak kode OTP, kode bocor dari database/log, email dibanjiri kode, enumerasi akun lewat
+  lupa kata sandi, CSRF/akun tertukar pada OAuth, pemilik Gmail lain masuk ke akun panel
+- [x] Kode: OTP 6 digit acak (`secrets`), disimpan sebagai HMAC-SHA256, 10 menit, 5x salah hangus, jeda 60 detik
+  & maks. 5/jam, jawaban lupa kata sandi selalu sama, Authlib (state + nonce + validasi ID token Google),
+  hanya email Google terverifikasi, akun panel tidak bisa disambungkan ke Google, kredensial hanya di `.env`
+- [x] Uji: `tests/test_otp_google.py` (14 tes, email tiruan & respons Google tiruan), lulus di SQLite dan PostgreSQL
+- [x] Monitor: event OTP & Google di tabel log di atas

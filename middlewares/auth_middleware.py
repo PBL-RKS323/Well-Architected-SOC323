@@ -8,7 +8,9 @@ from models import db
 from models.user import User
 
 # Endpoint yang boleh diakses tanpa login. Endpoint lain otomatis wajib login (default deny).
-PUBLIC_ENDPOINTS = {"static", "beranda", "jelajah", "produk_detail", "kredit_foto", "login", "register"}
+PUBLIC_ENDPOINTS = {"static", "beranda", "jelajah", "produk_detail", "kredit_foto", "login", "register",
+                    "verifikasi_kode", "verifikasi_kirim_ulang", "lupa_password", "lupa_password_kode",
+                    "lupa_password_kirim_ulang", "login_google", "login_google_callback"}
 
 
 def _muat_user():

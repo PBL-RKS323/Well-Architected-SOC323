@@ -46,6 +46,29 @@ class Config:
     TRUST_PROXY = _flag("TRUST_PROXY")
     SECURITY_LOG_FILE = os.getenv("SECURITY_LOG_FILE", os.path.join(BASE_DIR, "logs", "security.log"))
 
+    # Email (Flask-Mail) untuk kode OTP: lupa kata sandi, verifikasi email, OTP login panel.
+    # Gmail: MAIL_USERNAME = alamat Gmail pengirim, MAIL_PASSWORD = App Password 16 huruf (BUKAN kata sandi
+    # Gmail). Selama kosong, fitur email/OTP otomatis nonaktif dan login tetap berjalan seperti biasa.
+    MAIL_SERVER = os.getenv("MAIL_SERVER", "smtp.gmail.com")
+    MAIL_PORT = int(os.getenv("MAIL_PORT", "587"))
+    MAIL_USE_TLS = True
+    MAIL_USERNAME = os.getenv("MAIL_USERNAME") or None
+    MAIL_PASSWORD = os.getenv("MAIL_PASSWORD") or None
+    MAIL_DEFAULT_SENDER = (APP_NAME, MAIL_USERNAME) if MAIL_USERNAME else None
+
+    # Kode OTP 6 digit
+    OTP_BERLAKU_MENIT = 10
+    OTP_MAKS_PERCOBAAN = 5      # salah 5x -> kode hangus
+    OTP_JEDA_KIRIM_DETIK = 60   # jarak minimal kirim ulang
+    OTP_MAKS_PER_JAM = 5        # mencegah email dibanjiri kode
+    # Isi 1 agar Admin & Staf wajib memasukkan kode OTP dari email setiap login (2 langkah).
+    # Pastikan email akun panel sudah email asli sebelum menyalakan ini.
+    OTP_LOGIN_PANEL = _flag("OTP_LOGIN_PANEL")
+
+    # Login dengan Google (OAuth 2.0 / OpenID Connect). Kosong = tombol Google tidak tampil.
+    GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID") or None
+    GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET") or None
+
 
 class TestConfig(Config):
     TESTING = True
@@ -53,3 +76,8 @@ class TestConfig(Config):
     # Default SQLite di memori. Isi TEST_DATABASE_URL untuk menguji di PostgreSQL (database khusus uji!)
     SQLALCHEMY_DATABASE_URI = os.getenv("TEST_DATABASE_URL", "sqlite:///:memory:")
     WTF_CSRF_ENABLED = False
+    # Email & Google mati secara default saat pengujian; tes email menyalakannya sendiri
+    MAIL_USERNAME = MAIL_PASSWORD = MAIL_DEFAULT_SENDER = None
+    MAIL_SUPPRESS_SEND = True
+    OTP_LOGIN_PANEL = False
+    GOOGLE_CLIENT_ID = GOOGLE_CLIENT_SECRET = None

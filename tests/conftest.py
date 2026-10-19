@@ -21,13 +21,15 @@ PNG_BYTES = base64.b64decode(
 )
 
 
-@pytest.fixture
-def app(tmp_path):
+def buat_app(tmp_path, **tambahan):
+    """Aplikasi uji dengan 2 akun awal. `tambahan` menimpa konfigurasi (mis. menyalakan email)."""
     class Cfg(TestConfig):
         UPLOAD_FOLDER = str(tmp_path / "uploads")
         SECURITY_LOG_FILE = str(tmp_path / "logs" / "security.log")
         BUKTI_BAYAR_FOLDER = str(tmp_path / "bukti_bayar")
 
+    for kunci, nilai in tambahan.items():
+        setattr(Cfg, kunci, nilai)
     app = create_app(Cfg)
     with app.app_context():
         db.create_all()
@@ -37,10 +39,20 @@ def app(tmp_path):
         customer.set_password(CUSTOMER_PASSWORD)
         db.session.add_all([admin, customer])
         db.session.commit()
-    yield app
+    return app
+
+
+def tutup_app(app):
     with app.app_context():
         db.session.remove()
         db.drop_all()  # wajib jika TEST_DATABASE_URL memakai PostgreSQL agar tiap tes mulai dari kosong
+
+
+@pytest.fixture
+def app(tmp_path):
+    app = buat_app(tmp_path)
+    yield app
+    tutup_app(app)
 
 
 @pytest.fixture

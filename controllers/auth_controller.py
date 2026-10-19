@@ -4,28 +4,14 @@ import secrets
 
 from flask import render_template, redirect, url_for, flash, session, request, current_app, g
 
+from controllers.otp_controller import mulai_verifikasi
 from forms.auth_form import RegisterForm, LoginForm
+from helpers.email import email_aktif
 from helpers.security_logger import log_event
+from helpers.sesi import mulai_sesi, safe_next_url as _safe_next_url, halaman_awal  # noqa: F401
 from models import db
+from models.kode_otp import KodeOtp
 from models.user import User
-
-
-def _safe_next_url(target):
-    """Hanya izinkan redirect ke path internal (mencegah open redirect)."""
-    if target and target.startswith("/") and not target.startswith("//") and "\\" not in target:
-        return target
-    return None
-
-
-def mulai_sesi(user, ingat):
-    """Sesi baru setelah login / ganti kata sandi. Sesi lama dibuang (anti session fixation).
-
-    `ingat` True: sesi bertahan 7 hari ("Ingat saya"). False: berakhir saat browser ditutup.
-    """
-    session.clear()
-    session["user_id"] = user.id
-    session["sesi_token"] = user.sesi_token
-    session.permanent = ingat
 
 
 def _buat_username(email):
@@ -49,15 +35,31 @@ def register():
             nama_lengkap=" ".join(form.nama_lengkap.data.split()),
             email=email,
             role=User.ROLE_CUSTOMER,
+            # Jika email aktif, akun baru harus membuktikan email-nya miliknya lewat kode OTP
+            email_terverifikasi=not email_aktif(),
         )
         new_user.set_password(form.password.data)
         db.session.add(new_user)
         db.session.commit()
 
         log_event("REGISTER_SUCCESS", user_id=new_user.id, username=new_user.username)
+        if not new_user.email_terverifikasi:
+            return mulai_verifikasi(new_user, KodeOtp.VERIFIKASI_EMAIL)
         flash("Pendaftaran berhasil! Silakan login.", "success")
         return redirect(url_for("login"))
     return render_template("auth/register.html", form=form)
+
+
+def _perlu_otp(user):
+    """Langkah kode email setelah kata sandi benar: verifikasi email (pendaftar baru) atau OTP login
+    untuk akun panel (jika OTP_LOGIN_PANEL=1). None = langsung masuk. Tanpa email aktif selalu None."""
+    if not email_aktif():
+        return None
+    if not user.email_terverifikasi:
+        return KodeOtp.VERIFIKASI_EMAIL
+    if current_app.config["OTP_LOGIN_PANEL"] and user.is_staf_toko():
+        return KodeOtp.LOGIN
+    return None
 
 
 def login():
@@ -85,16 +87,17 @@ def login():
             user.reset_failed_login()
             db.session.commit()
 
+            next_url = _safe_next_url(request.args.get("next"))
+            tujuan_otp = _perlu_otp(user)
+            if tujuan_otp:
+                return mulai_verifikasi(user, tujuan_otp, ingat=bool(form.ingat_saya.data), next_url=next_url)
+
             mulai_sesi(user, ingat=bool(form.ingat_saya.data))
 
             log_event("SUCCESSFUL_LOGIN", user_id=user.id, username=user.username, role=user.role,
                       remember=int(session.permanent))
-            flash(f"Selamat datang, {user.display_name}!", "success")
-
-            next_url = _safe_next_url(request.args.get("next"))
-            if user.is_staf_toko():
-                return redirect(next_url or url_for("admin_dashboard"))
-            return redirect(next_url or url_for("beranda"))
+            flash(f"Selamat datang, {user.nama_panggilan}!", "success")
+            return redirect(halaman_awal(user, next_url))
 
         # Gagal login: pesan dibuat sama agar penyerang tidak tahu email mana yang terdaftar
         if user:

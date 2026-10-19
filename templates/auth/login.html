@@ -1,5 +1,5 @@
 {% extends 'layouts/polos.html' %}
-{% from '_macros.html' import field, checkbox, tombol_utama %}
+{% from '_macros.html' import field, checkbox, tombol_utama, tombol_google %}
 {% block title %}Masuk - {{ app_name }}{% endblock %}
 {% block content %}
 <div class="text-center mb-6">
@@ -7,11 +7,15 @@
     <p class="text-muted mt-2">Masuk untuk lanjut belanja gadget favoritmu.</p>
 </div>
 <div class="bg-white sm:p-7 sm:rounded-2xl sm:shadow-[0_8px_30px_rgba(15,23,42,0.06)] sm:border sm:border-slate-100">
+    {% if google_aktif %}{{ tombol_google('Masuk dengan Google', request.args.get('next')) }}{% endif %}
     <form method="POST" class="space-y-5" novalidate>
         {{ form.hidden_tag() }}
         {{ field(form.email, ikon='mail', autocomplete="email", placeholder="nama@email.com") }}
         {{ field(form.password, ikon='lock', autocomplete="current-password", placeholder="Kata sandi") }}
-        {{ checkbox(form.ingat_saya) }}
+        <div class="flex items-center justify-between gap-3">
+            {{ checkbox(form.ingat_saya) }}
+            <a href="{{ url_for('lupa_password') }}" class="inline-flex items-center min-h-11 text-sm font-semibold text-brand hover:underline">Lupa kata sandi?</a>
+        </div>
         {{ tombol_utama(form.submit) }}
     </form>
 </div>

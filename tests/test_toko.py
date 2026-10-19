@@ -126,7 +126,7 @@ def test_beranda_menampilkan_produk_unggulan_diskon(client):
     # Label hanya fakta diskon, bukan klaim periode promo yang tidak ada datanya
     assert "PROMO MINGGU INI" not in html
     unggulan = html.split("Diskon 14%", 1)[1]
-    assert unggulan.index("Redmi Note 14") < unggulan.index("Belanja per Kategori")
+    assert unggulan.index("Redmi Note 14") < unggulan.index("Kategori Belanja")
 
 
 def test_halaman_profil(client):

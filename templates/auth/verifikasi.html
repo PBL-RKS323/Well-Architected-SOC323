@@ -1,0 +1,25 @@
+{% extends 'layouts/polos.html' %}
+{% from '_macros.html' import kolom_kode, tombol_utama %}
+{% block title %}{{ judul }} - {{ app_name }}{% endblock %}
+{% block content %}
+<div class="text-center mb-6">
+    <h1 class="font-display text-3xl font-extrabold">{{ judul }}</h1>
+    <p class="text-muted mt-2">Masukkan kode 6 digit yang kami kirim ke <span class="font-semibold text-ink">{{ email }}</span>.</p>
+</div>
+<div class="bg-white sm:p-7 sm:rounded-2xl sm:shadow-[0_8px_30px_rgba(15,23,42,0.06)] sm:border sm:border-slate-100">
+    <form method="POST" class="space-y-5" novalidate data-kirim-sekali>
+        {{ form.hidden_tag() }}
+        {{ kolom_kode(form.kode) }}
+        {{ tombol_utama(form.submit) }}
+    </form>
+    <form method="POST" action="{{ url_for('verifikasi_kirim_ulang') }}" class="mt-4 text-center">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <span class="text-sm text-muted">Belum menerima kode?</span>
+        <button type="submit" class="min-h-11 px-2 text-sm font-semibold text-brand hover:underline cursor-pointer">Kirim ulang</button>
+    </form>
+    <p class="text-xs text-muted text-center">Kode berlaku {{ config.OTP_BERLAKU_MENIT }} menit. Cek juga folder Spam atau Promosi.</p>
+</div>
+<p class="mt-6 text-center text-sm text-muted">
+    Salah akun? <a href="{{ url_for('login') }}" class="text-brand font-semibold hover:underline">Kembali ke halaman masuk</a>
+</p>
+{% endblock %}

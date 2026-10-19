@@ -77,5 +77,54 @@ cat instance/akun_baru.txt   # kata sandi sementara (file chmod 600)
 rm instance/akun_baru.txt    # hapus setelah dibagikan lewat pesan pribadi
 ```
 
-Aplikasi tidak mengirim email, jadi alamat email cukup berformat benar (tidak harus kotak masuk asli).
+Selama email (Gmail SMTP) belum diisi di `.env`, alamat email cukup berformat benar. Setelah email aktif,
+pakai email asli: kode lupa kata sandi dan OTP login dikirim ke alamat itu.
 Pemilik akun wajib mengganti kata sandi sementara di **Pengaturan** setelah login pertama.
+
+## Login Google & kode OTP lewat Gmail
+
+Kedua fitur mati selama `.env` belum diisi; isi lalu `sudo systemctl restart elektronik-store`.
+Edit `.env` di server dengan `nano /opt/elektronik-store/.env` (izin file tetap 600). Jangan kirim isi
+`.env` lewat chat/grup.
+
+### 1. Gmail pengirim kode OTP
+
+1. Buat Gmail khusus toko (mis. `elektronikstore.pbl@gmail.com`), jangan Gmail pribadi.
+2. Akun Google tersebut: **Keamanan > Verifikasi 2 Langkah** diaktifkan.
+3. Buka <https://myaccount.google.com/apppasswords>, buat App Password bernama `Elektronik Store`.
+   Google menampilkan 16 huruf sekali saja.
+4. Isi `.env`:
+   ```
+   MAIL_USERNAME=elektronikstore.pbl@gmail.com
+   MAIL_PASSWORD=abcdefghijklmnop   # 16 huruf App Password, tanpa spasi
+   ```
+5. Uji: halaman **Masuk > Lupa kata sandi?** dengan email akun yang asli. Batas Gmail sekitar 500 email/hari.
+
+Yang aktif setelah email diisi:
+- **Lupa kata sandi**: kode 6 digit ke email, berlaku 10 menit, hangus setelah 5x salah, kirim ulang tiap 60 detik
+  (maks. 5 kode/jam). Halaman selalu menjawab sama untuk email terdaftar/tidak (anti enumerasi akun).
+- **Verifikasi email** untuk pendaftar baru: akun baru harus memasukkan kode sebelum bisa masuk.
+- **OTP login Admin/Staf** (opsional): isi `OTP_LOGIN_PANEL=1` setelah semua akun panel memakai email asli.
+  Jika email gagal dikirim, admin tidak bisa masuk; kembalikan ke `0` untuk sementara.
+
+### 2. Login dengan Google
+
+1. Buka <https://console.cloud.google.com>, buat project `Elektronik Store PBL`.
+2. **Google Auth Platform > Branding**: nama aplikasi, email dukungan, domain resmi `neteye.my.id`.
+3. **Audience**: External. Selama status *Testing*, hanya Gmail yang ditambahkan di *Test users* yang bisa masuk
+   (tambahkan Gmail anggota tim). Scope yang dipakai hanya `openid email profile` (tidak perlu verifikasi Google).
+4. **Clients > Create client > Web application**. *Authorized redirect URIs*:
+   - `https://toko.neteye.my.id/login/google/callback`
+   - `http://localhost:5000/login/google/callback` (untuk uji di laptop)
+5. Salin Client ID & Client secret ke `.env`:
+   ```
+   GOOGLE_CLIENT_ID=xxxxxxxx.apps.googleusercontent.com
+   GOOGLE_CLIENT_SECRET=GOCSPX-xxxxxxxx
+   ```
+6. Restart. Tombol **Masuk dengan Google** muncul di halaman Masuk dan Daftar.
+
+Aturan login Google:
+- Email Google baru -> otomatis dibuat akun **Pelanggan** (email sudah terverifikasi oleh Google).
+- Email sama dengan akun Pelanggan yang sudah ada -> akun tersebut disambungkan ke Google.
+- Akun **Admin/Staf tidak bisa** masuk lewat Google (tetap email + kata sandi, dan OTP jika dinyalakan),
+  agar pemilik Gmail lain tidak bisa ikut masuk ke panel bila email akun panel salah ketik.

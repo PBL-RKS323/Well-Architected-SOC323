@@ -3,6 +3,22 @@
 Setiap perubahan dicatat di sini: apa yang berubah, alasannya, dan cara mengujinya.
 Format tanggal: YYYY-MM-DD (WIB).
 
+## [0.9.0] - 2026-10-20 - Login Google & Kode OTP Email
+
+### Ditambahkan
+- **Masuk/Daftar dengan Google** (Authlib, OpenID Connect). Email Google baru menjadi akun Pelanggan; akun
+  Admin/Staf tetap memakai email + kata sandi.
+- **Kode OTP lewat email** (Flask-Mail, Gmail SMTP + App Password): lupa kata sandi, verifikasi email pendaftar
+  baru, dan OTP login Admin/Staf (opsional, `OTP_LOGIN_PANEL=1`).
+- Tabel `kode_otp`, kolom `users.email_terverifikasi` dan `users.google_sub`.
+- Panduan Google Cloud & Gmail di `docs/DEPLOY.md`; variabel baru di `.env.example`.
+
+### Diubah
+- Judul beranda "Belanja per Kategori" menjadi "Kategori Belanja". Banner "toko demo" dimatikan (DEMO_MODE=0).
+
+### Cara uji
+- `pip install -r requirements.txt`, `flask db upgrade`, `pytest -q` -> 152 passed.
+
 ## [0.8.1] - 2026-10-20 - Kelola Akun Lebih Lengkap, Carousel Otomatis
 
 ### Ditambahkan

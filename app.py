@@ -15,9 +15,10 @@ from config import Config  # noqa: E402  (dibaca setelah .env dimuat)
 from controllers import (auth_controller, admin_controller, produk_controller, toko_controller,  # noqa: E402
                          akun_controller, keranjang_controller, pesanan_controller, admin_pesanan_controller,
                          admin_pengguna_controller, alamat_controller, ulasan_controller,
-                         admin_laporan_controller)
+                         admin_laporan_controller, otp_controller, google_controller)
 from forms.auth_form import PASSWORD_POLICY, PASSWORD_POLICY_MESSAGE, NAMA_POLICY  # noqa: E402
 from helpers.kata_sandi import buat_kata_sandi_sementara  # noqa: E402
+from helpers.email import mail, email_aktif  # noqa: E402
 from helpers.katalog_contoh import isi_katalog  # noqa: E402
 from helpers.security_logger import init_security_logger, log_event  # noqa: E402
 from helpers.waktu import format_tanggal, format_hari  # noqa: E402
@@ -28,6 +29,7 @@ from models.keranjang import KeranjangItem  # noqa: E402,F401
 from models.pesanan import Pesanan, PesananItem, PesananRiwayat  # noqa: E402,F401
 from models.alamat import Alamat  # noqa: E402,F401
 from models.ulasan import Ulasan  # noqa: E402,F401
+from models.kode_otp import KodeOtp  # noqa: E402,F401
 from models.user import User  # noqa: E402
 
 migrate = Migrate()
@@ -52,6 +54,8 @@ def create_app(config_class=Config):
     csrf.init_app(app)
     init_security_logger(app)
     init_auth_middleware(app)
+    mail.init_app(app)
+    google_controller.init_google(app)
 
     register_routes(app)
     register_error_handlers(app)
@@ -83,7 +87,8 @@ def create_app(config_class=Config):
     def inject_globals():
         user = g.get("user")
         data = {"app_name": app.config["APP_NAME"], "current_user": user,
-                "cart_count": keranjang_controller.jumlah_item(user), "kategori_nav": Produk.KATEGORI}
+                "cart_count": keranjang_controller.jumlah_item(user), "kategori_nav": Produk.KATEGORI,
+                "email_aktif": email_aktif(), "google_aktif": google_controller.google_aktif()}
         if user is not None and user.punya_izin("kelola_pesanan"):
             data["perlu_verifikasi"] = admin_pesanan_controller.jumlah_perlu_verifikasi()
         return data
@@ -144,6 +149,36 @@ def register_routes(app):
     @app.route("/login", methods=["GET", "POST"])
     def login():
         return auth_controller.login()
+
+    # --- KODE OTP EMAIL & LUPA KATA SANDI ---
+    @app.route("/verifikasi", methods=["GET", "POST"])
+    def verifikasi_kode():
+        return otp_controller.verifikasi()
+
+    @app.route("/verifikasi/kirim-ulang", methods=["POST"])
+    def verifikasi_kirim_ulang():
+        return otp_controller.verifikasi_kirim_ulang()
+
+    @app.route("/lupa-password", methods=["GET", "POST"])
+    def lupa_password():
+        return otp_controller.lupa_password()
+
+    @app.route("/lupa-password/kode", methods=["GET", "POST"])
+    def lupa_password_kode():
+        return otp_controller.lupa_password_kode()
+
+    @app.route("/lupa-password/kirim-ulang", methods=["POST"])
+    def lupa_password_kirim_ulang():
+        return otp_controller.lupa_password_kirim_ulang()
+
+    # --- MASUK DENGAN GOOGLE ---
+    @app.route("/login/google")
+    def login_google():
+        return google_controller.login()
+
+    @app.route("/login/google/callback")
+    def login_google_callback():
+        return google_controller.callback()
 
     @app.route("/logout", methods=["POST"])
     def logout():
@@ -358,7 +393,7 @@ def register_error_handlers(app):
 def register_commands(app):
     @app.cli.command("seed-admin")
     @click.option("--username", prompt="Username admin")
-    @click.option("--nama", prompt="Nama tampilan admin", default="Admin Toko")
+    @click.option("--nama", prompt="Nama lengkap admin")
     @click.option("--email", prompt="Email admin")
     @click.option("--password", prompt="Kata sandi admin", hide_input=True, confirmation_prompt=True)
     def seed_admin(username, nama, email, password):

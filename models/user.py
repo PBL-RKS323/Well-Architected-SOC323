@@ -46,6 +46,11 @@ class User(db.Model):
     aktif = db.Column(db.Boolean, nullable=False, default=True, server_default=db.true())
     # Nama file foto profil di static/uploads/avatar (sudah di-encode ulang tanpa metadata EXIF)
     avatar = db.Column(db.String(255), nullable=True)
+    # False hanya untuk pendaftar baru saat fitur email aktif, sampai kode OTP dari email dimasukkan.
+    # Akun lama & akun buatan admin dianggap sudah terverifikasi.
+    email_terverifikasi = db.Column(db.Boolean, nullable=False, default=True, server_default=db.true())
+    # ID akun Google ("sub" dari OpenID Connect), terisi setelah pertama kali masuk dengan Google
+    google_sub = db.Column(db.String(255), unique=True, nullable=True)
     created_at = db.Column(db.DateTime, nullable=False, default=utcnow)
 
     def set_password(self, password):
@@ -81,6 +86,11 @@ class User(db.Model):
     @property
     def display_name(self):
         return self.nama_lengkap or self.username
+
+    @property
+    def nama_panggilan(self):
+        """Nama depan untuk sapaan ("Selamat pagi, Pedro"), lebih akrab daripada nama lengkap."""
+        return self.display_name.split()[0]
 
     @property
     def initials(self):
