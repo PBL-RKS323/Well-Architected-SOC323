@@ -3,6 +3,22 @@
 Setiap perubahan dicatat di sini: apa yang berubah, alasannya, dan cara mengujinya.
 Format tanggal: YYYY-MM-DD (WIB).
 
+## [0.5.3] - 2026-10-19 - Katalog Contoh & Navigasi
+
+### Ditambahkan
+- `flask seed-katalog`: 8 produk contoh (Apple, Samsung, Xiaomi) dari `seed/katalog.json`, foto HD dari
+  Wikimedia Commons (dipotong & diperkecil ke 1200px, lewat validasi upload yang sama). Produk yang
+  namanya sudah ada dilewati.
+- Halaman **Kredit Foto** (`/kredit-foto`, link di footer) berisi sumber, pembuat, dan lisensi tiap foto.
+- Tombol "Kembali ke toko" di halaman Masuk/Daftar, tombol kembali di Pesanan Saya.
+
+### Diubah
+- Menu bawah untuk tamu: Beranda, Jelajah, Keranjang, Masuk (Pesanan & Profil hanya setelah login).
+- Footer tampil juga di HP.
+
+### Cara uji
+- `pytest -q` -> 99 passed.
+
 ## [0.5.2] - 2026-10-19 - Deploy ke OCI
 
 ### Ditambahkan

@@ -1,6 +1,7 @@
-from flask import render_template, request
+from flask import render_template, request, current_app
 from sqlalchemy import case, or_, select
 
+from helpers.katalog_contoh import baca_katalog
 from models import db
 from models.keranjang import KeranjangItem
 from models.produk import Produk
@@ -96,3 +97,8 @@ def detail(produk_id):
                .order_by(Produk.created_at.desc()).limit(4).all())
     return render_template("toko/detail.html", produk=produk, terkait=terkait,
                            maks_per_produk=KeranjangItem.MAKS_PER_PRODUK)
+
+
+def kredit_foto():
+    """Sumber & lisensi foto katalog contoh (wajib untuk foto berlisensi Creative Commons)."""
+    return render_template("toko/kredit_foto.html", katalog=baca_katalog(current_app))

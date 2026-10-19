@@ -42,23 +42,31 @@
     {% block content %}{% endblock %}
 </main>
 
-<footer class="hidden md:block border-t border-slate-200 bg-white">
-    <div class="max-w-6xl mx-auto px-4 py-6 text-xs text-muted flex justify-between">
-        <span>&copy; {{ app_name }}</span><span>PBL RKS 323</span>
+<footer class="border-t border-slate-200 bg-white">
+    <div class="max-w-6xl mx-auto px-4 py-3 md:py-6 text-xs text-muted flex flex-wrap items-center justify-between gap-x-4">
+        <span>&copy; {{ app_name }} &middot; PBL RKS 323</span>
+        <a href="{{ url_for('kredit_foto') }}" class="py-3 underline hover:text-ink">Kredit foto produk</a>
     </div>
 </footer>
 
-{# Navigasi bawah khusus layar HP (halaman checkout menggantinya dengan tombol bayar) #}
+{# Navigasi bawah khusus layar HP (halaman checkout menggantinya dengan tombol bayar).
+   Tamu tidak melihat menu Pesanan/Profil; keranjang tetap ada dan mengarah ke login. #}
 {% block bottom_nav scoped %}
 <nav class="md:hidden fixed bottom-0 inset-x-0 z-30 bg-white border-t border-slate-100 shadow-[0_-4px_16px_rgba(15,23,42,0.04)]">
-    <div class="grid grid-cols-5 text-[11px] font-medium">
-        {% set items = [
-            ('beranda', 'store', 'Beranda', ['beranda']),
-            ('jelajah', 'layout-grid', 'Jelajah', ['jelajah', 'produk_detail']),
-            ('keranjang', 'shopping-bag', 'Keranjang', ['keranjang']),
+    {% set items = [
+        ('beranda', 'store', 'Beranda', ['beranda']),
+        ('jelajah', 'layout-grid', 'Jelajah', ['jelajah', 'produk_detail']),
+        ('keranjang', 'shopping-bag', 'Keranjang', ['keranjang']),
+    ] %}
+    {% if current_user %}
+        {% set items = items + [
             ('pesanan', 'receipt-text', 'Pesanan', ['pesanan', 'pesanan_detail', 'pesanan_konfirmasi']),
             ('profil', 'user', 'Profil', ['profil', 'pengaturan']),
         ] %}
+    {% else %}
+        {% set items = items + [('login', 'user', 'Masuk', ['login', 'register'])] %}
+    {% endif %}
+    <div class="grid {{ 'grid-cols-5' if current_user else 'grid-cols-4' }} text-[11px] font-medium">
         {% for endpoint, ic, label, active in items %}
         <a href="{{ url_for(endpoint) }}" class="flex flex-col items-center gap-1 py-2.5 {{ 'text-brand' if ep in active else 'text-muted' }}">
             {{ icon(ic, 'w-6 h-6') }}<span>{{ label }}</span>

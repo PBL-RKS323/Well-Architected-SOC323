@@ -14,6 +14,7 @@ from config import Config  # noqa: E402  (dibaca setelah .env dimuat)
 from controllers import (auth_controller, admin_controller, produk_controller, toko_controller,  # noqa: E402
                          akun_controller, keranjang_controller, pesanan_controller, admin_pesanan_controller)
 from forms.auth_form import PASSWORD_POLICY, PASSWORD_POLICY_MESSAGE  # noqa: E402
+from helpers.katalog_contoh import isi_katalog  # noqa: E402
 from helpers.security_logger import init_security_logger, log_event  # noqa: E402
 from helpers.waktu import format_tanggal  # noqa: E402
 from middlewares.auth_middleware import init_auth_middleware  # noqa: E402
@@ -101,6 +102,10 @@ def register_routes(app):
     @app.route("/produk/<int:produk_id>")
     def produk_detail(produk_id):
         return toko_controller.detail(produk_id)
+
+    @app.route("/kredit-foto")
+    def kredit_foto():
+        return toko_controller.kredit_foto()
 
     # --- AUTENTIKASI ---
     @app.route("/register", methods=["GET", "POST"])
@@ -268,5 +273,14 @@ def register_commands(app):
         db.session.add(admin)
         db.session.commit()
         click.echo(f"Akun admin '{admin.username}' berhasil dibuat.")
+
+    @app.cli.command("seed-katalog")
+    def seed_katalog():
+        """Mengisi katalog contoh dari seed/katalog.json. Perintah: flask seed-katalog"""
+        try:
+            dibuat = isi_katalog(app)
+        except ValueError as e:
+            raise click.ClickException(str(e))
+        click.echo(f"{dibuat} produk contoh ditambahkan.")
 
 # Tidak ada objek `app` global: perintah `flask run` / `flask db ...` otomatis memanggil create_app().

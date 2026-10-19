@@ -1,0 +1,93 @@
+{
+  "keterangan": "Katalog contoh untuk demo. Harga & stok contoh. Foto dari Wikimedia Commons (dipotong & diperkecil), kredit tampil di /kredit-foto.",
+  "produk": [
+    {
+      "nama_produk": "iPhone 16 Pro 128GB",
+      "merek": "Apple",
+      "kategori": "Handphone",
+      "harga": 16999000,
+      "harga_normal": 18999000,
+      "stok": 8,
+      "deskripsi": "Layar Super Retina XDR 6,3 inci, chip A18 Pro, kamera utama 48 MP, bodi titanium.\nWarna di foto: White Titanium.",
+      "foto": "iphone-16-pro.jpg",
+      "kredit": {"judul": "Back view of iPhone 16 Pro White Titanium", "pembuat": "メイド理世", "lisensi": "CC BY-SA 4.0", "url_lisensi": "https://creativecommons.org/licenses/by-sa/4.0", "halaman": "https://commons.wikimedia.org/wiki/File:Back_view_of_iPhone_16_Pro_White_Titanium.jpg"}
+    },
+    {
+      "nama_produk": "MacBook Air 13 inci M2",
+      "merek": "Apple",
+      "kategori": "Laptop",
+      "harga": 13999000,
+      "harga_normal": 15999000,
+      "stok": 5,
+      "deskripsi": "Layar Liquid Retina 13,6 inci, chip Apple M2, tanpa kipas sehingga senyap.",
+      "foto": "macbook-air-m2.jpg",
+      "kredit": {"judul": "MacBook Air (A2681) front", "pembuat": "メイド理世", "lisensi": "CC BY-SA 4.0", "url_lisensi": "https://creativecommons.org/licenses/by-sa/4.0", "halaman": "https://commons.wikimedia.org/wiki/File:MacBook_Air_(A2681)_front.jpg"}
+    },
+    {
+      "nama_produk": "Apple Watch Series 10 42mm",
+      "merek": "Apple",
+      "kategori": "Smartwatch",
+      "harga": 6499000,
+      "harga_normal": null,
+      "stok": 10,
+      "deskripsi": "Layar OLED sudut lebar, bodi tipis, pemantauan detak jantung dan tidur.",
+      "foto": "apple-watch-series-10.jpg",
+      "kredit": {"judul": "Apple Watch Series 10", "pembuat": "KK IN HK", "lisensi": "Public domain", "url_lisensi": "", "halaman": "https://commons.wikimedia.org/wiki/File:Apple_Watch_Series_10.JPG"}
+    },
+    {
+      "nama_produk": "AirPods Pro 2 (USB-C)",
+      "merek": "Apple",
+      "kategori": "Audio",
+      "harga": 3799000,
+      "harga_normal": 4299000,
+      "stok": 15,
+      "deskripsi": "Peredam bising aktif (ANC), mode Transparansi, casing pengisian USB-C.",
+      "foto": "airpods-pro-2.jpg",
+      "kredit": {"judul": "AirPods Pro (2nd generation)", "pembuat": "Hajoon0102", "lisensi": "CC BY-SA 4.0", "url_lisensi": "https://creativecommons.org/licenses/by-sa/4.0", "halaman": "https://commons.wikimedia.org/wiki/File:AirPods_Pro_(2nd_generation).jpg"}
+    },
+    {
+      "nama_produk": "Galaxy S24 Ultra 256GB",
+      "merek": "Samsung",
+      "kategori": "Handphone",
+      "harga": 16499000,
+      "harga_normal": 19999000,
+      "stok": 6,
+      "deskripsi": "Layar 6,8 inci QHD+, Snapdragon 8 Gen 3 for Galaxy, kamera utama 200 MP, S Pen bawaan, bodi titanium.",
+      "foto": "galaxy-s24-ultra.jpg",
+      "kredit": {"judul": "SAMSUNG Galaxy S24 Ultra (2)", "pembuat": "Dinkun Chen", "lisensi": "CC BY-SA 4.0", "url_lisensi": "https://creativecommons.org/licenses/by-sa/4.0", "halaman": "https://commons.wikimedia.org/wiki/File:SAMSUNG_Galaxy_S24_Ultra_(2).jpg"}
+    },
+    {
+      "nama_produk": "Galaxy Watch 7 44mm",
+      "merek": "Samsung",
+      "kategori": "Smartwatch",
+      "harga": 3999000,
+      "harga_normal": null,
+      "stok": 12,
+      "deskripsi": "Wear OS, chip Exynos W1000, sensor kesehatan BioActive, tahan air 5ATM.",
+      "foto": "galaxy-watch-7.jpg",
+      "kredit": {"judul": "Galaxy Watch 7", "pembuat": "Kyu3a", "lisensi": "CC BY-SA 4.0", "url_lisensi": "https://creativecommons.org/licenses/by-sa/4.0", "halaman": "https://commons.wikimedia.org/wiki/File:Galaxy_Watch_7.jpg"}
+    },
+    {
+      "nama_produk": "Redmi Note 14 Pro 5G 8/256GB",
+      "merek": "Xiaomi",
+      "kategori": "Handphone",
+      "harga": 4299000,
+      "harga_normal": 4799000,
+      "stok": 20,
+      "deskripsi": "Layar AMOLED 6,67 inci 120Hz, kamera utama 200 MP, MediaTek Dimensity 7300-Ultra, tahan air IP68.",
+      "foto": "redmi-note-14-pro.jpg",
+      "kredit": {"judul": "Redmi Note 14 Pro (1)", "pembuat": "茅野ふたば", "lisensi": "CC BY-SA 4.0", "url_lisensi": "https://creativecommons.org/licenses/by-sa/4.0", "halaman": "https://commons.wikimedia.org/wiki/File:Redmi_Note_14_Pro_(1).jpg"}
+    },
+    {
+      "nama_produk": "Xiaomi Pad 6 8/256GB",
+      "merek": "Xiaomi",
+      "kategori": "Tablet",
+      "harga": 4999000,
+      "harga_normal": null,
+      "stok": 7,
+      "deskripsi": "Layar 11 inci 144Hz, Snapdragon 870, baterai 8840 mAh.\nKeyboard di foto dijual terpisah.",
+      "foto": "xiaomi-pad-6.jpg",
+      "kredit": {"judul": "Xiaomi Pad 6 display", "pembuat": "Myrat", "lisensi": "CC0", "url_lisensi": "https://creativecommons.org/publicdomain/zero/1.0/", "halaman": "https://commons.wikimedia.org/wiki/File:Xiaomi_Pad_6_display.jpg"}
+    }
+  ]
+}

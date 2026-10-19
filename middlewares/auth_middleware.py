@@ -8,7 +8,7 @@ from models import db
 from models.user import User
 
 # Endpoint yang boleh diakses tanpa login. Endpoint lain otomatis wajib login (default deny).
-PUBLIC_ENDPOINTS = {"static", "beranda", "jelajah", "produk_detail", "login", "register"}
+PUBLIC_ENDPOINTS = {"static", "beranda", "jelajah", "produk_detail", "kredit_foto", "login", "register"}
 
 
 def init_auth_middleware(app):
