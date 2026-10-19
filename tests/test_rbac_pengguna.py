@@ -1,3 +1,5 @@
+import os
+
 from conftest import login, read_log, produk_data, ADMIN_PASSWORD, CUSTOMER_PASSWORD
 from models import db
 from models.alamat import Alamat
@@ -183,3 +185,23 @@ def test_alamat_maksimal_dan_validasi(app, client):
         client.post("/alamat/tambah", data=dict(ALAMAT, label=f"A{i}"))
     with app.app_context():
         assert Alamat.query.count() == Alamat.MAKS_PER_USER
+
+
+# --- PERINTAH CLI buat-pengguna ---
+
+def test_cli_buat_pengguna_simpan_password_di_file_privat(app, tmp_path):
+    app.instance_path = str(tmp_path / "instance")
+    runner = app.test_cli_runner()
+    hasil = runner.invoke(args=["buat-pengguna", "--nama", "Intan Sri Diana", "--email", "Intan@Neteye.my.id",
+                                "--peran", "staf"])
+    assert hasil.exit_code == 0, hasil.output
+    baris = open(os.path.join(app.instance_path, "akun_baru.txt"), encoding="utf-8").read().strip()
+    password = baris.split(" | ")[-1]
+    assert password not in hasil.output  # tidak tercetak di terminal
+    with app.app_context():
+        u = User.query.filter_by(email="intan@neteye.my.id").one()
+        assert u.role == User.ROLE_STAF and u.check_password(password)
+
+    gagal = runner.invoke(args=["buat-pengguna", "--nama", "Lain", "--email", "intan@neteye.my.id", "--peran", "staf"])
+    assert gagal.exit_code != 0 and "sudah terdaftar" in gagal.output
+    assert runner.invoke(args=["buat-pengguna", "--nama", "X", "--email", "x@y.id", "--peran", "dewa"]).exit_code != 0

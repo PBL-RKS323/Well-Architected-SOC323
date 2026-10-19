@@ -64,3 +64,18 @@ sudo journalctl -u elektronik-store -n 50   # log Gunicorn
 tail -f /opt/elektronik-store/logs/security.log
 sudo nginx -t && sudo systemctl reload nginx
 ```
+
+## Akun anggota tim
+
+Setiap anggota memakai akunnya sendiri (log mencatat siapa melakukan apa). Buat lewat panel
+**Pengguna → Tambah Pengguna**, atau dari server:
+
+```bash
+cd /opt/elektronik-store
+.venv/bin/flask buat-pengguna --nama "Nama Lengkap" --email nama@neteye.my.id --peran staf   # admin / staf / customer
+cat instance/akun_baru.txt   # kata sandi sementara (file chmod 600)
+rm instance/akun_baru.txt    # hapus setelah dibagikan lewat pesan pribadi
+```
+
+Aplikasi tidak mengirim email, jadi alamat email cukup berformat benar (tidak harus kotak masuk asli).
+Pemilik akun wajib mengganti kata sandi sementara di **Pengaturan** setelah login pertama.

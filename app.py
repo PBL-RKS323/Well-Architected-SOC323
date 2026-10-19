@@ -1,6 +1,7 @@
 import logging
 import os
 import re
+import secrets
 
 import click
 from dotenv import load_dotenv
@@ -16,7 +17,7 @@ from controllers import (auth_controller, admin_controller, produk_controller, t
                          akun_controller, keranjang_controller, pesanan_controller, admin_pesanan_controller,
                          admin_pengguna_controller, alamat_controller, ulasan_controller,
                          admin_laporan_controller)
-from forms.auth_form import PASSWORD_POLICY, PASSWORD_POLICY_MESSAGE  # noqa: E402
+from forms.auth_form import PASSWORD_POLICY, PASSWORD_POLICY_MESSAGE, NAMA_POLICY  # noqa: E402
 from helpers.katalog_contoh import isi_katalog  # noqa: E402
 from helpers.security_logger import init_security_logger, log_event  # noqa: E402
 from helpers.waktu import format_tanggal, format_hari  # noqa: E402
@@ -379,5 +380,42 @@ def register_commands(app):
         except ValueError as e:
             raise click.ClickException(str(e))
         click.echo(f"{dibuat} produk contoh ditambahkan, {diperbarui} foto diperbarui.")
+
+    @app.cli.command("buat-pengguna")
+    @click.option("--nama", required=True, help="Nama lengkap")
+    @click.option("--email", required=True)
+    @click.option("--peran", required=True, type=click.Choice(list(User.LABEL_ROLE)))
+    def buat_pengguna(nama, email, peran):
+        """Membuat akun anggota tim dengan kata sandi sementara acak.
+
+        Kata sandi TIDAK dicetak ke layar (agar tidak tersimpan di riwayat terminal/log), tetapi ditulis
+        ke instance/akun_baru.txt (hanya bisa dibaca pemilik file). Bagikan lewat pesan pribadi, minta
+        pemilik akun langsung menggantinya di Pengaturan, lalu hapus file tersebut.
+        Perintah: flask buat-pengguna --nama "Nama" --email nama@contoh.id --peran staf
+        """
+        email = email.strip().lower()
+        nama = " ".join(nama.split())
+        if not re.match(NAMA_POLICY, nama) or not 3 <= len(nama) <= 100:
+            raise click.ClickException("Nama hanya boleh huruf, spasi, titik, tanda hubung, apostrof (3-100 karakter).")
+        if not re.match(r"^[^@\s]+@[^@\s]+\.[a-z]{2,}$", email) or len(email) > 100:
+            raise click.ClickException("Format email tidak valid.")
+        if User.query.filter_by(email=email).first():
+            raise click.ClickException(f"Email {email} sudah terdaftar.")
+
+        while True:  # acak sampai memenuhi kebijakan kata sandi (huruf besar, kecil, angka, simbol)
+            password = secrets.token_urlsafe(9) + secrets.choice("!#$%*?") + str(secrets.randbelow(10))
+            if re.match(PASSWORD_POLICY, password):
+                break
+        user = User(username=auth_controller._buat_username(email), nama_lengkap=nama, email=email, role=peran)
+        user.set_password(password)
+        db.session.add(user)
+        db.session.commit()
+
+        os.makedirs(app.instance_path, exist_ok=True)
+        path = os.path.join(app.instance_path, "akun_baru.txt")
+        with open(os.open(path, os.O_WRONLY | os.O_CREAT | os.O_APPEND, 0o600), "a", encoding="utf-8") as f:
+            f.write(f"{nama} | {email} | {User.LABEL_ROLE[peran]} | {password}\n")
+        log_event("USER_CREATED", logging.WARNING, user_id=user.id, username=user.username, role=peran, by="cli")
+        click.echo(f"Akun {email} ({User.LABEL_ROLE[peran]}) dibuat. Kata sandi sementara ada di {path}")
 
 # Tidak ada objek `app` global: perintah `flask run` / `flask db ...` otomatis memanggil create_app().
