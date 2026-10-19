@@ -86,9 +86,13 @@ document.addEventListener("change", function (event) {
 });
 
 // Carousel beranda: geser manual (jari / tombol panah / titik) dan putar otomatis tiap 5 detik.
-// Putar otomatis berhenti sementara saat kursor/fokus keyboard ada di carousel atau tab tidak terlihat,
-// dan bisa dijeda lewat tombol. Jika pengguna memilih "kurangi gerakan", slide berganti tanpa animasi geser.
+// Berhenti hanya jika dijeda lewat tombol, saat pengguna keyboard sedang menekan Tab di dalam carousel,
+// atau saat tab browser tidak terlihat. Klik panah/titik hanya mengulang hitungan 5 detik.
+// Jika pengguna memilih "kurangi gerakan", slide berganti tanpa animasi geser.
 const JEDA_CAROUSEL_MS = 5000;
+let pakaiKeyboard = false;  // true setelah tombol Tab ditekan, false lagi setelah klik/sentuh
+document.addEventListener("keydown", function (e) { if (e.key === "Tab") { pakaiKeyboard = true; } });
+document.addEventListener("pointerdown", function () { pakaiKeyboard = false; });
 document.querySelectorAll("[data-carousel]").forEach(function (carousel) {
     const track = carousel.querySelector("[data-carousel-track]");
     const dots = carousel.querySelectorAll("[data-carousel-dot]");
@@ -102,13 +106,12 @@ document.querySelectorAll("[data-carousel]").forEach(function (carousel) {
 
     const tombolJeda = carousel.querySelector("[data-carousel-jeda]");
     let dijeda = false;           // dijeda pengguna lewat tombol
-    let dihover = false;          // sementara: kursor ada di atas carousel
-    let difokus = false;          // sementara: fokus keyboard ada di dalam carousel
+    let difokus = false;          // sementara: fokus keyboard (Tab) ada di dalam carousel
     let timer = null;
     const mulai = function () {
         clearInterval(timer);
         timer = null;
-        if (!dijeda && !dihover && !difokus && track.children.length > 1) {
+        if (!dijeda && !difokus && track.children.length > 1) {
             timer = setInterval(function () { if (!document.hidden) { ke(posisi() + 1); } }, JEDA_CAROUSEL_MS);
         }
     };
@@ -121,10 +124,8 @@ document.querySelectorAll("[data-carousel]").forEach(function (carousel) {
     if (tombolJeda) {
         tombolJeda.addEventListener("click", function () { dijeda = !dijeda; tampilkanJeda(); mulai(); });
     }
-    carousel.addEventListener("mouseenter", function () { dihover = true; mulai(); });
-    carousel.addEventListener("mouseleave", function () { dihover = false; mulai(); });
-    // Hanya fokus keyboard (Tab) yang menahan; klik mouse pada tombol tidak membuat carousel macet
-    carousel.addEventListener("focusin", function (e) { difokus = e.target.matches(":focus-visible"); mulai(); });
+    // Hanya fokus dari Tab yang menahan; klik mouse pada tombol tidak membuat carousel berhenti
+    carousel.addEventListener("focusin", function () { difokus = pakaiKeyboard; mulai(); });
     carousel.addEventListener("focusout", function (e) {
         if (!carousel.contains(e.relatedTarget)) { difokus = false; mulai(); }
     });
