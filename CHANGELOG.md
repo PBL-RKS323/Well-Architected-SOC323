@@ -3,6 +3,25 @@
 Setiap perubahan dicatat di sini: apa yang berubah, alasannya, dan cara mengujinya.
 Format tanggal: YYYY-MM-DD (WIB).
 
+## [0.5.2] - 2026-10-19 - Deploy ke OCI
+
+### Ditambahkan
+- Aplikasi online di **https://toko.neteye.my.id** (VM Oracle Cloud, Ubuntu 24.04): Gunicorn di
+  belakang Nginx, PostgreSQL 16 lokal, sertifikat Let's Encrypt. Panduan di `docs/DEPLOY.md`.
+- `deploy/elektronik-store.service` (systemd) dan `deploy/nginx-elektronik-store.conf`.
+- `DEMO_MODE`: pemberitahuan "toko demo" di semua halaman (rekening & produk masih contoh).
+- Header HSTS dikirim saat `SESSION_COOKIE_SECURE=1` (HTTPS).
+- `gunicorn` di `requirements.txt`.
+
+### Keamanan
+- Rahasia produksi (SECRET_KEY, password database) dibuat acak di server, hanya di `.env` (chmod 600).
+- Database hanya mendengar di localhost, role aplikasi bukan superuser.
+- Password admin pertama acak, disimpan di file chmod 600 di server (tidak dikirim lewat chat).
+
+### Cara uji
+- `pytest -q` -> 96 passed.
+- `curl -I https://toko.neteye.my.id` -> 200 dengan header CSP, HSTS, X-Frame-Options.
+
 ## [0.5.1] - 2026-10-19 - Audit Anti-Slop
 
 Tampilan diperiksa dengan aturan [antislop](https://github.com/miqdadbadjuber/anti-slop) agar tidak

@@ -59,6 +59,22 @@ def test_security_headers(client):
     assert resp.headers["X-Frame-Options"] == "DENY"
     assert resp.headers["X-Content-Type-Options"] == "nosniff"
     assert "default-src 'self'" in resp.headers["Content-Security-Policy"]
+    assert "Strict-Transport-Security" not in resp.headers  # belum HTTPS (pengembangan lokal)
+
+
+def test_hsts_dan_banner_demo_di_produksi(tmp_path):
+    class Cfg(TestConfig):
+        SESSION_COOKIE_SECURE = True
+        DEMO_MODE = True
+        SECURITY_LOG_FILE = str(tmp_path / "security.log")
+
+    resp = create_app(Cfg).test_client().get("/static/js/app.js")
+    assert resp.headers["Strict-Transport-Security"] == "max-age=31536000"
+    app = create_app(Cfg)
+    with app.app_context():
+        from models import db
+        db.create_all()
+        assert "Toko demo tugas kuliah" in app.test_client().get("/login").get_data(as_text=True)
 
 
 def test_csrf_aktif_di_konfigurasi_normal(tmp_path):

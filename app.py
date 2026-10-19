@@ -80,6 +80,9 @@ def create_app(config_class=Config):
             "img-src 'self' data:; "
             "frame-ancestors 'none'; form-action 'self'"
         )
+        if app.config["SESSION_COOKIE_SECURE"]:
+            # Hanya saat sudah HTTPS: browser diminta selalu memakai HTTPS selama 1 tahun
+            response.headers["Strict-Transport-Security"] = "max-age=31536000"
         return response
 
     return app

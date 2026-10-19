@@ -46,7 +46,10 @@ sudo certbot --nginx -d toko.neteye.my.id --redirect
 ```
 
 Certbot menambah blok `listen 443` ke config Nginx dan memperpanjang sertifikat otomatis.
-Karena `SESSION_COOKIE_SECURE=1`, login baru berfungsi setelah HTTPS aktif.
+Karena `SESSION_COOKIE_SECURE=1`, login baru berfungsi setelah HTTPS aktif. Pengaturan yang sama
+membuat aplikasi mengirim header HSTS (`Strict-Transport-Security: max-age=31536000`).
+Status 19 Okt 2026: sertifikat Let's Encrypt untuk `toko.neteye.my.id` sudah terpasang, HTTP dialihkan
+ke HTTPS.
 
 ## Akun admin pertama
 
