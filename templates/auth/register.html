@@ -1,20 +1,27 @@
-{% extends 'base.html' %}
-{% from '_macros.html' import field %}
+{% extends 'layouts/polos.html' %}
+{% from '_macros.html' import field, checkbox, tombol_utama %}
+{% from '_icons.html' import icon %}
 {% block title %}Daftar - {{ app_name }}{% endblock %}
 {% block content %}
-<div class="max-w-md mx-auto bg-white p-8 rounded-xl shadow-md border border-slate-200">
-    <h2 class="text-2xl font-bold text-slate-900 mb-6 text-center">Daftar Akun Baru</h2>
+<div class="text-center mb-6">
+    <h1 class="font-display text-3xl font-extrabold">Buat Akun</h1>
+    <p class="text-muted mt-2">Gabung untuk belanja dan lacak pesananmu.</p>
+</div>
+<div class="bg-white sm:p-7 sm:rounded-2xl sm:shadow-[0_8px_30px_rgba(15,23,42,0.06)] sm:border sm:border-slate-100">
     <form method="POST" class="space-y-5" novalidate>
         {{ form.hidden_tag() }}
-        {{ field(form.username, autocomplete="username") }}
-        {{ field(form.email, autocomplete="email", placeholder="nama@email.com") }}
-        {{ field(form.password, autocomplete="new-password") }}
-        <p class="text-xs text-slate-500 -mt-3">Minimal 8 karakter, mengandung huruf besar, huruf kecil, angka, dan simbol (contoh: # @ ! _ -).</p>
-        {{ field(form.confirm_password, autocomplete="new-password") }}
-        {{ form.submit(class="w-full bg-indigo-700 hover:bg-indigo-800 text-white font-semibold py-2.5 rounded-lg cursor-pointer") }}
+        {{ field(form.nama_lengkap, ikon='user', autocomplete="name", placeholder="Nama lengkap") }}
+        {{ field(form.email, ikon='mail', autocomplete="email", placeholder="nama@email.com") }}
+        <div>
+            {{ field(form.password, ikon='lock', autocomplete="new-password", placeholder="Kata sandi") }}
+            <p class="flex items-center gap-1.5 text-xs text-muted mt-1.5">{{ icon('info', 'w-3.5 h-3.5') }} Minimal 8 karakter, ada huruf besar, huruf kecil, angka, dan simbol.</p>
+        </div>
+        {{ field(form.confirm_password, ikon='lock', autocomplete="new-password", placeholder="Ulangi kata sandi") }}
+        {{ checkbox(form.setuju) }}
+        {{ tombol_utama(form.submit) }}
     </form>
-    <p class="mt-5 text-center text-sm text-slate-600">
-        Sudah punya akun? <a href="{{ url_for('login') }}" class="text-indigo-700 font-semibold hover:underline">Login di sini</a>
-    </p>
 </div>
+<p class="mt-6 text-center text-sm text-muted">
+    Sudah punya akun? <a href="{{ url_for('login') }}" class="text-brand font-semibold hover:underline">Masuk</a>
+</p>
 {% endblock %}

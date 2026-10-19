@@ -1,0 +1,63 @@
+{% extends 'layouts/toko.html' %}
+{% from '_icons.html' import icon %}
+{% from '_produk.html' import kartu %}
+{% block title %}{{ produk.nama_produk }} - {{ app_name }}{% endblock %}
+{% block content %}
+<a href="{{ url_for('jelajah') }}" class="inline-flex items-center gap-2 text-sm font-medium text-muted hover:text-ink mb-4">
+    <span class="w-9 h-9 rounded-full bg-white border border-slate-100 flex items-center justify-center">{{ icon('arrow-left', 'w-4 h-4') }}</span>
+    Kembali
+</a>
+
+<div class="md:grid md:grid-cols-2 md:gap-10">
+    <div class="relative bg-white rounded-3xl p-4 border border-slate-100">
+        <div class="absolute top-6 left-6 z-10 flex flex-col items-start gap-1.5">
+            {% if produk.diskon_persen %}
+                <span class="inline-flex items-center gap-1 bg-coral text-white text-xs font-bold px-3 py-1 rounded-full">{{ icon('flame', 'w-3.5 h-3.5') }} DISKON {{ produk.diskon_persen }}%</span>
+            {% endif %}
+            {% if 0 < produk.stok <= produk.STOK_MENIPIS %}
+                <span class="inline-flex items-center gap-1 bg-white text-brand text-xs font-semibold px-3 py-1 rounded-full shadow-sm">{{ icon('sparkles', 'w-3.5 h-3.5') }} Stok tinggal sedikit</span>
+            {% endif %}
+        </div>
+        <img src="{{ url_for('static', filename='uploads/' ~ produk.gambar) }}" alt="{{ produk.nama_produk }}"
+             class="w-full aspect-square object-cover rounded-2xl bg-soft">
+    </div>
+
+    <div class="mt-6 md:mt-0">
+        <span class="inline-block bg-brand-soft text-brand-dark text-xs font-semibold px-2.5 py-1 rounded-md">{{ produk.merek }} &middot; {{ produk.kategori }}</span>
+        <h1 class="font-display text-2xl md:text-3xl font-extrabold leading-tight mt-3">{{ produk.nama_produk }}</h1>
+
+        <div class="flex items-end gap-3 mt-4">
+            <p class="font-display text-3xl font-extrabold text-ink">{{ produk.harga | rupiah }}</p>
+            {% if produk.diskon_persen %}
+                <p class="text-muted line-through mb-1">{{ produk.harga_normal | rupiah }}</p>
+            {% endif %}
+        </div>
+
+        <p class="mt-3 text-sm font-medium {{ 'text-coral' if produk.stok == 0 else 'text-emerald-700' }}">
+            {{ 'Stok habis' if produk.stok == 0 else 'Stok tersedia: ' ~ produk.stok }}
+        </p>
+
+        <section class="mt-6">
+            <h2 class="font-display text-lg font-bold">Ringkasan</h2>
+            <p class="text-muted leading-relaxed mt-2 whitespace-pre-line">{{ produk.deskripsi or 'Belum ada deskripsi untuk produk ini.' }}</p>
+        </section>
+
+        <div class="mt-6 flex items-center gap-3 bg-white border border-slate-100 rounded-2xl p-4">
+            <span class="w-10 h-10 shrink-0 rounded-full bg-brand-soft text-brand flex items-center justify-center">{{ icon('truck', 'w-5 h-5') }}</span>
+            <div class="text-sm">
+                <p class="font-semibold">Dikirim ke seluruh Indonesia</p>
+                <p class="text-muted">Atau ambil langsung di toko tanpa ongkos kirim.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if terkait %}
+<section class="mt-12">
+    <h2 class="font-display text-lg md:text-xl font-bold mb-3">Produk lain dari {{ produk.merek }}</h2>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-5">
+        {% for p in terkait %}{{ kartu(p) }}{% endfor %}
+    </div>
+</section>
+{% endif %}
+{% endblock %}

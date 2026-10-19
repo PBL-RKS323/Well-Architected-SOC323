@@ -11,7 +11,7 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 load_dotenv()
 
 from config import Config  # noqa: E402  (dibaca setelah .env dimuat)
-from controllers import auth_controller, admin_controller, produk_controller, katalog_controller, akun_controller  # noqa: E402,E501
+from controllers import auth_controller, admin_controller, produk_controller, toko_controller, akun_controller  # noqa: E402,E501
 from forms.auth_form import PASSWORD_POLICY, PASSWORD_POLICY_MESSAGE  # noqa: E402
 from helpers.security_logger import init_security_logger, log_event  # noqa: E402
 from middlewares.auth_middleware import init_auth_middleware  # noqa: E402
@@ -62,7 +62,8 @@ def create_app(config_class=Config):
         response.headers["Content-Security-Policy"] = (
             "default-src 'self'; "
             "script-src 'self' https://cdn.jsdelivr.net; "
-            "style-src 'self' 'unsafe-inline'; "
+            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
+            "font-src 'self' https://fonts.gstatic.com; "
             "img-src 'self' data:; "
             "frame-ancestors 'none'; form-action 'self'"
         )
@@ -72,10 +73,18 @@ def create_app(config_class=Config):
 
 
 def register_routes(app):
-    # --- KATALOG (publik) ---
+    # --- TOKO (publik) ---
     @app.route("/")
-    def katalog():
-        return katalog_controller.index()
+    def beranda():
+        return toko_controller.beranda()
+
+    @app.route("/jelajah")
+    def jelajah():
+        return toko_controller.jelajah()
+
+    @app.route("/produk/<int:produk_id>")
+    def produk_detail(produk_id):
+        return toko_controller.detail(produk_id)
 
     # --- AUTENTIKASI ---
     @app.route("/register", methods=["GET", "POST"])
@@ -90,10 +99,18 @@ def register_routes(app):
     def logout():
         return auth_controller.logout()
 
-    # --- PENGATURAN AKUN (semua user yang login) ---
+    # --- PROFIL & PENGATURAN AKUN (semua user yang login) ---
+    @app.route("/profil")
+    def profil():
+        return akun_controller.profil()
+
     @app.route("/pengaturan")
     def pengaturan():
         return akun_controller.pengaturan()
+
+    @app.route("/pengaturan/nama", methods=["POST"])
+    def pengaturan_nama():
+        return akun_controller.ubah_nama()
 
     @app.route("/pengaturan/email", methods=["POST"])
     def pengaturan_email():
@@ -149,9 +166,10 @@ def register_error_handlers(app):
 def register_commands(app):
     @app.cli.command("seed-admin")
     @click.option("--username", prompt="Username admin")
+    @click.option("--nama", prompt="Nama tampilan admin", default="Admin Toko")
     @click.option("--email", prompt="Email admin")
     @click.option("--password", prompt="Kata sandi admin", hide_input=True, confirmation_prompt=True)
-    def seed_admin(username, email, password):
+    def seed_admin(username, nama, email, password):
         """Membuat akun admin pertama. Perintah: flask seed-admin"""
         email = email.strip().lower()
         if not re.match(PASSWORD_POLICY, password) or len(password) < 8:
@@ -159,7 +177,7 @@ def register_commands(app):
         if User.query.filter((User.email == email) | (User.username == username)).first():
             raise click.ClickException("Username atau email tersebut sudah terdaftar.")
 
-        admin = User(username=username.strip(), email=email, role=User.ROLE_ADMIN)
+        admin = User(username=username.strip(), nama_lengkap=nama.strip(), email=email, role=User.ROLE_ADMIN)
         admin.set_password(password)
         db.session.add(admin)
         db.session.commit()

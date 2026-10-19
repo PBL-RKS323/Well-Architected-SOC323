@@ -1,17 +1,21 @@
-{% extends 'base.html' %}
-{% from '_macros.html' import field %}
-{% block title %}Login - {{ app_name }}{% endblock %}
+{% extends 'layouts/polos.html' %}
+{% from '_macros.html' import field, checkbox, tombol_utama %}
+{% block title %}Masuk - {{ app_name }}{% endblock %}
 {% block content %}
-<div class="max-w-md mx-auto bg-white p-8 rounded-xl shadow-md border border-slate-200">
-    <h2 class="text-2xl font-bold text-slate-900 mb-6 text-center">Masuk ke Akun</h2>
+<div class="text-center mb-6">
+    <h1 class="font-display text-3xl font-extrabold">Selamat Datang Kembali</h1>
+    <p class="text-muted mt-2">Masuk untuk lanjut belanja gadget favoritmu.</p>
+</div>
+<div class="bg-white sm:p-7 sm:rounded-2xl sm:shadow-[0_8px_30px_rgba(15,23,42,0.06)] sm:border sm:border-slate-100">
     <form method="POST" class="space-y-5" novalidate>
         {{ form.hidden_tag() }}
-        {{ field(form.email, autocomplete="email", placeholder="nama@email.com") }}
-        {{ field(form.password, autocomplete="current-password") }}
-        {{ form.submit(class="w-full bg-indigo-700 hover:bg-indigo-800 text-white font-semibold py-2.5 rounded-lg cursor-pointer") }}
+        {{ field(form.email, ikon='mail', autocomplete="email", placeholder="nama@email.com") }}
+        {{ field(form.password, ikon='lock', autocomplete="current-password", placeholder="Kata sandi") }}
+        {{ checkbox(form.ingat_saya) }}
+        {{ tombol_utama(form.submit) }}
     </form>
-    <p class="mt-5 text-center text-sm text-slate-600">
-        Belum punya akun? <a href="{{ url_for('register') }}" class="text-indigo-700 font-semibold hover:underline">Daftar di sini</a>
-    </p>
 </div>
+<p class="mt-6 text-center text-sm text-muted">
+    Belum punya akun? <a href="{{ url_for('register') }}" class="text-brand font-semibold hover:underline">Daftar di sini</a>
+</p>
 {% endblock %}

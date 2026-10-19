@@ -10,9 +10,9 @@ Acuan: OWASP Top 10 2025, alur SSDLC (rencana → kode → uji → monitor) per 
 | A02 Security Misconfiguration | `SECRET_KEY` & `DATABASE_URL` wajib dari `.env` (aplikasi menolak jalan tanpa itu), debug mati secara default, header keamanan (CSP, X-Frame-Options, nosniff, Referrer-Policy), halaman error tanpa detail teknis | `config.py`, `app.py` |
 | A03 Software Supply Chain Failures | Versi dependensi dikunci di `requirements.txt` | `requirements.txt` |
 | A04 Cryptographic Failures | Kata sandi di-hash (Werkzeug scrypt), cookie sesi HttpOnly + SameSite=Lax, opsi `SESSION_COOKIE_SECURE` untuk HTTPS | `models/user.py`, `config.py` |
-| A05 Injection | Query lewat ORM SQLAlchemy (terparameter), output Jinja2 auto-escape (XSS), input divalidasi WTForms | `models/`, `forms/` |
+| A05 Injection | Query lewat ORM SQLAlchemy (terparameter), wildcard `%`/`_` di kata kunci pencarian di-escape, parameter filter divalidasi terhadap daftar yang diizinkan, output Jinja2 auto-escape (XSS), input divalidasi WTForms | `models/`, `forms/` |
 | A06 Insecure Design | Role customer tidak bisa dipilih saat register, upload gambar diperiksa isi biner, nama file acak | `controllers/`, `helpers/image_security.py` |
-| A07 Authentication Failures | Kebijakan kata sandi kuat, ganti email/kata sandi wajib konfirmasi kata sandi lama, penguncian akun 5x gagal, pesan error login generik, sesi dibersihkan saat login (anti session fixation), sesi kedaluwarsa 1 jam, CSRF di semua form | `controllers/auth_controller.py` |
+| A07 Authentication Failures | Kebijakan kata sandi kuat, ganti email/kata sandi wajib konfirmasi kata sandi lama, penguncian akun 5x gagal, pesan error login generik, sesi dibersihkan saat login (anti session fixation), sesi berakhir saat browser ditutup (atau 7 hari jika "Ingat saya"), CSRF di semua form | `controllers/auth_controller.py` |
 | A08 Software or Data Integrity Failures | Token CSRF global, file upload divalidasi sebelum disimpan | `app.py`, `helpers/image_security.py` |
 | A09 Security Logging and Alerting Failures | Log audit ke `logs/security.log`, format seragam untuk Wazuh, karakter baris baru dinetralkan (anti log injection) | `helpers/security_logger.py` |
 | A10 Mishandling of Exceptional Conditions | Error handler 400/404/413/500 dengan pesan aman, redirect `next` hanya ke path internal | `app.py`, `controllers/auth_controller.py` |
@@ -67,5 +67,5 @@ Konfigurasi Wazuh agent (contoh `ossec.conf` di server web):
 
 - [x] Rencana: daftar fitur ATS dan ancaman utamanya (brute force, akses admin tanpa izin, upload berbahaya, XSS, CSRF)
 - [x] Kode: kontrol di tabel OWASP di atas
-- [x] Uji: 33 tes otomatis (`pytest -q`), termasuk uji negatif (akses ditolak, file palsu, password lemah)
+- [x] Uji: 55 tes otomatis (`pytest -q`), termasuk uji negatif (akses ditolak, file palsu, password lemah)
 - [x] Monitor: log keamanan siap dikirim ke Wazuh

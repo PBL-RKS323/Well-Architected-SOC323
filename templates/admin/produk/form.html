@@ -1,34 +1,41 @@
-{% extends 'base.html' %}
+{% extends 'layouts/admin.html' %}
 {% from '_macros.html' import field %}
+{% from '_icons.html' import icon %}
 {% block title %}{{ 'Tambah' if mode == 'tambah' else 'Edit' }} Produk - {{ app_name }}{% endblock %}
 {% block content %}
-<div class="max-w-2xl mx-auto bg-white p-8 rounded-xl shadow-md border border-slate-200">
-    <h1 class="text-2xl font-bold text-slate-900 mb-6 border-b pb-3">
-        {{ 'Tambah Produk Baru' if mode == 'tambah' else 'Edit Produk' }}
-    </h1>
-    <form method="POST" enctype="multipart/form-data" class="space-y-5" novalidate>
-        {{ form.hidden_tag() }}
+<a href="{{ url_for('admin_produk') }}" class="inline-flex items-center gap-2 text-sm font-medium text-muted hover:text-ink mb-4">{{ icon('arrow-left', 'w-4 h-4') }} Kembali ke daftar produk</a>
+<h1 class="font-display text-3xl font-extrabold mb-6">{{ 'Tambah Produk' if mode == 'tambah' else 'Edit Produk' }}</h1>
+
+<form method="POST" enctype="multipart/form-data" class="grid lg:grid-cols-3 gap-5" novalidate>
+    {{ form.hidden_tag() }}
+    <section class="lg:col-span-2 bg-white border border-slate-100 rounded-2xl p-6 space-y-5">
         {{ field(form.nama_produk, placeholder="Contoh: Galaxy S25 Ultra 256GB") }}
         <div class="grid sm:grid-cols-2 gap-5">
             {{ field(form.merek) }}
             {{ field(form.kategori) }}
             {{ field(form.harga, placeholder="Contoh: 18999000") }}
+            {{ field(form.harga_normal, placeholder="Kosongkan jika tidak diskon") }}
             {{ field(form.stok, placeholder="0") }}
         </div>
-        {{ field(form.deskripsi, rows=4) }}
+        {{ field(form.deskripsi, rows=5) }}
+    </section>
 
+    <section class="bg-white border border-slate-100 rounded-2xl p-6 space-y-4 h-fit">
+        <h2 class="font-display font-bold">Foto Produk</h2>
         {% if produk %}
-        <div class="flex items-center gap-4">
-            <img src="{{ url_for('static', filename='uploads/' ~ produk.gambar) }}" alt="" class="w-20 h-20 object-cover rounded-lg border">
-            <p class="text-xs text-slate-500">Gambar saat ini. Kosongkan input di bawah jika tidak ingin mengganti.</p>
-        </div>
+            <img src="{{ url_for('static', filename='uploads/' ~ produk.gambar) }}" alt="" class="w-full aspect-square object-cover rounded-xl border border-slate-100">
+            <p class="text-xs text-muted">Kosongkan input di bawah jika tidak ingin mengganti gambar.</p>
+        {% else %}
+            <div class="w-full aspect-square rounded-xl bg-soft border border-dashed border-slate-300 flex flex-col items-center justify-center text-muted">
+                {{ icon('image-plus', 'w-10 h-10') }}
+                <span class="text-xs mt-2">JPG/PNG, maks. 2 MB</span>
+            </div>
         {% endif %}
         {{ field(form.gambar, accept=".jpg,.jpeg,.png") }}
-
-        <div class="flex justify-end gap-3 pt-2">
-            <a href="{{ url_for('admin_produk') }}" class="border border-slate-300 hover:bg-slate-50 px-4 py-2 rounded-lg text-sm">Batal</a>
-            {{ form.submit(class="bg-indigo-700 hover:bg-indigo-800 text-white font-semibold px-5 py-2 rounded-lg text-sm cursor-pointer") }}
+        <div class="flex gap-3 pt-2">
+            <a href="{{ url_for('admin_produk') }}" class="flex-1 text-center border border-slate-200 hover:bg-soft px-4 py-3 rounded-full text-sm font-medium">Batal</a>
+            {{ form.submit(class="flex-1 bg-brand hover:bg-brand-dark text-white font-medium px-5 py-3 rounded-full text-sm cursor-pointer") }}
         </div>
-    </form>
-</div>
+    </section>
+</form>
 {% endblock %}

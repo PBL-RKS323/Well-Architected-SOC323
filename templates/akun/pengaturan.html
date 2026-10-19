@@ -1,34 +1,47 @@
-{% extends 'base.html' %}
-{% from '_macros.html' import field %}
+{% extends 'layouts/admin.html' if current_user.is_admin() else 'layouts/toko.html' %}
+{% from '_macros.html' import field, tombol_utama %}
+{% from '_icons.html' import icon %}
 {% block title %}Pengaturan Akun - {{ app_name }}{% endblock %}
 {% block content %}
-<div class="max-w-3xl mx-auto">
-    <h1 class="text-2xl font-extrabold text-slate-900 mb-2">Pengaturan Akun</h1>
-    <p class="text-slate-500 text-sm mb-6">
-        {{ current_user.username }} &middot; {{ current_user.email }} &middot;
-        <span class="uppercase text-xs font-semibold">{{ current_user.role }}</span>
-    </p>
+<div class="max-w-4xl {{ '' if current_user.is_admin() else 'mx-auto' }}">
+    {% if not current_user.is_admin() %}
+    <a href="{{ url_for('profil') }}" class="inline-flex items-center gap-2 text-sm font-medium text-muted hover:text-ink mb-4">
+        <span class="w-9 h-9 rounded-full bg-white border border-slate-100 flex items-center justify-center">{{ icon('arrow-left', 'w-4 h-4') }}</span>
+        Profil
+    </a>
+    {% endif %}
+    <h1 class="font-display text-2xl md:text-3xl font-extrabold">Pengaturan & Keamanan</h1>
+    <p class="text-muted text-sm mt-1 mb-6">{{ current_user.display_name }} &middot; {{ current_user.email }}</p>
 
-    <div class="grid md:grid-cols-2 gap-6">
-        <section class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-            <h2 class="text-lg font-bold text-slate-900 mb-4">Ubah Email</h2>
-            <form method="POST" action="{{ url_for('pengaturan_email') }}" class="space-y-4" novalidate>
-                {{ email_form.hidden_tag() }}
-                {{ field(email_form.email_baru, autocomplete="email", placeholder="nama@email.com") }}
-                {{ field(email_form.password_sekarang, autocomplete="current-password") }}
-                {{ email_form.submit(class="w-full bg-indigo-700 hover:bg-indigo-800 text-white font-semibold py-2.5 rounded-lg cursor-pointer") }}
+    <div class="grid md:grid-cols-2 gap-5">
+        <section class="bg-white p-6 rounded-2xl border border-slate-100 md:col-span-2">
+            <h2 class="font-display text-lg font-bold mb-4">Nama Tampilan</h2>
+            <form method="POST" action="{{ url_for('pengaturan_nama') }}" class="flex flex-col sm:flex-row gap-3 sm:items-end" novalidate>
+                {{ nama_form.hidden_tag() }}
+                <div class="flex-1">{{ field(nama_form.nama_lengkap, ikon='user', autocomplete="name") }}</div>
+                {{ nama_form.submit(class="sm:w-auto bg-brand hover:bg-brand-dark text-white font-medium px-6 py-3 rounded-full cursor-pointer") }}
             </form>
         </section>
 
-        <section class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-            <h2 class="text-lg font-bold text-slate-900 mb-4">Ubah Kata Sandi</h2>
+        <section class="bg-white p-6 rounded-2xl border border-slate-100">
+            <h2 class="font-display text-lg font-bold mb-4">Ubah Email</h2>
+            <form method="POST" action="{{ url_for('pengaturan_email') }}" class="space-y-4" novalidate>
+                {{ email_form.hidden_tag() }}
+                {{ field(email_form.email_baru, ikon='mail', autocomplete="email", placeholder="nama@email.com") }}
+                {{ field(email_form.password_sekarang, ikon='lock', autocomplete="current-password") }}
+                {{ tombol_utama(email_form.submit) }}
+            </form>
+        </section>
+
+        <section class="bg-white p-6 rounded-2xl border border-slate-100">
+            <h2 class="font-display text-lg font-bold mb-4">Ubah Kata Sandi</h2>
             <form method="POST" action="{{ url_for('pengaturan_password') }}" class="space-y-4" novalidate>
                 {{ password_form.hidden_tag() }}
-                {{ field(password_form.password_sekarang, autocomplete="current-password") }}
-                {{ field(password_form.password_baru, autocomplete="new-password") }}
-                <p class="text-xs text-slate-500 -mt-2">Minimal 8 karakter, mengandung huruf besar, huruf kecil, angka, dan simbol.</p>
-                {{ field(password_form.konfirmasi_password, autocomplete="new-password") }}
-                {{ password_form.submit(class="w-full bg-indigo-700 hover:bg-indigo-800 text-white font-semibold py-2.5 rounded-lg cursor-pointer") }}
+                {{ field(password_form.password_sekarang, ikon='lock', autocomplete="current-password") }}
+                {{ field(password_form.password_baru, ikon='lock', autocomplete="new-password") }}
+                <p class="text-xs text-muted -mt-2">Minimal 8 karakter, ada huruf besar, huruf kecil, angka, dan simbol.</p>
+                {{ field(password_form.konfirmasi_password, ikon='lock', autocomplete="new-password") }}
+                {{ tombol_utama(password_form.submit) }}
             </form>
         </section>
     </div>

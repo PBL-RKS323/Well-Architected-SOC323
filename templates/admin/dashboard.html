@@ -1,40 +1,91 @@
-{% extends 'base.html' %}
-{% block title %}Dashboard Admin - {{ app_name }}{% endblock %}
+{% extends 'layouts/admin.html' %}
+{% from '_icons.html' import icon %}
+{% block title %}Dasbor Admin - {{ app_name }}{% endblock %}
 {% block content %}
-<div class="mb-6">
-    <h1 class="text-2xl font-extrabold text-slate-900">Dashboard Admin</h1>
-    <p class="text-slate-500 text-sm">Login sebagai {{ admin.username }} (admin)</p>
+<div class="flex flex-wrap items-end justify-between gap-4 mb-8">
+    <div>
+        <h1 class="font-display text-3xl font-extrabold">{{ sapaan }}, {{ admin.display_name }}</h1>
+        <p class="text-muted mt-1">Dashboard Admin &middot; ringkasan kondisi toko hari ini.</p>
+    </div>
+    <a href="{{ url_for('admin_produk_tambah') }}" class="inline-flex items-center gap-2 bg-brand hover:bg-brand-dark text-white font-medium px-5 py-3 rounded-full shadow-lg shadow-brand/25">
+        {{ icon('plus', 'w-5 h-5') }} Tambah Produk
+    </a>
 </div>
 
-<div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-    {% for label, value in [('Total Produk', stats.total_produk), ('Total Stok', stats.total_stok),
-                            ('Produk Stok Habis', stats.stok_habis), ('Customer Terdaftar', stats.total_customer)] %}
-    <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
-        <p class="text-xs font-semibold uppercase text-slate-500">{{ label }}</p>
-        <p class="text-3xl font-extrabold text-slate-900 mt-1">{{ value }}</p>
+<div class="grid grid-cols-2 xl:grid-cols-4 gap-4 lg:gap-5 mb-8">
+    {% set kartu_stat = [
+        ('Total Produk', stats.total_produk, 'package', 'bg-brand-soft text-brand'),
+        ('Total Stok', stats.total_stok, 'layout-grid', 'bg-peach text-coral'),
+        ('Customer Terdaftar', stats.total_customer, 'users', 'bg-amber-100 text-amber-700'),
+        ('Stok Menipis', stats.stok_menipis, 'triangle-alert', 'bg-red-50 text-coral'),
+    ] %}
+    {% for label, nilai, ic, warna in kartu_stat %}
+    <div class="bg-white border border-slate-100 rounded-2xl p-5 shadow-[0_4px_20px_rgba(15,23,42,0.04)]">
+        <div class="flex items-start justify-between">
+            <p class="text-sm text-muted">{{ label }}</p>
+            <span class="w-10 h-10 rounded-xl flex items-center justify-center {{ warna }}">{{ icon(ic, 'w-5 h-5') }}</span>
+        </div>
+        <p class="font-display text-3xl font-extrabold mt-4">{{ nilai }}</p>
     </div>
     {% endfor %}
 </div>
 
-<div class="bg-white border border-slate-200 rounded-xl shadow-sm">
-    <div class="flex items-center justify-between p-4 border-b border-slate-200">
-        <h2 class="font-bold text-slate-900">Produk Terbaru</h2>
-        <div class="flex gap-2">
-            <a href="{{ url_for('admin_produk') }}" class="text-sm border border-slate-300 hover:bg-slate-50 px-3 py-1.5 rounded-lg">Kelola Produk</a>
-            <a href="{{ url_for('admin_produk_tambah') }}" class="text-sm bg-indigo-700 hover:bg-indigo-800 text-white px-3 py-1.5 rounded-lg">+ Tambah Produk</a>
+<div class="grid xl:grid-cols-3 gap-5">
+    <section class="xl:col-span-2 bg-white border border-slate-100 rounded-2xl overflow-hidden">
+        <div class="flex items-center justify-between p-5">
+            <div>
+                <h2 class="font-display text-lg font-bold">Produk Terbaru</h2>
+                <p class="text-sm text-muted">Produk yang terakhir ditambahkan ke katalog.</p>
+            </div>
+            <a href="{{ url_for('admin_produk') }}" class="inline-flex items-center gap-1 text-sm font-medium text-brand bg-brand-soft px-4 py-2 rounded-full">Lihat Semua {{ icon('chevron-right', 'w-4 h-4') }}</a>
         </div>
-    </div>
-    {% if produk_terbaru %}
-    <ul class="divide-y divide-slate-100">
-        {% for produk in produk_terbaru %}
-        <li class="flex items-center justify-between p-4 text-sm">
-            <span><strong>{{ produk.nama_produk }}</strong> <span class="text-slate-500">({{ produk.merek }})</span></span>
-            <span class="text-slate-600">{{ produk.harga | rupiah }} &middot; stok {{ produk.stok }}</span>
-        </li>
-        {% endfor %}
-    </ul>
-    {% else %}
-    <p class="p-6 text-center text-slate-500 text-sm">Belum ada produk.</p>
-    {% endif %}
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead class="bg-soft text-muted text-xs uppercase tracking-wide text-left">
+                    <tr><th class="px-5 py-3">Produk</th><th class="px-5 py-3">Kategori</th><th class="px-5 py-3">Harga</th><th class="px-5 py-3">Stok</th></tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                {% for produk in produk_terbaru %}
+                    <tr>
+                        <td class="px-5 py-3">
+                            <div class="flex items-center gap-3">
+                                <img src="{{ url_for('static', filename='uploads/' ~ produk.gambar) }}" alt="" class="w-10 h-10 rounded-lg object-cover border border-slate-100">
+                                <span><span class="block font-semibold">{{ produk.nama_produk }}</span><span class="block text-xs text-muted">{{ produk.merek }}</span></span>
+                            </div>
+                        </td>
+                        <td class="px-5 py-3 text-muted">{{ produk.kategori }}</td>
+                        <td class="px-5 py-3 font-semibold">{{ produk.harga | rupiah }}</td>
+                        <td class="px-5 py-3">{{ produk.stok }}</td>
+                    </tr>
+                {% else %}
+                    <tr><td colspan="4" class="px-5 py-8 text-center text-muted">Belum ada produk.</td></tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="bg-white border border-slate-100 rounded-2xl p-5">
+        <div class="flex items-center gap-2">
+            <span class="w-9 h-9 rounded-xl bg-red-50 text-coral flex items-center justify-center">{{ icon('triangle-alert', 'w-5 h-5') }}</span>
+            <h2 class="font-display text-lg font-bold">Peringatan Stok</h2>
+        </div>
+        <p class="text-sm text-muted mt-1">Produk dengan stok {{ '≤' }} 5 unit.</p>
+        <ul class="mt-4 divide-y divide-slate-100">
+            {% for produk in stok_menipis %}
+            <li class="flex items-center justify-between py-3 text-sm">
+                <span class="font-medium truncate pr-3">{{ produk.nama_produk }}</span>
+                <span class="shrink-0 text-xs font-semibold px-2.5 py-1 rounded-full {{ 'bg-red-50 text-coral' if produk.stok == 0 else 'bg-amber-50 text-amber-700' }}">
+                    {{ 'Habis' if produk.stok == 0 else produk.stok ~ ' unit' }}
+                </span>
+            </li>
+            {% else %}
+            <li class="py-6 text-center text-sm text-muted">Semua stok aman.</li>
+            {% endfor %}
+        </ul>
+        {% if stok_menipis %}
+        <a href="{{ url_for('admin_produk') }}" class="inline-flex items-center gap-1 mt-3 text-sm font-semibold text-coral">Restok sekarang {{ icon('arrow-right', 'w-4 h-4') }}</a>
+        {% endif %}
+    </section>
 </div>
 {% endblock %}

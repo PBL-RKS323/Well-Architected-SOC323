@@ -1,4 +1,6 @@
 import logging
+import re
+import secrets
 
 from flask import render_template, redirect, url_for, flash, session, request, current_app, g
 
@@ -15,15 +17,26 @@ def _safe_next_url(target):
     return None
 
 
+def _buat_username(email):
+    """Username internal dibuat otomatis dari email (tidak perlu diisi pengguna)."""
+    dasar = re.sub(r"[^a-z0-9_.]", "", email.split("@")[0].lower())[:40] or "user"
+    username = dasar
+    while User.query.filter_by(username=username).first():
+        username = f"{dasar}{secrets.randbelow(9000) + 1000}"
+    return username
+
+
 def register():
     if g.user:
-        return redirect(url_for("katalog"))
+        return redirect(url_for("beranda"))
 
     form = RegisterForm()
     if form.validate_on_submit():
+        email = form.email.data.strip().lower()
         new_user = User(
-            username=form.username.data.strip(),
-            email=form.email.data.strip().lower(),
+            username=_buat_username(email),
+            nama_lengkap=" ".join(form.nama_lengkap.data.split()),
+            email=email,
             role=User.ROLE_CUSTOMER,
         )
         new_user.set_password(form.password.data)
@@ -38,7 +51,7 @@ def register():
 
 def login():
     if g.user:
-        return redirect(url_for("admin_dashboard" if g.user.is_admin() else "katalog"))
+        return redirect(url_for("admin_dashboard" if g.user.is_admin() else "beranda"))
 
     form = LoginForm()
     if form.validate_on_submit():
@@ -58,15 +71,17 @@ def login():
             # Sesi lama dibuang agar tidak terjadi session fixation
             session.clear()
             session["user_id"] = user.id
-            session.permanent = True
+            # "Ingat saya": sesi bertahan 7 hari. Tanpa centang: sesi berakhir saat browser ditutup.
+            session.permanent = bool(form.ingat_saya.data)
 
-            log_event("SUCCESSFUL_LOGIN", user_id=user.id, username=user.username, role=user.role)
-            flash(f"Selamat datang, {user.username}!", "success")
+            log_event("SUCCESSFUL_LOGIN", user_id=user.id, username=user.username, role=user.role,
+                      remember=int(session.permanent))
+            flash(f"Selamat datang, {user.display_name}!", "success")
 
             next_url = _safe_next_url(request.args.get("next"))
             if user.is_admin():
                 return redirect(next_url or url_for("admin_dashboard"))
-            return redirect(next_url or url_for("katalog"))
+            return redirect(next_url or url_for("beranda"))
 
         # Gagal login: pesan dibuat sama agar penyerang tidak tahu email mana yang terdaftar
         if user:

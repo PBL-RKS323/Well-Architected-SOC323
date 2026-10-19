@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% from '_icons.html' import icon %}
+{% block body_class %}pb-20 md:pb-0{% endblock %}
+{% block body %}
+{% set ep = request.endpoint %}
+<header class="sticky top-0 z-30 bg-white/95 backdrop-blur border-b border-slate-100">
+    <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
+        <a href="{{ url_for('beranda') }}" class="font-display font-extrabold text-xl tracking-tight text-ink">{{ app_name }}</a>
+
+        <nav class="hidden md:flex items-center gap-6 text-sm font-medium text-muted">
+            <a href="{{ url_for('beranda') }}" class="{{ 'text-brand' if ep == 'beranda' else 'hover:text-ink' }}">Beranda</a>
+            <a href="{{ url_for('jelajah') }}" class="{{ 'text-brand' if ep in ['jelajah', 'produk_detail'] else 'hover:text-ink' }}">Jelajah</a>
+            {% if current_user and current_user.is_admin() %}
+                <a href="{{ url_for('admin_dashboard') }}" class="hover:text-ink">Panel Admin</a>
+            {% endif %}
+        </nav>
+
+        <div class="flex items-center gap-1">
+            <a href="{{ url_for('jelajah') }}" aria-label="Cari produk" class="p-2.5 rounded-full hover:bg-soft">{{ icon('search', 'w-5 h-5') }}</a>
+            {% if current_user %}
+                <a href="{{ url_for('profil') }}" class="hidden md:flex items-center gap-2 ml-2 pl-3 border-l border-slate-200 text-sm font-medium hover:text-brand">
+                    {{ icon('user', 'w-5 h-5') }} {{ current_user.display_name }}
+                </a>
+            {% else %}
+                <a href="{{ url_for('login') }}" class="hidden md:inline-flex ml-2 bg-brand hover:bg-brand-dark text-white text-sm font-medium px-4 py-2 rounded-full">Masuk</a>
+            {% endif %}
+        </div>
+    </div>
+</header>
+
+<main class="max-w-6xl mx-auto px-4 pt-5 pb-10">
+    {% include '_flash.html' %}
+    {% block content %}{% endblock %}
+</main>
+
+<footer class="hidden md:block border-t border-slate-200 bg-white">
+    <div class="max-w-6xl mx-auto px-4 py-6 text-xs text-muted flex justify-between">
+        <span>&copy; {{ app_name }}</span><span>PBL RKS 323</span>
+    </div>
+</footer>
+
+{# Navigasi bawah khusus layar HP #}
+<nav class="md:hidden fixed bottom-0 inset-x-0 z-30 bg-white border-t border-slate-100 shadow-[0_-4px_16px_rgba(15,23,42,0.04)]">
+    <div class="grid grid-cols-3 text-[11px] font-medium">
+        {% set items = [
+            ('beranda', 'store', 'Beranda', ['beranda']),
+            ('jelajah', 'layout-grid', 'Jelajah', ['jelajah', 'produk_detail']),
+            ('profil', 'user', 'Profil', ['profil', 'pengaturan']),
+        ] %}
+        {% for endpoint, ic, label, active in items %}
+        <a href="{{ url_for(endpoint) }}" class="flex flex-col items-center gap-1 py-2.5 {{ 'text-brand' if ep in active else 'text-muted' }}">
+            {{ icon(ic, 'w-6 h-6') }}<span>{{ label }}</span>
+        </a>
+        {% endfor %}
+    </div>
+</nav>
+{% endblock %}

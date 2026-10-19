@@ -8,7 +8,7 @@ from models import db
 from models.user import User
 
 # Endpoint yang boleh diakses tanpa login. Endpoint lain otomatis wajib login (default deny).
-PUBLIC_ENDPOINTS = {"static", "katalog", "login", "register"}
+PUBLIC_ENDPOINTS = {"static", "beranda", "jelajah", "produk_detail", "login", "register"}
 
 
 def init_auth_middleware(app):
@@ -29,7 +29,8 @@ def init_auth_middleware(app):
         # 2. Autentikasi global
         if g.user is None:
             flash("Silakan login terlebih dahulu untuk mengakses halaman ini.", "warning")
-            return redirect(url_for("login", next=request.path))
+            # next hanya untuk GET (URL aksi POST tidak bisa dibuka ulang setelah login)
+            return redirect(url_for("login", next=request.path if request.method == "GET" else None))
 
         # 3. Otorisasi area admin: role dibaca dari database, bukan dari sesi
         if request.path.startswith("/admin"):
@@ -37,7 +38,7 @@ def init_auth_middleware(app):
                 log_event("ACCESS_DENIED", logging.WARNING, user_id=g.user.id,
                           username=g.user.username, role=g.user.role, path=request.path)
                 flash("Akses ditolak! Halaman ini khusus untuk Admin.", "danger")
-                return redirect(url_for("katalog"))
+                return redirect(url_for("beranda"))
             log_event("ADMIN_ACCESS", user_id=g.user.id, username=g.user.username,
                       method=request.method, path=request.path)
         return None
@@ -49,6 +50,6 @@ def admin_required(view):
     def wrapped(*args, **kwargs):
         if g.get("user") is None or not g.user.is_admin():
             flash("Akses ditolak! Halaman ini khusus untuk Admin.", "danger")
-            return redirect(url_for("katalog"))
+            return redirect(url_for("beranda"))
         return view(*args, **kwargs)
     return wrapped

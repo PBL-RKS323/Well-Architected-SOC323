@@ -16,7 +16,9 @@ class User(db.Model):
     ROLE_CUSTOMER = "customer"
 
     id = db.Column(db.Integer, primary_key=True)
+    # username = identitas internal (dipakai di log), nama_lengkap = nama yang tampil di halaman
     username = db.Column(db.String(50), unique=True, nullable=False)
+    nama_lengkap = db.Column(db.String(100), nullable=False, default="", server_default="")
     email = db.Column(db.String(100), unique=True, nullable=False)
     password_hash = db.Column(db.String(255), nullable=False)
     role = db.Column(db.String(20), nullable=False, default=ROLE_CUSTOMER)
@@ -36,6 +38,15 @@ class User(db.Model):
 
     def is_admin(self):
         return self.role == self.ROLE_ADMIN
+
+    @property
+    def display_name(self):
+        return self.nama_lengkap or self.username
+
+    @property
+    def initials(self):
+        parts = self.display_name.split()
+        return "".join(p[0] for p in parts[:2]).upper() or "?"
 
     def is_locked(self):
         return self.locked_until is not None and self.locked_until > utcnow()

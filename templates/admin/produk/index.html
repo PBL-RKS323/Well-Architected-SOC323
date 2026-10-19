@@ -1,44 +1,68 @@
-{% extends 'base.html' %}
+{% extends 'layouts/admin.html' %}
+{% from '_icons.html' import icon %}
 {% block title %}Kelola Produk - {{ app_name }}{% endblock %}
 {% block content %}
-<div class="flex flex-wrap items-center justify-between gap-4 mb-6">
-    <h1 class="text-2xl font-extrabold text-slate-900">Kelola Produk</h1>
-    <a href="{{ url_for('admin_produk_tambah') }}" class="bg-indigo-700 hover:bg-indigo-800 text-white text-sm font-semibold px-4 py-2 rounded-lg">+ Tambah Produk</a>
+<div class="flex flex-wrap items-end justify-between gap-4 mb-6">
+    <div>
+        <h1 class="font-display text-3xl font-extrabold">Produk</h1>
+        <p class="text-muted mt-1">{{ produk_list | length }} produk{{ ' untuk pencarian "' ~ q ~ '"' if q }}</p>
+    </div>
+    <a href="{{ url_for('admin_produk_tambah') }}" class="inline-flex items-center gap-2 bg-brand hover:bg-brand-dark text-white font-medium px-5 py-3 rounded-full shadow-lg shadow-brand/25">
+        {{ icon('plus', 'w-5 h-5') }} Tambah Produk
+    </a>
 </div>
 
-<div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-x-auto">
+<form method="GET" class="lg:hidden relative mb-4">
+    <span class="absolute left-4 top-1/2 -translate-y-1/2 text-muted">{{ icon('search', 'w-4 h-4') }}</span>
+    <input type="search" name="q" value="{{ q }}" placeholder="Cari produk..." class="w-full bg-white border border-slate-100 rounded-full pl-11 pr-4 py-2.5 text-sm">
+</form>
+
+<div class="bg-white border border-slate-100 rounded-2xl overflow-x-auto">
     <table class="w-full text-sm">
-        <thead class="bg-slate-100 text-slate-600 text-left">
+        <thead class="bg-soft text-muted text-xs uppercase tracking-wide text-left">
             <tr>
-                <th class="p-3">Gambar</th>
-                <th class="p-3">Nama Produk</th>
-                <th class="p-3">Kategori</th>
-                <th class="p-3">Harga</th>
-                <th class="p-3">Stok</th>
-                <th class="p-3 text-right">Aksi</th>
+                <th class="px-5 py-3">Produk</th>
+                <th class="px-5 py-3">Kategori</th>
+                <th class="px-5 py-3">Harga</th>
+                <th class="px-5 py-3">Stok</th>
+                <th class="px-5 py-3 text-right">Aksi</th>
             </tr>
         </thead>
         <tbody class="divide-y divide-slate-100">
         {% for produk in produk_list %}
             <tr>
-                <td class="p-3"><img src="{{ url_for('static', filename='uploads/' ~ produk.gambar) }}" alt="" class="w-14 h-14 object-cover rounded-lg border"></td>
-                <td class="p-3"><strong>{{ produk.nama_produk }}</strong><br><span class="text-slate-500 text-xs">{{ produk.merek }}</span></td>
-                <td class="p-3">{{ produk.kategori }}</td>
-                <td class="p-3">{{ produk.harga | rupiah }}</td>
-                <td class="p-3">{{ produk.stok }}</td>
-                <td class="p-3">
+                <td class="px-5 py-3">
+                    <div class="flex items-center gap-3">
+                        <img src="{{ url_for('static', filename='uploads/' ~ produk.gambar) }}" alt="" class="w-12 h-12 object-cover rounded-xl border border-slate-100">
+                        <span><span class="block font-semibold">{{ produk.nama_produk }}</span><span class="block text-xs text-muted">{{ produk.merek }}</span></span>
+                    </div>
+                </td>
+                <td class="px-5 py-3 text-muted">{{ produk.kategori }}</td>
+                <td class="px-5 py-3">
+                    <span class="font-semibold">{{ produk.harga | rupiah }}</span>
+                    {% if produk.diskon_persen %}<span class="ml-1 text-[11px] font-bold text-coral">-{{ produk.diskon_persen }}%</span>{% endif %}
+                </td>
+                <td class="px-5 py-3">
+                    <span class="text-xs font-semibold px-2.5 py-1 rounded-full
+                        {{ 'bg-red-50 text-coral' if produk.stok == 0 else ('bg-amber-50 text-amber-700' if produk.stok <= produk.STOK_MENIPIS else 'bg-emerald-50 text-emerald-700') }}">
+                        {{ produk.stok }}
+                    </span>
+                </td>
+                <td class="px-5 py-3">
                     <div class="flex justify-end gap-2">
-                        <a href="{{ url_for('admin_produk_edit', produk_id=produk.id) }}" class="bg-amber-500 hover:bg-amber-600 text-white font-semibold px-3 py-1.5 rounded-lg">Edit</a>
+                        <a href="{{ url_for('admin_produk_edit', produk_id=produk.id) }}" aria-label="Edit {{ produk.nama_produk }}"
+                           class="inline-flex items-center gap-1.5 border border-slate-200 hover:border-brand hover:text-brand px-3 py-2 rounded-full">{{ icon('pencil', 'w-4 h-4') }} Edit</a>
                         <form action="{{ url_for('admin_produk_hapus', produk_id=produk.id) }}" method="POST"
                               data-confirm="Hapus produk '{{ produk.nama_produk }}' secara permanen?">
                             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                            <button type="submit" class="bg-red-600 hover:bg-red-700 text-white font-semibold px-3 py-1.5 rounded-lg cursor-pointer">Hapus</button>
+                            <button type="submit" aria-label="Hapus {{ produk.nama_produk }}"
+                                    class="inline-flex items-center gap-1.5 bg-red-50 hover:bg-red-100 text-coral px-3 py-2 rounded-full cursor-pointer">{{ icon('trash-2', 'w-4 h-4') }} Hapus</button>
                         </form>
                     </div>
                 </td>
             </tr>
         {% else %}
-            <tr><td colspan="6" class="p-8 text-center text-slate-500">Belum ada produk. Klik "+ Tambah Produk".</td></tr>
+            <tr><td colspan="5" class="px-5 py-10 text-center text-muted">{{ 'Tidak ada produk yang cocok.' if q else 'Belum ada produk. Klik "Tambah Produk".' }}</td></tr>
         {% endfor %}
         </tbody>
     </table>

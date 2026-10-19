@@ -6,13 +6,15 @@ from models.user import User
 
 def test_register_berhasil_sebagai_customer(client, app):
     resp = client.post("/register", data={
-        "username": "siti_01", "email": "Siti@TokoElektronik.id",
+        "nama_lengkap": "Siti Aminah", "setuju": "y", "email": "Siti@TokoElektronik.id",
         "password": "Rahasia123!", "confirm_password": "Rahasia123!",
     })
     assert resp.status_code == 302
     with app.app_context():
-        user = User.query.filter_by(username="siti_01").first()
+        user = User.query.filter_by(email="siti@tokoelektronik.id").first()
         assert user.role == User.ROLE_CUSTOMER
+        assert user.nama_lengkap == "Siti Aminah"
+        assert user.username == "siti"  # dibuat otomatis dari email
         assert user.email == "siti@tokoelektronik.id"
         assert user.password_hash != "Rahasia123!"
     assert "REGISTER_SUCCESS" in read_log(app)
@@ -20,18 +22,43 @@ def test_register_berhasil_sebagai_customer(client, app):
 
 def test_register_menolak_password_lemah(client, app):
     resp = client.post("/register", data={
-        "username": "lemah", "email": "lemah@tokoelektronik.id",
+        "nama_lengkap": "Lemah Sekali", "setuju": "y", "email": "lemah@tokoelektronik.id",
         "password": "password", "confirm_password": "password",
     })
     assert resp.status_code == 200
     assert "huruf besar" in resp.get_data(as_text=True)
     with app.app_context():
-        assert User.query.filter_by(username="lemah").first() is None
+        assert User.query.filter_by(email="lemah@tokoelektronik.id").first() is None
+
+
+def test_register_wajib_setuju_syarat(client, app):
+    resp = client.post("/register", data={
+        "nama_lengkap": "Tanpa Centang", "email": "tanpa@tokoelektronik.id",
+        "password": "Rahasia123!", "confirm_password": "Rahasia123!",
+    })
+    assert "menyetujui syarat" in resp.get_data(as_text=True)
+
+
+def test_username_otomatis_unik(client, app):
+    for email in ["rina@tokoelektronik.id", "rina@lain.id"]:
+        client.post("/register", data={"nama_lengkap": "Rina", "setuju": "y", "email": email,
+                                       "password": "Rahasia123!", "confirm_password": "Rahasia123!"})
+    with app.app_context():
+        usernames = {u.username for u in User.query.filter(User.email.like("rina@%")).all()}
+    assert len(usernames) == 2 and "rina" in usernames
+
+
+def test_ingat_saya_membuat_sesi_permanen(client):
+    resp = client.post("/login", data={"email": "budi@tokoelektronik.id", "password": CUSTOMER_PASSWORD, "ingat_saya": "y"})
+    assert "Expires=" in resp.headers.get("Set-Cookie", "")
+    client.post("/logout")
+    resp = client.post("/login", data={"email": "budi@tokoelektronik.id", "password": CUSTOMER_PASSWORD})
+    assert "Expires=" not in resp.headers.get("Set-Cookie", "")
 
 
 def test_register_menolak_email_duplikat(client):
     resp = client.post("/register", data={
-        "username": "budi2", "email": "budi@tokoelektronik.id",
+        "nama_lengkap": "Budi Dua", "setuju": "y", "email": "budi@tokoelektronik.id",
         "password": "Rahasia123!", "confirm_password": "Rahasia123!",
     })
     assert "Email sudah terdaftar" in resp.get_data(as_text=True)

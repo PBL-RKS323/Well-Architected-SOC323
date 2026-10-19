@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField
+from wtforms import StringField, PasswordField, BooleanField, SubmitField
 from wtforms.validators import DataRequired, Email, Length, EqualTo, Regexp, ValidationError
 
 from models.user import User
@@ -8,13 +8,14 @@ from models.user import User
 PASSWORD_POLICY = r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9\s]).{8,128}$"
 PASSWORD_POLICY_MESSAGE = ("Kata sandi minimal 8 karakter dan harus mengandung huruf besar, huruf kecil, "
                            "angka, dan simbol (contoh: # @ ! _ -).")
+NAMA_POLICY = r"^[A-Za-zÀ-ÖØ-öø-ÿ' .-]+$"
 
 
 class RegisterForm(FlaskForm):
-    username = StringField("Username", validators=[
-        DataRequired(message="Username wajib diisi."),
-        Length(min=4, max=50, message="Username harus 4-50 karakter."),
-        Regexp(r"^[A-Za-z0-9_.]+$", message="Username hanya boleh huruf, angka, titik, dan garis bawah."),
+    nama_lengkap = StringField("Nama Lengkap", validators=[
+        DataRequired(message="Nama lengkap wajib diisi."),
+        Length(min=3, max=100, message="Nama lengkap harus 3-100 karakter."),
+        Regexp(NAMA_POLICY, message="Nama hanya boleh berisi huruf, spasi, titik, tanda hubung, dan apostrof."),
     ])
     email = StringField("Email", validators=[
         DataRequired(message="Email wajib diisi."),
@@ -30,11 +31,10 @@ class RegisterForm(FlaskForm):
         DataRequired(message="Konfirmasi kata sandi wajib diisi."),
         EqualTo("password", message="Konfirmasi kata sandi tidak cocok."),
     ])
-    submit = SubmitField("Daftar")
-
-    def validate_username(self, field):
-        if User.query.filter_by(username=field.data).first():
-            raise ValidationError("Username sudah digunakan!")
+    setuju = BooleanField("Saya setuju dengan Syarat & Ketentuan serta Kebijakan Privasi", validators=[
+        DataRequired(message="Anda harus menyetujui syarat & ketentuan."),
+    ])
+    submit = SubmitField("Buat Akun")
 
     def validate_email(self, field):
         if User.query.filter_by(email=field.data.strip().lower()).first():
@@ -48,4 +48,5 @@ class LoginForm(FlaskForm):
         Length(max=100),
     ])
     password = PasswordField("Kata Sandi", validators=[DataRequired(message="Kata sandi wajib diisi.")])
+    ingat_saya = BooleanField("Ingat saya")
     submit = SubmitField("Masuk")

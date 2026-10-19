@@ -2,7 +2,7 @@ import os
 
 from flask_wtf import FlaskForm
 from wtforms import StringField, DecimalField, IntegerField, TextAreaField, FileField, SelectField, SubmitField
-from wtforms.validators import DataRequired, InputRequired, Length, NumberRange, ValidationError
+from wtforms.validators import DataRequired, InputRequired, Length, NumberRange, Optional, ValidationError
 
 from models.produk import Produk
 
@@ -22,6 +22,10 @@ class FormProduk(FlaskForm):
         DataRequired(message="Harga wajib diisi dengan angka!"),
         NumberRange(min=1000, max=999_999_999, message="Harga harus antara Rp 1.000 dan Rp 999.999.999"),
     ])
+    harga_normal = DecimalField("Harga Normal / Sebelum Diskon (opsional)", places=2, validators=[
+        Optional(),
+        NumberRange(min=1000, max=999_999_999, message="Harga normal harus antara Rp 1.000 dan Rp 999.999.999"),
+    ])
     stok = IntegerField("Stok", validators=[
         InputRequired(message="Stok wajib diisi!"),
         NumberRange(min=0, max=100_000, message="Stok harus antara 0 dan 100.000"),
@@ -31,6 +35,10 @@ class FormProduk(FlaskForm):
     ])
     gambar = FileField("Foto Produk (JPG/PNG, maks. 2 MB)")
     submit = SubmitField("Simpan")
+
+    def validate_harga_normal(self, field):
+        if field.data is not None and self.harga.data is not None and field.data <= self.harga.data:
+            raise ValidationError("Harga normal harus lebih tinggi dari harga jual (atau kosongkan jika tidak diskon).")
 
     # Validasi lapis pertama: ekstensi nama file. Lapis kedua (isi biner) ada di helpers/image_security.py
     def validate_gambar(self, field):

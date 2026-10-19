@@ -30,9 +30,9 @@ def app(tmp_path):
     app = create_app(Cfg)
     with app.app_context():
         db.create_all()
-        admin = User(username="admin", email="admin@tokoelektronik.id", role=User.ROLE_ADMIN)
+        admin = User(username="admin", nama_lengkap="Admin Toko", email="admin@tokoelektronik.id", role=User.ROLE_ADMIN)
         admin.set_password(ADMIN_PASSWORD)
-        customer = User(username="budi", email="budi@tokoelektronik.id", role=User.ROLE_CUSTOMER)
+        customer = User(username="budi", nama_lengkap="Budi Santoso", email="budi@tokoelektronik.id", role=User.ROLE_CUSTOMER)
         customer.set_password(CUSTOMER_PASSWORD)
         db.session.add_all([admin, customer])
         db.session.commit()

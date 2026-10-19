@@ -3,6 +3,40 @@
 Setiap perubahan dicatat di sini: apa yang berubah, alasannya, dan cara mengujinya.
 Format tanggal: YYYY-MM-DD (WIB).
 
+## [0.3.0] - 2026-10-19 - Sprint 3: Tampilan Sesuai Desain Figma
+
+### Ditambahkan
+- **Sistem desain** dari moodboard Figma: font Inter + Plus Jakarta Sans, palet warna (Bright Blue
+  `#2F80ED`, Soft Gray, Peach, Slate, Coral Red, Warm Yellow), tombol pill, sudut 8-16px,
+  bayangan lembut, ikon garis tipis Lucide (disimpan sebagai macro, tanpa skrip eksternal).
+- **Layout mobile-first** untuk toko: header ringkas + navigasi bawah (Beranda, Jelajah, Profil)
+  di HP, menu atas di desktop. **Layout admin desktop** dengan sidebar.
+- **Beranda**: kolom pencarian, produk unggulan (diskon terbesar), belanja per kategori,
+  produk per ekosistem brand.
+- **Jelajah** (`/jelajah`): pencarian nama/merek/kategori/deskripsi, filter kategori, merek,
+  rentang harga, urutan (terbaru, termurah, termahal, nama), paginasi 12 produk.
+- **Detail produk** (`/produk/<id>`): foto, badge diskon/stok, harga coret, ringkasan, info
+  pengiriman, produk lain dari merek yang sama.
+- **Profil** (`/profil`) dan form ubah nama di Pengaturan.
+- Harga normal (opsional) untuk menampilkan diskon dan harga coret.
+- Register memakai **nama lengkap** + persetujuan syarat; username internal dibuat otomatis
+  dari email. Login punya opsi **Ingat saya**.
+- Dashboard admin: sapaan sesuai jam (WIB), kartu statistik, produk terbaru, peringatan stok
+  (≤ 5 unit). Daftar produk admin bisa dicari.
+
+### Diubah
+- Endpoint `katalog` diganti `beranda`; `katalog_controller` menjadi `toko_controller`.
+- Sesi: tanpa "Ingat saya" berakhir saat browser ditutup, dengan "Ingat saya" bertahan 7 hari.
+- CSP mengizinkan Google Fonts (`fonts.googleapis.com`, `fonts.gstatic.com`).
+
+### Keamanan
+- Karakter `%` dan `_` dalam kata kunci pencarian di-escape agar tidak menjadi wildcard SQL.
+- Parameter filter yang tidak valid (kategori/merek di luar daftar, harga bukan angka) diabaikan.
+
+### Cara uji
+- `pytest -q` → 55 passed.
+- `flask db upgrade` untuk menambah kolom `users.nama_lengkap` dan `produk.harga_normal`.
+
 ## [0.2.1] - 2026-10-19 - Penyesuaian Tampilan & Katalog
 
 ### Diubah

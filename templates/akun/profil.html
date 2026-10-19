@@ -1,0 +1,47 @@
+{% extends 'layouts/toko.html' %}
+{% from '_icons.html' import icon %}
+{% block title %}Profil - {{ app_name }}{% endblock %}
+{% block content %}
+<div class="max-w-xl mx-auto">
+    <section class="bg-white rounded-3xl border border-slate-100 p-6 text-center shadow-[0_4px_20px_rgba(15,23,42,0.04)]">
+        <span class="inline-flex w-24 h-24 rounded-full bg-brand-soft ring-4 ring-brand-soft/60 text-brand font-display text-3xl font-extrabold items-center justify-center">
+            {{ current_user.initials }}
+        </span>
+        <h1 class="font-display text-2xl font-extrabold mt-4">{{ current_user.display_name }}</h1>
+        <p class="text-muted">{{ current_user.email }}</p>
+        <div class="grid grid-cols-2 gap-3 mt-5">
+            <div class="bg-soft rounded-2xl py-3">
+                <p class="font-bold capitalize">{{ current_user.role }}</p>
+                <p class="text-xs text-muted">Jenis akun</p>
+            </div>
+            <div class="bg-soft rounded-2xl py-3">
+                <p class="font-bold">{{ current_user.created_at.strftime('%m/%Y') }}</p>
+                <p class="text-xs text-muted">Bergabung</p>
+            </div>
+        </div>
+    </section>
+
+    <h2 class="text-xs font-bold tracking-wider text-muted mt-7 mb-2 px-1">AKUN</h2>
+    <nav class="bg-white rounded-2xl border border-slate-100 divide-y divide-slate-100">
+        {% if current_user.is_admin() %}
+        <a href="{{ url_for('admin_dashboard') }}" class="flex items-center gap-4 p-4 hover:bg-soft/60">
+            <span class="w-11 h-11 rounded-full bg-brand-soft text-brand flex items-center justify-center">{{ icon('layout-dashboard', 'w-5 h-5') }}</span>
+            <span class="flex-1"><span class="block font-semibold">Panel Admin</span><span class="block text-sm text-muted">Kelola produk dan toko</span></span>
+            <span class="text-muted">{{ icon('chevron-right', 'w-5 h-5') }}</span>
+        </a>
+        {% endif %}
+        <a href="{{ url_for('pengaturan') }}" class="flex items-center gap-4 p-4 hover:bg-soft/60">
+            <span class="w-11 h-11 rounded-full bg-brand-soft text-brand flex items-center justify-center">{{ icon('shield-check', 'w-5 h-5') }}</span>
+            <span class="flex-1"><span class="block font-semibold">Pengaturan & Keamanan</span><span class="block text-sm text-muted">Ubah nama, email, dan kata sandi</span></span>
+            <span class="text-muted">{{ icon('chevron-right', 'w-5 h-5') }}</span>
+        </a>
+    </nav>
+
+    <form action="{{ url_for('logout') }}" method="POST" class="mt-6">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button type="submit" class="w-full flex items-center justify-center gap-2 bg-red-50 hover:bg-red-100 text-coral font-semibold py-3.5 rounded-2xl cursor-pointer">
+            {{ icon('log-out', 'w-5 h-5') }} Keluar
+        </button>
+    </form>
+</div>
+{% endblock %}

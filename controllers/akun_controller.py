@@ -2,21 +2,36 @@ import logging
 
 from flask import render_template, redirect, url_for, flash, session, g
 
-from forms.akun_form import UbahEmailForm, UbahPasswordForm
+from forms.akun_form import UbahNamaForm, UbahEmailForm, UbahPasswordForm
 from helpers.security_logger import log_event
 from models import db
 
 
-def _render(email_form=None, password_form=None):
+def _render(nama_form=None, email_form=None, password_form=None):
     return render_template(
         "akun/pengaturan.html",
+        nama_form=nama_form or UbahNamaForm(prefix="nama", formdata=None, nama_lengkap=g.user.nama_lengkap),
         email_form=email_form or UbahEmailForm(prefix="email", formdata=None),
         password_form=password_form or UbahPasswordForm(prefix="pw", formdata=None),
     )
 
 
+def profil():
+    return render_template("akun/profil.html")
+
+
 def pengaturan():
     return _render()
+
+
+def ubah_nama():
+    form = UbahNamaForm(prefix="nama")
+    if form.validate_on_submit():
+        g.user.nama_lengkap = " ".join(form.nama_lengkap.data.split())
+        db.session.commit()
+        flash("Nama berhasil diperbarui.", "success")
+        return redirect(url_for("pengaturan"))
+    return _render(nama_form=form)
 
 
 def ubah_email():

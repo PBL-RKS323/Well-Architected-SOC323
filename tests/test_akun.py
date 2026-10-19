@@ -4,7 +4,7 @@ from models.user import User
 
 def test_password_dengan_simbol_pagar_diterima(client, app):
     resp = client.post("/register", data={
-        "username": "andi", "email": "andi@tokoelektronik.id",
+        "nama_lengkap": "Andi Wijaya", "setuju": "y", "email": "andi@tokoelektronik.id",
         "password": "Admin123#", "confirm_password": "Admin123#",
     })
     assert resp.status_code == 302

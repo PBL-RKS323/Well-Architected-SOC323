@@ -1,7 +1,8 @@
 import logging
 
-from flask import render_template, redirect, url_for, flash, current_app, g
+from flask import render_template, redirect, url_for, flash, current_app, g, request
 
+from controllers.toko_controller import _escape_like
 from forms.produk_form import FormProduk
 from helpers.image_security import upload_secure_image, delete_image
 from helpers.security_logger import log_event
@@ -15,6 +16,7 @@ def _isi_produk(produk, form):
     produk.merek = form.merek.data.strip()
     produk.kategori = form.kategori.data
     produk.harga = form.harga.data
+    produk.harga_normal = form.harga_normal.data or None
     produk.stok = form.stok.data
     produk.deskripsi = (form.deskripsi.data or "").strip()
 
@@ -26,9 +28,14 @@ def _tolak_upload(filename):
 
 @admin_required
 def index():
-    """[READ] Daftar produk di panel admin"""
-    daftar_produk = Produk.query.order_by(Produk.id.desc()).all()
-    return render_template("admin/produk/index.html", produk_list=daftar_produk)
+    """[READ] Daftar produk di panel admin, bisa dicari berdasarkan nama/merek"""
+    q = request.args.get("q", "").strip()[:100]
+    query = Produk.query
+    if q:
+        pola = f"%{_escape_like(q)}%"
+        query = query.filter(Produk.nama_produk.ilike(pola, escape="\\") | Produk.merek.ilike(pola, escape="\\"))
+    daftar_produk = query.order_by(Produk.id.desc()).all()
+    return render_template("admin/produk/index.html", produk_list=daftar_produk, q=q)
 
 
 @admin_required

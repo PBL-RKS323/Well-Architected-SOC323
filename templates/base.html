@@ -4,55 +4,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}{{ app_name }}{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap">
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    {# Palet & tipografi mengikuti moodboard desain (Figma) #}
+    <style type="text/tailwindcss">
+        @theme {
+            --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+            --font-display: "Plus Jakarta Sans", "Inter", ui-sans-serif, sans-serif;
+            --color-brand: #2F80ED;
+            --color-brand-dark: #1B5FC1;
+            --color-brand-soft: #EAF2FD;
+            --color-ink: #1F2937;
+            --color-muted: #6B7280;
+            --color-soft: #F4F6F8;
+            --color-peach: #FDF0EA;
+            --color-coral: #F04438;
+            --color-sun: #F5A623;
+        }
+        .scrollbar-none { scrollbar-width: none; }
+        .scrollbar-none::-webkit-scrollbar { display: none; }
+    </style>
     <script src="{{ url_for('static', filename='js/app.js') }}" defer></script>
 </head>
-<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
-    <nav class="bg-indigo-900 text-white shadow-md">
-        <div class="container mx-auto max-w-6xl px-4 py-3 flex flex-wrap justify-between items-center gap-3">
-            <a href="{{ url_for('katalog') }}" class="font-bold text-lg tracking-wide">{{ app_name }}</a>
-            <div class="flex items-center gap-4 text-sm font-medium">
-                <a href="{{ url_for('katalog') }}" class="hover:text-indigo-200">Katalog</a>
-                {% if current_user %}
-                    {% if current_user.is_admin() %}
-                        <a href="{{ url_for('admin_dashboard') }}" class="hover:text-indigo-200">Dashboard Admin</a>
-                        <a href="{{ url_for('admin_produk') }}" class="hover:text-indigo-200">Kelola Produk</a>
-                    {% endif %}
-                    <a href="{{ url_for('pengaturan') }}" class="hover:text-indigo-200">Pengaturan</a>
-                    <span class="flex items-center gap-1.5 text-indigo-100">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/>
-                        </svg>
-                        {{ current_user.username }}
-                    </span>
-                    <form action="{{ url_for('logout') }}" method="POST">
-                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                        <button type="submit" class="bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-lg cursor-pointer">Logout</button>
-                    </form>
-                {% else %}
-                    <a href="{{ url_for('login') }}" class="hover:text-indigo-200">Login</a>
-                    <a href="{{ url_for('register') }}" class="bg-white text-indigo-900 px-3 py-1.5 rounded-lg hover:bg-indigo-100">Daftar</a>
-                {% endif %}
-            </div>
-        </div>
-    </nav>
-
-    <main class="container mx-auto max-w-6xl px-4 mt-8 mb-12 flex-1">
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% for category, message in messages %}
-                {% set colors = {
-                    'success': 'bg-emerald-50 text-emerald-900 border-emerald-300',
-                    'danger': 'bg-red-50 text-red-900 border-red-300',
-                    'warning': 'bg-amber-50 text-amber-900 border-amber-300'
-                } %}
-                <div class="p-4 mb-4 text-sm rounded-lg border shadow-sm {{ colors.get(category, 'bg-indigo-50 text-indigo-900 border-indigo-300') }}">
-                    {{ message }}
-                </div>
-            {% endfor %}
-        {% endwith %}
-        {% block content %}{% endblock %}
-    </main>
-
-    <footer class="text-center text-xs text-slate-400 py-6">&copy; {{ app_name }} - PBL RKS 323</footer>
+<body class="bg-soft text-ink font-sans antialiased min-h-screen {% block body_class %}{% endblock %}">
+    {% block body %}{% endblock %}
 </body>
 </html>

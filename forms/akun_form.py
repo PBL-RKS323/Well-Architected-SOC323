@@ -3,8 +3,17 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired, Email, Length, EqualTo, Regexp, ValidationError
 
-from forms.auth_form import PASSWORD_POLICY, PASSWORD_POLICY_MESSAGE
+from forms.auth_form import PASSWORD_POLICY, PASSWORD_POLICY_MESSAGE, NAMA_POLICY
 from models.user import User
+
+
+class UbahNamaForm(FlaskForm):
+    nama_lengkap = StringField("Nama Lengkap", validators=[
+        DataRequired(message="Nama lengkap wajib diisi."),
+        Length(min=3, max=100, message="Nama lengkap harus 3-100 karakter."),
+        Regexp(NAMA_POLICY, message="Nama hanya boleh berisi huruf, spasi, titik, tanda hubung, dan apostrof."),
+    ])
+    submit = SubmitField("Simpan Nama")
 
 
 class UbahEmailForm(FlaskForm):

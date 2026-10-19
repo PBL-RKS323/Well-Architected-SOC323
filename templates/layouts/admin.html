@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% from '_icons.html' import icon %}
+{% block body %}
+{% set ep = request.endpoint or '' %}
+{% set menu = [
+    ('admin_dashboard', 'layout-dashboard', 'Dasbor', ep == 'admin_dashboard'),
+    ('admin_produk', 'package', 'Produk', ep.startswith('admin_produk')),
+    ('pengaturan', 'settings', 'Pengaturan', ep == 'pengaturan'),
+    ('beranda', 'store', 'Lihat Toko', false),
+] %}
+<div class="min-h-screen lg:flex">
+    <aside class="hidden lg:flex lg:flex-col w-64 shrink-0 bg-white border-r border-slate-100 p-5 sticky top-0 h-screen">
+        <a href="{{ url_for('admin_dashboard') }}" class="flex items-center gap-3 px-2 mb-8">
+            <span class="w-10 h-10 rounded-xl bg-brand text-white flex items-center justify-center">{{ icon('shopping-bag', 'w-5 h-5') }}</span>
+            <span>
+                <span class="block font-display font-extrabold text-ink leading-tight">{{ app_name }}</span>
+                <span class="block text-xs text-muted">Admin Panel</span>
+            </span>
+        </a>
+        <nav class="space-y-1 text-sm font-medium">
+            {% for endpoint, ic, label, active in menu %}
+            <a href="{{ url_for(endpoint) }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl {{ 'bg-brand text-white' if active else 'text-muted hover:bg-soft hover:text-ink' }}">
+                {{ icon(ic, 'w-5 h-5') }} {{ label }}
+            </a>
+            {% endfor %}
+        </nav>
+        <div class="mt-auto flex items-center gap-3 p-3 rounded-xl border border-slate-100">
+            <span class="w-9 h-9 rounded-full bg-brand-soft text-brand flex items-center justify-center">{{ icon('user', 'w-5 h-5') }}</span>
+            <span class="flex-1 min-w-0">
+                <span class="block text-sm font-semibold truncate">{{ current_user.display_name }}</span>
+                <span class="block text-xs text-muted">Admin</span>
+            </span>
+            <form action="{{ url_for('logout') }}" method="POST">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" aria-label="Logout" class="p-2 rounded-lg text-muted hover:text-coral hover:bg-soft cursor-pointer">{{ icon('log-out', 'w-5 h-5') }}</button>
+            </form>
+        </div>
+    </aside>
+
+    <div class="flex-1 min-w-0">
+        {# Menu ringkas untuk layar kecil #}
+        <div class="lg:hidden bg-white border-b border-slate-100 px-4 py-3 flex items-center gap-2 overflow-x-auto scrollbar-none text-sm font-medium">
+            <span class="font-display font-extrabold mr-2 whitespace-nowrap">{{ app_name }}</span>
+            {% for endpoint, ic, label, active in menu %}
+            <a href="{{ url_for(endpoint) }}" class="whitespace-nowrap px-3 py-1.5 rounded-full {{ 'bg-brand text-white' if active else 'bg-soft text-muted' }}">{{ label }}</a>
+            {% endfor %}
+        </div>
+
+        <header class="hidden lg:flex items-center justify-between gap-4 px-8 h-16 bg-white border-b border-slate-100">
+            <form action="{{ url_for('admin_produk') }}" method="GET" class="relative w-96">
+                <span class="absolute left-4 top-1/2 -translate-y-1/2 text-muted">{{ icon('search', 'w-4 h-4') }}</span>
+                <input type="search" name="q" value="{{ request.args.get('q', '') if ep == 'admin_produk' else '' }}" placeholder="Cari produk..."
+                       class="w-full bg-soft rounded-full pl-11 pr-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-brand/40">
+            </form>
+            <div class="flex items-center gap-3">
+                <span class="text-right">
+                    <span class="block text-sm font-semibold">{{ current_user.display_name }}</span>
+                    <span class="block text-xs text-muted">Admin</span>
+                </span>
+                <span class="w-10 h-10 rounded-full bg-brand text-white flex items-center justify-center">{{ icon('user', 'w-5 h-5') }}</span>
+            </div>
+        </header>
+
+        <main class="px-4 lg:px-8 py-6 lg:py-8">
+            {% include '_flash.html' %}
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+</div>
+{% endblock %}
