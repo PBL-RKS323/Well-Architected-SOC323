@@ -51,13 +51,19 @@
             class="hidden md:flex absolute left-4 top-1/2 -translate-y-1/2 -mt-6 w-11 h-11 rounded-full bg-white border border-slate-200 items-center justify-center hover:bg-soft cursor-pointer">{{ icon('chevron-left', 'w-5 h-5') }}</button>
     <button type="button" data-carousel-next aria-label="Produk unggulan berikutnya"
             class="hidden md:flex absolute right-4 top-1/2 -translate-y-1/2 -mt-6 w-11 h-11 rounded-full bg-white border border-slate-200 items-center justify-center hover:bg-soft cursor-pointer">{{ icon('chevron-right', 'w-5 h-5') }}</button>
-    <div class="flex justify-center">
+    <div class="flex justify-center items-center">
         {% for p in unggulan %}
         <button type="button" data-carousel-dot="{{ loop.index0 }}" aria-label="Tampilkan produk unggulan {{ loop.index }}"
                 class="w-11 h-11 flex items-center justify-center cursor-pointer">
             <span class="block h-2 w-2 rounded-full bg-slate-300 transition-all data-[aktif]:w-6 data-[aktif]:bg-brand" {{ 'data-aktif' if loop.first }}></span>
         </button>
         {% endfor %}
+        {# Putar otomatis tiap 5 detik; tombol ini menjeda/melanjutkan (konten bergerak wajib bisa dihentikan) #}
+        <button type="button" data-carousel-jeda aria-label="Jeda putar otomatis"
+                class="w-11 h-11 flex items-center justify-center rounded-full text-muted hover:text-ink cursor-pointer">
+            <span data-ikon-jeda>{{ icon('pause', 'w-4 h-4') }}</span>
+            <span data-ikon-putar class="hidden">{{ icon('play', 'w-4 h-4') }}</span>
+        </button>
     </div>
     {% endif %}
 </section>
