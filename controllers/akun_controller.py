@@ -2,9 +2,11 @@ import logging
 
 from flask import render_template, redirect, url_for, flash, session, g
 
+from controllers.auth_controller import mulai_sesi
 from forms.akun_form import UbahNamaForm, UbahEmailForm, UbahPasswordForm
 from helpers.security_logger import log_event
 from models import db
+from models.pesanan import Pesanan
 
 
 def _render(nama_form=None, email_form=None, password_form=None):
@@ -17,7 +19,15 @@ def _render(nama_form=None, email_form=None, password_form=None):
 
 
 def profil():
-    return render_template("akun/profil.html")
+    pesanan_terbaru, ringkasan = [], {}
+    if not g.user.is_admin():
+        milik = Pesanan.query.filter_by(user_id=g.user.id)
+        pesanan_terbaru = milik.order_by(Pesanan.created_at.desc()).limit(3).all()
+        ringkasan = {
+            "aktif": milik.filter(Pesanan.status.in_(Pesanan.STATUS_AKTIF)).count(),
+            "selesai": milik.filter_by(status=Pesanan.SELESAI).count(),
+        }
+    return render_template("akun/profil.html", pesanan_terbaru=pesanan_terbaru, ringkasan=ringkasan)
 
 
 def pengaturan():
@@ -66,13 +76,11 @@ def ubah_password():
         g.user.set_password(form.password_baru.data)
         db.session.commit()
 
-        # Sesi diperbarui setelah ganti kata sandi
-        user_id = g.user.id
-        session.clear()
-        session["user_id"] = user_id
-        session.permanent = True
+        # Sesi perangkat ini diperbarui dengan pilihan "Ingat saya" yang sama. Sesi di perangkat lain
+        # otomatis tidak berlaku karena sesi_token ikut berubah bersama hash kata sandi.
+        mulai_sesi(g.user, ingat=session.permanent)
 
-        log_event("PASSWORD_CHANGED", logging.WARNING, user_id=user_id, username=g.user.username)
+        log_event("PASSWORD_CHANGED", logging.WARNING, user_id=g.user.id, username=g.user.username)
         flash("Kata sandi berhasil diperbarui.", "success")
         return redirect(url_for("pengaturan"))
     return _render(password_form=form)

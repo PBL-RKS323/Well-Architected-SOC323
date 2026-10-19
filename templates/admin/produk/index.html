@@ -1,23 +1,70 @@
 {% extends 'layouts/admin.html' %}
 {% from '_icons.html' import icon %}
 {% block title %}Kelola Produk - {{ app_name }}{% endblock %}
+
+{% macro badge_stok(produk) %}
+<span class="text-xs font-semibold px-2.5 py-1 rounded-full whitespace-nowrap
+    {{ 'bg-red-50 text-coral' if produk.stok == 0 else ('bg-amber-50 text-amber-700' if produk.stok <= produk.STOK_MENIPIS else 'bg-emerald-50 text-emerald-700') }}">
+    Stok {{ produk.stok }}
+</span>
+{% endmacro %}
+
+{% macro tombol_aksi(produk, cls="") %}
+<a href="{{ url_for('admin_produk_edit', produk_id=produk.id) }}" aria-label="Edit {{ produk.nama_produk }}"
+   class="inline-flex items-center justify-center gap-1.5 min-h-11 border border-slate-200 hover:border-brand hover:text-brand px-4 rounded-full {{ cls }}">{{ icon('pencil', 'w-4 h-4') }} Edit</a>
+<form action="{{ url_for('admin_produk_hapus', produk_id=produk.id) }}" method="POST" class="{{ cls }}"
+      data-confirm="Hapus produk '{{ produk.nama_produk }}' secara permanen?">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <button type="submit" aria-label="Hapus {{ produk.nama_produk }}"
+            class="w-full inline-flex items-center justify-center gap-1.5 min-h-11 bg-red-50 hover:bg-red-100 text-coral px-4 rounded-full cursor-pointer">{{ icon('trash-2', 'w-4 h-4') }} Hapus</button>
+</form>
+{% endmacro %}
+
 {% block content %}
 <div class="flex flex-wrap items-end justify-between gap-4 mb-6">
     <div>
-        <h1 class="font-display text-3xl font-extrabold">Produk</h1>
+        <h1 class="font-display text-2xl lg:text-3xl font-extrabold">Produk</h1>
         <p class="text-muted mt-1">{{ produk_list | length }} produk{{ ' untuk pencarian "' ~ q ~ '"' if q }}</p>
     </div>
-    <a href="{{ url_for('admin_produk_tambah') }}" class="inline-flex items-center gap-2 bg-brand hover:bg-brand-dark text-white font-medium px-5 py-3 rounded-full">
+    <a href="{{ url_for('admin_produk_tambah') }}" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-brand hover:bg-brand-dark text-white font-medium px-5 py-3 rounded-full">
         {{ icon('plus', 'w-5 h-5') }} Tambah Produk
     </a>
 </div>
 
 <form method="GET" class="lg:hidden relative mb-4">
     <span class="absolute left-4 top-1/2 -translate-y-1/2 text-muted">{{ icon('search', 'w-4 h-4') }}</span>
-    <input type="search" name="q" value="{{ q }}" placeholder="Cari produk..." class="w-full bg-white border border-slate-100 rounded-full pl-11 pr-4 py-2.5 text-sm">
+    <input type="search" name="q" value="{{ q }}" placeholder="Cari produk..." aria-label="Cari produk"
+           class="w-full bg-white border border-slate-100 rounded-full pl-11 pr-4 py-3 text-sm">
 </form>
 
-<div class="bg-white border border-slate-100 rounded-2xl overflow-x-auto">
+{% if not produk_list %}
+<p class="bg-white border border-slate-100 rounded-2xl px-5 py-10 text-center text-muted">
+    {{ 'Tidak ada produk yang cocok.' if q else 'Belum ada produk. Klik "Tambah Produk".' }}
+</p>
+{% else %}
+{# HP & tablet: kartu, semua info dan tombol terlihat tanpa digeser #}
+<ul class="lg:hidden space-y-3">
+    {% for produk in produk_list %}
+    <li class="bg-white border border-slate-100 rounded-2xl p-3">
+        <div class="flex gap-3">
+            <img src="{{ url_for('static', filename='uploads/' ~ produk.gambar) }}" alt="" class="w-16 h-16 shrink-0 object-cover rounded-xl border border-slate-100">
+            <div class="min-w-0 flex-1">
+                <p class="font-semibold leading-snug line-clamp-2">{{ produk.nama_produk }}</p>
+                <p class="text-xs text-muted">{{ produk.merek }} &middot; {{ produk.kategori }}</p>
+                <div class="flex flex-wrap items-center gap-x-2 gap-y-1 mt-1">
+                    <span class="font-semibold">{{ produk.harga | rupiah }}</span>
+                    {% if produk.diskon_persen %}<span class="text-[11px] font-bold text-coral">-{{ produk.diskon_persen }}%</span>{% endif %}
+                    {{ badge_stok(produk) }}
+                </div>
+            </div>
+        </div>
+        <div class="grid grid-cols-2 gap-2 mt-3 text-sm">{{ tombol_aksi(produk) }}</div>
+    </li>
+    {% endfor %}
+</ul>
+
+{# Desktop: tabel #}
+<div class="hidden lg:block bg-white border border-slate-100 rounded-2xl overflow-hidden">
     <table class="w-full text-sm">
         <thead class="bg-soft text-muted text-xs uppercase tracking-wide text-left">
             <tr>
@@ -38,33 +85,16 @@
                     </div>
                 </td>
                 <td class="px-5 py-3 text-muted">{{ produk.kategori }}</td>
-                <td class="px-5 py-3">
+                <td class="px-5 py-3 whitespace-nowrap">
                     <span class="font-semibold">{{ produk.harga | rupiah }}</span>
                     {% if produk.diskon_persen %}<span class="ml-1 text-[11px] font-bold text-coral">-{{ produk.diskon_persen }}%</span>{% endif %}
                 </td>
-                <td class="px-5 py-3">
-                    <span class="text-xs font-semibold px-2.5 py-1 rounded-full
-                        {{ 'bg-red-50 text-coral' if produk.stok == 0 else ('bg-amber-50 text-amber-700' if produk.stok <= produk.STOK_MENIPIS else 'bg-emerald-50 text-emerald-700') }}">
-                        {{ produk.stok }}
-                    </span>
-                </td>
-                <td class="px-5 py-3">
-                    <div class="flex justify-end gap-2">
-                        <a href="{{ url_for('admin_produk_edit', produk_id=produk.id) }}" aria-label="Edit {{ produk.nama_produk }}"
-                           class="inline-flex items-center gap-1.5 border border-slate-200 hover:border-brand hover:text-brand px-3 py-2 rounded-full">{{ icon('pencil', 'w-4 h-4') }} Edit</a>
-                        <form action="{{ url_for('admin_produk_hapus', produk_id=produk.id) }}" method="POST"
-                              data-confirm="Hapus produk '{{ produk.nama_produk }}' secara permanen?">
-                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                            <button type="submit" aria-label="Hapus {{ produk.nama_produk }}"
-                                    class="inline-flex items-center gap-1.5 bg-red-50 hover:bg-red-100 text-coral px-3 py-2 rounded-full cursor-pointer">{{ icon('trash-2', 'w-4 h-4') }} Hapus</button>
-                        </form>
-                    </div>
-                </td>
+                <td class="px-5 py-3">{{ badge_stok(produk) }}</td>
+                <td class="px-5 py-3"><div class="flex justify-end gap-2">{{ tombol_aksi(produk) }}</div></td>
             </tr>
-        {% else %}
-            <tr><td colspan="5" class="px-5 py-10 text-center text-muted">{{ 'Tidak ada produk yang cocok.' if q else 'Belum ada produk. Klik "Tambah Produk".' }}</td></tr>
         {% endfor %}
         </tbody>
     </table>
 </div>
+{% endif %}
 {% endblock %}

@@ -11,7 +11,8 @@ from models.produk import Produk
 class Pesanan(db.Model):
     __tablename__ = "pesanan"
 
-    PREFIX_KODE = "ES"
+    PREFIX_KODE = "ES"   # nomor pesanan: ES-YYMMDD-XXXXXX (ES = Elektronik Store)
+    KODE_KURIR = "JJN"   # awalan nomor resi otomatis (kurir fiktif)
 
     # Status pesanan
     MENUNGGU_PEMBAYARAN = "menunggu_pembayaran"
@@ -94,6 +95,15 @@ class Pesanan(db.Model):
             kode = f"{Pesanan.PREFIX_KODE}-{datetime.now(WIB):%y%m%d}-{secrets.token_hex(3).upper()}"
             if not Pesanan.query.filter_by(kode=kode).first():
                 return kode
+
+    @staticmethod
+    def buat_resi():
+        """Nomor resi otomatis: 3 huruf kode kurir + 10 angka, contoh JJN4821093756.
+        JJN adalah kurir fiktif untuk demo (bukan JNE/J&T asli)."""
+        while True:
+            resi = Pesanan.KODE_KURIR + "".join(str(secrets.randbelow(10)) for _ in range(10))
+            if not Pesanan.query.filter_by(nomor_resi=resi).first():
+                return resi
 
     @property
     def label_status(self):

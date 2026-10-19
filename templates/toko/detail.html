@@ -26,10 +26,11 @@
         <span class="inline-block bg-brand-soft text-brand-dark text-xs font-semibold px-2.5 py-1 rounded-md">{{ produk.merek }} &middot; {{ produk.kategori }}</span>
         <h1 class="font-display text-2xl md:text-3xl font-extrabold leading-tight mt-3">{{ produk.nama_produk }}</h1>
 
-        <div class="flex items-end gap-3 mt-4">
-            <p class="font-display text-3xl font-extrabold text-ink">{{ produk.harga | rupiah }}</p>
+        {# whitespace-nowrap + flex-wrap: harga tidak terpotong jadi "Rp" / angka; harga coret turun ke baris baru jika sempit #}
+        <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1 mt-4">
+            <p class="font-display text-2xl sm:text-3xl font-extrabold text-ink whitespace-nowrap">{{ produk.harga | rupiah }}</p>
             {% if produk.diskon_persen %}
-                <p class="text-muted line-through mb-1">{{ produk.harga_normal | rupiah }}</p>
+                <p class="text-muted line-through whitespace-nowrap">{{ produk.harga_normal | rupiah }}</p>
             {% endif %}
         </div>
 
@@ -38,7 +39,11 @@
         </p>
 
         {% if produk.stok > 0 %}
-            {% if current_user %}
+            {% if current_user and current_user.is_admin() %}
+            <p class="mt-5 text-sm text-muted bg-white border border-slate-100 rounded-2xl p-4">
+                Kamu masuk sebagai admin. Untuk mencoba membeli, gunakan akun pelanggan.
+            </p>
+            {% elif current_user %}
             {% set maks = [produk.stok, maks_per_produk] | min %}
             <form action="{{ url_for('keranjang_tambah', produk_id=produk.id) }}" method="POST" class="mt-5 bg-white border border-slate-100 rounded-2xl p-4">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">

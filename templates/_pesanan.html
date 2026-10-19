@@ -1,23 +1,19 @@
 {% from '_icons.html' import icon %}
 
 {% set WARNA_STATUS = {
-    'menunggu_pembayaran': 'bg-amber-50 text-amber-700',
-    'menunggu_verifikasi': 'bg-brand-soft text-brand',
-    'diproses': 'bg-amber-50 text-amber-700',
-    'dikirim': 'bg-brand-soft text-brand',
-    'siap_diambil': 'bg-brand-soft text-brand',
-    'selesai': 'bg-emerald-50 text-emerald-700',
-    'dibatalkan': 'bg-red-50 text-coral'
+    'menunggu_pembayaran': 'text-amber-700',
+    'menunggu_verifikasi': 'text-brand',
+    'diproses': 'text-amber-700',
+    'dikirim': 'text-brand',
+    'siap_diambil': 'text-brand',
+    'selesai': 'text-emerald-700',
+    'dibatalkan': 'text-coral'
 } %}
 
-{# Badge status pesanan, warna mengikuti desain (kuning = perlu tindakan, biru = berjalan, hijau = selesai) #}
+{# Status pesanan sebagai teks berwarna saja (tanpa titik/latar, sesuai masukan tim).
+   Kuning = perlu tindakan, biru = berjalan, hijau = selesai, merah = batal. #}
 {% macro badge_status(pesanan, cls="") %}
-<span class="inline-flex items-center gap-1.5 whitespace-nowrap text-xs font-semibold px-2.5 py-1 rounded-full {{ WARNA_STATUS.get(pesanan.status, 'bg-soft text-muted') }} {{ cls }}">
-    {% if pesanan.status in ['selesai'] %}{{ icon('circle-check', 'w-3.5 h-3.5') }}
-    {% elif pesanan.status == 'dibatalkan' %}{{ icon('circle-x', 'w-3.5 h-3.5') }}
-    {% else %}<span class="w-1.5 h-1.5 rounded-full bg-current"></span>{% endif %}
-    {{ pesanan.label_status }}
-</span>
+<span class="whitespace-nowrap text-sm font-semibold {{ WARNA_STATUS.get(pesanan.status, 'text-muted') }} {{ cls }}">{{ pesanan.label_status }}</span>
 {% endmacro %}
 
 {# Foto produk di item pesanan. Jika produk sudah dihapus dari katalog, tampilkan ikon. #}

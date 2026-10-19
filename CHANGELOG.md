@@ -3,6 +3,36 @@
 Setiap perubahan dicatat di sini: apa yang berubah, alasannya, dan cara mengujinya.
 Format tanggal: YYYY-MM-DD (WIB).
 
+## [0.6.0] - 2026-10-19 - Review Keamanan, Tampilan HP & Desktop, Katalog 17 Produk
+
+### Diperbaiki (cacat logika & keamanan)
+- Ganti kata sandi sekarang membuat sesi di perangkat lain tidak berlaku (`SESSION_INVALIDATED`), dan
+  pilihan "Ingat saya" tidak berubah jadi 7 hari setelah ganti kata sandi.
+- Akun admin tidak bisa berbelanja (keranjang, checkout, pesanan) agar tidak bisa membuat pesanan lalu
+  menyetujui bukti bayarnya sendiri.
+- Batas pesanan belum lunas ikut menghitung pesanan yang bukti bayarnya belum diverifikasi.
+- Checkout yang terkirim dua kali (klik ganda) tidak membuat pesanan ganda; tombol dikunci setelah klik.
+- "Beli Sekarang" langsung ke checkout.
+
+### Diubah (tampilan)
+- HP: harga tidak lagi terpotong ("Rp" dan angka selalu satu baris), tombol + di kartu produk dipindah ke
+  pojok foto, tab Pesanan Saya muat di layar.
+- Admin di HP: navigasi bawah 5 menu, daftar produk & pesanan berupa kartu (tanpa geser ke samping).
+- Desktop: kolom cari di header, baris kategori, footer 4 kolom (info toko, belanja, akun), area akun
+  dengan sidebar (Profil, Pesanan Saya, Pengaturan), Pesanan Saya 2 kolom, profil menampilkan pesanan terbaru.
+- Beranda: carousel 3 produk diskon terbesar (geser manual, tidak berganti otomatis).
+- Status pesanan tampil sebagai teks berwarna tanpa titik & latar.
+- Foto katalog dipotong ulang tanpa efek blur; foto Galaxy Watch 7 & Galaxy S24 Ultra diganti.
+- Header halaman (tombol kembali + judul) menjadi macro `judul_halaman` agar mudah dirawat.
+
+### Ditambahkan
+- Nomor resi otomatis `JJN` + 10 angka (kurir fiktif) jika admin tidak mengisi resi.
+- Katalog contoh jadi 17 produk (semua kategori terisi). `flask seed-katalog --perbarui-foto` mengganti
+  foto produk contoh yang sudah ada tanpa mengubah harga/stok.
+
+### Cara uji
+- `pytest -q` (semua lulus).
+
 ## [0.5.3] - 2026-10-19 - Katalog Contoh & Navigasi
 
 ### Ditambahkan

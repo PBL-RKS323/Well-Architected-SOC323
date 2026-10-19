@@ -70,6 +70,32 @@ def test_ubah_password_berhasil(client, app):
     assert login(client, "budi@tokoelektronik.id", "BaruLagi99#").status_code == 302
 
 
+def test_ganti_password_mengeluarkan_sesi_di_perangkat_lain(app):
+    hp, laptop = app.test_client(), app.test_client()
+    login(hp, "budi@tokoelektronik.id", CUSTOMER_PASSWORD)
+    login(laptop, "budi@tokoelektronik.id", CUSTOMER_PASSWORD)
+    assert laptop.get("/profil").status_code == 200
+
+    hp.post("/pengaturan/password", data={
+        "pw-password_sekarang": CUSTOMER_PASSWORD,
+        "pw-password_baru": "BaruLagi99#", "pw-konfirmasi_password": "BaruLagi99#",
+    })
+    assert hp.get("/profil").status_code == 200          # perangkat yang mengganti tetap login
+    resp = laptop.get("/profil")                          # perangkat lain harus login ulang
+    assert resp.status_code == 302 and "/login" in resp.headers["Location"]
+    assert "SESSION_INVALIDATED" in read_log(app)
+
+
+def test_ganti_password_tidak_mengubah_pilihan_ingat_saya(client):
+    login(client, "budi@tokoelektronik.id", CUSTOMER_PASSWORD)  # tanpa "Ingat saya"
+    resp = client.post("/pengaturan/password", data={
+        "pw-password_sekarang": CUSTOMER_PASSWORD,
+        "pw-password_baru": "BaruLagi99#", "pw-konfirmasi_password": "BaruLagi99#",
+    })
+    cookie = resp.headers.get("Set-Cookie", "")
+    assert "session=" in cookie and "Expires=" not in cookie  # tetap cookie sesi, bukan 7 hari
+
+
 def test_ubah_password_ditolak_jika_lemah_atau_sama(client):
     login(client, "budi@tokoelektronik.id", CUSTOMER_PASSWORD)
     resp = client.post("/pengaturan/password", data={

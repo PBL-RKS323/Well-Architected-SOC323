@@ -6,13 +6,13 @@ Acuan: OWASP Top 10 2025, alur SSDLC (rencana → kode → uji → monitor) per 
 
 | Risiko | Kontrol yang diterapkan | Lokasi |
 |---|---|---|
-| A01 Broken Access Control | Middleware default-deny, item keranjang & pesanan dicek kepemilikannya (anti IDOR, pesanan orang lain dijawab 404 dan dicatat), bukti bayar disimpan di luar folder publik dan hanya bisa dibuka pemilik/admin, cek role admin dari database tiap request, decorator `admin_required`, aksi ubah data hanya lewat POST | `middlewares/auth_middleware.py`, `controllers/pesanan_controller.py` |
+| A01 Broken Access Control | Middleware default-deny, item keranjang & pesanan dicek kepemilikannya (anti IDOR, pesanan orang lain dijawab 404 dan dicatat), bukti bayar disimpan di luar folder publik dan hanya bisa dibuka pemilik/admin, cek role admin dari database tiap request, decorator `admin_required`, akun admin tidak bisa berbelanja (`pelanggan_required`, pemisahan tugas: admin tidak bisa membuat pesanan lalu menyetujui bukti bayarnya sendiri), aksi ubah data hanya lewat POST | `middlewares/auth_middleware.py`, `controllers/pesanan_controller.py` |
 | A02 Security Misconfiguration | `SECRET_KEY` & `DATABASE_URL` wajib dari `.env` (aplikasi menolak jalan tanpa itu), debug mati secara default, header keamanan (CSP, X-Frame-Options, nosniff, Referrer-Policy), halaman error tanpa detail teknis | `config.py`, `app.py` |
 | A03 Software Supply Chain Failures | Versi dependensi dikunci di `requirements.txt` | `requirements.txt` |
 | A04 Cryptographic Failures | Kata sandi di-hash (Werkzeug scrypt), cookie sesi HttpOnly + SameSite=Lax, opsi `SESSION_COOKIE_SECURE` untuk HTTPS | `models/user.py`, `config.py` |
 | A05 Injection | Query lewat ORM SQLAlchemy (terparameter), wildcard `%`/`_` di kata kunci pencarian di-escape, parameter filter divalidasi terhadap daftar yang diizinkan, output Jinja2 auto-escape (XSS), input divalidasi WTForms | `models/`, `forms/` |
-| A06 Insecure Design | Role customer tidak bisa dipilih saat register, harga & ongkir dihitung ulang di server (bukan dari form), stok dipotong atomik saat checkout (tidak bisa minus walau checkout bersamaan), status pesanan hanya boleh pindah sesuai tabel transisi, maks. 3 pesanan belum dibayar per akun dan batal otomatis setelah 24 jam (stok tidak bisa "ditahan"), kode pesanan acak, upload gambar diperiksa isi biner, nama file acak | `models/pesanan.py`, `controllers/`, `helpers/image_security.py` |
-| A07 Authentication Failures | Kebijakan kata sandi kuat, ganti email/kata sandi wajib konfirmasi kata sandi lama, penguncian akun 5x gagal, pesan error login generik, sesi dibersihkan saat login (anti session fixation), sesi berakhir saat browser ditutup (atau 7 hari jika "Ingat saya"), CSRF di semua form | `controllers/auth_controller.py` |
+| A06 Insecure Design | Role customer tidak bisa dipilih saat register, harga & ongkir dihitung ulang di server (bukan dari form), stok dipotong atomik saat checkout (tidak bisa minus walau checkout bersamaan), status pesanan hanya boleh pindah sesuai tabel transisi, maks. 3 pesanan belum lunas per akun (termasuk yang bukti bayarnya belum diverifikasi) dan batal otomatis setelah 24 jam (stok tidak bisa "ditahan"), pengiriman ganda checkout (klik dua kali) ditolak, kode pesanan acak, upload gambar diperiksa isi biner, nama file acak | `models/pesanan.py`, `controllers/`, `helpers/image_security.py` |
+| A07 Authentication Failures | Kebijakan kata sandi kuat, ganti email/kata sandi wajib konfirmasi kata sandi lama, penguncian akun 5x gagal, pesan error login generik, sesi dibersihkan saat login (anti session fixation), sesi berakhir saat browser ditutup (atau 7 hari jika "Ingat saya"), ganti kata sandi membuat sesi di perangkat lain tidak berlaku (sidik hash kata sandi disimpan di sesi), CSRF di semua form | `controllers/auth_controller.py` |
 | A08 Software or Data Integrity Failures | Token CSRF global, file upload divalidasi sebelum disimpan | `app.py`, `helpers/image_security.py` |
 | A09 Security Logging and Alerting Failures | Log audit ke `logs/security.log`, format seragam untuk Wazuh, karakter baris baru dinetralkan (anti log injection) | `helpers/security_logger.py` |
 | A10 Mishandling of Exceptional Conditions | Error handler 400/404/413/500 dengan pesan aman, redirect `next` hanya ke path internal | `app.py`, `controllers/auth_controller.py` |
@@ -57,6 +57,7 @@ Contoh:
 | `ORDER_STATUS_CHANGE` | INFO | Status pesanan berubah (dikirim, siap diambil, selesai) |
 | `ORDER_CANCELLED` | INFO / WARNING | Pesanan dibatalkan pelanggan (INFO) atau admin (WARNING) |
 | `ORDER_INVALID_TRANSITION` | WARNING | Admin mencoba aksi yang tidak sah untuk status pesanan saat itu (indikasi request dimanipulasi) |
+| `SESSION_INVALIDATED` | WARNING | Sesi lama dipakai setelah kata sandi akun diganti (sesi otomatis ditolak) |
 
 Jika aplikasi berjalan di belakang Nginx, isi `TRUST_PROXY=1` agar `src_ip` berisi IP asli
 klien, bukan IP Nginx.

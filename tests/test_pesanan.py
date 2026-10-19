@@ -99,8 +99,8 @@ def test_checkout_keranjang_kosong_kembali_ke_keranjang(client, produk_ids):
 def test_halaman_checkout_tampil_dengan_ringkasan(pelanggan):
     html = pelanggan.get("/checkout").get_data(as_text=True)
     assert "Checkout" in html and "Ambil di toko" in html
-    assert "Rp 41.500.000" in html  # subtotal 2 x 20jt + 1,5jt
-    assert "Rp 15.000" in html      # ongkir flat
+    assert "Rp\u00a041.500.000" in html  # subtotal 2 x 20jt + 1,5jt
+    assert "Rp\u00a015.000" in html      # ongkir flat
     assert 'href="/checkout"' in pelanggan.get("/keranjang").get_data(as_text=True)
 
 
@@ -130,7 +130,7 @@ def test_checkout_kurir_membuat_pesanan(app, pelanggan, produk_ids):
     assert f"ORDER_CREATE" in read_log(app) and p.kode in read_log(app)
 
     html = pelanggan.get(f"/pesanan/{p.kode}/konfirmasi").get_data(as_text=True)
-    assert "Pesanan Berhasil Dibuat" in html and p.kode in html and "Rp 41.515.000" in html
+    assert "Pesanan Berhasil Dibuat" in html and p.kode in html and "Rp\u00a041.515.000" in html
 
 
 def test_checkout_ambil_di_toko_tanpa_ongkir_dan_alamat(app, pelanggan):
@@ -142,6 +142,29 @@ def test_checkout_ambil_di_toko_tanpa_ongkir_dan_alamat(app, pelanggan):
 def test_checkout_harga_dari_database_bukan_dari_form(app, pelanggan):
     p = _buat_pesanan(app, pelanggan, harga="1", total="1", subtotal="1", ongkir="0")
     assert p.total == 41515000
+
+
+def test_checkout_dikirim_dua_kali_hanya_satu_pesanan(app, pelanggan, produk_ids):
+    _buat_pesanan(app, pelanggan)
+    resp = _checkout(pelanggan)  # klik kedua: keranjang sudah kosong
+    assert resp.status_code == 302 and resp.headers["Location"].endswith("/keranjang")
+    with app.app_context():
+        assert Pesanan.query.count() == 1
+    assert _stok(app, produk_ids["iPhone 16 Pro"]) == 8  # stok hanya terpotong sekali
+
+
+def test_batas_pesanan_menghitung_yang_menunggu_verifikasi(app, client, produk_ids):
+    """Batas tidak bisa diakali dengan mengunggah bukti palsu agar status pindah ke verifikasi."""
+    login(client, "budi@tokoelektronik.id", CUSTOMER_PASSWORD)
+    for _ in range(app.config["MAKS_PESANAN_BELUM_BAYAR"]):
+        client.post(f"/keranjang/tambah/{produk_ids['iPhone 16 Pro']}")
+        p = _buat_pesanan(app, client)
+        _unggah_bukti(client, p.kode)
+    client.post(f"/keranjang/tambah/{produk_ids['iPhone 16 Pro']}")
+    resp = _checkout(client)
+    assert resp.headers["Location"].endswith("/pesanan")
+    with app.app_context():
+        assert Pesanan.query.count() == app.config["MAKS_PESANAN_BELUM_BAYAR"]
 
 
 def test_checkout_ditolak_jika_stok_berubah(app, pelanggan, produk_ids):
@@ -278,6 +301,16 @@ def test_admin_verifikasi_lalu_kirim_lalu_pelanggan_terima(app, pelanggan):
     assert _pesanan(app, p.kode).status == Pesanan.SELESAI
 
 
+def test_resi_dibuat_otomatis_jika_kosong(app, pelanggan):
+    p = _buat_pesanan(app, pelanggan)
+    _unggah_bukti(pelanggan, p.kode)
+    _jadi_admin(pelanggan)
+    _aksi_admin(pelanggan, p.id, "terima")
+    _aksi_admin(pelanggan, p.id, "kirim")  # tanpa nomor resi
+    resi = _pesanan(app, p.kode).nomor_resi
+    assert resi.startswith("JJN") and len(resi) == 13 and resi[3:].isdigit()
+
+
 def test_admin_tolak_bukti_wajib_alasan_dan_pelanggan_unggah_ulang(app, pelanggan):
     p = _buat_pesanan(app, pelanggan)
     _unggah_bukti(pelanggan, p.kode)
@@ -342,8 +375,8 @@ def test_dashboard_pendapatan_hanya_dari_pesanan_lunas(app, pelanggan, produk_id
     _aksi_admin(pelanggan, p2.id, "terima")
 
     html = pelanggan.get("/admin").get_data(as_text=True)
-    assert "Rp 1.500.000" in html          # pendapatan = pesanan lunas saja
-    assert "Rp 41.515.000" in html          # p1 tampil di Pesanan Terbaru
+    assert "Rp\u00a01.500.000" in html          # pendapatan = pesanan lunas saja
+    assert "Rp\u00a041.515.000" in html          # p1 tampil di Pesanan Terbaru
     assert p1.kode in html and p2.kode in html
     assert "Galaxy Buds 3" in html          # produk terlaris
 

@@ -54,7 +54,7 @@
       "stok": 6,
       "deskripsi": "Layar 6,8 inci QHD+, Snapdragon 8 Gen 3 for Galaxy, kamera utama 200 MP, S Pen bawaan, bodi titanium.",
       "foto": "galaxy-s24-ultra.jpg",
-      "kredit": {"judul": "SAMSUNG Galaxy S24 Ultra (2)", "pembuat": "Dinkun Chen", "lisensi": "CC BY-SA 4.0", "url_lisensi": "https://creativecommons.org/licenses/by-sa/4.0", "halaman": "https://commons.wikimedia.org/wiki/File:SAMSUNG_Galaxy_S24_Ultra_(2).jpg"}
+      "kredit": {"judul": "Samsung Galaxy S24 Ultra with retail box, rear", "pembuat": "Benlisquare", "lisensi": "CC BY-SA 4.0", "url_lisensi": "https://creativecommons.org/licenses/by-sa/4.0", "halaman": "https://commons.wikimedia.org/wiki/File:Samsung_Galaxy_S24_Ultra_with_retail_box,_rear.jpg"}
     },
     {
       "nama_produk": "Galaxy Watch 7 44mm",
@@ -65,7 +65,7 @@
       "stok": 12,
       "deskripsi": "Wear OS, chip Exynos W1000, sensor kesehatan BioActive, tahan air 5ATM.",
       "foto": "galaxy-watch-7.jpg",
-      "kredit": {"judul": "Galaxy Watch 7", "pembuat": "Kyu3a", "lisensi": "CC BY-SA 4.0", "url_lisensi": "https://creativecommons.org/licenses/by-sa/4.0", "halaman": "https://commons.wikimedia.org/wiki/File:Galaxy_Watch_7.jpg"}
+      "kredit": {"judul": "Galaxy Watch7", "pembuat": "Pierre-Félix Vautrin", "lisensi": "CC0", "url_lisensi": "https://creativecommons.org/publicdomain/zero/1.0/", "halaman": "https://commons.wikimedia.org/wiki/File:Galaxy_Watch7.jpg"}
     },
     {
       "nama_produk": "Redmi Note 14 Pro 5G 8/256GB",
@@ -88,6 +88,105 @@
       "deskripsi": "Layar 11 inci 144Hz, Snapdragon 870, baterai 8840 mAh.\nKeyboard di foto dijual terpisah.",
       "foto": "xiaomi-pad-6.jpg",
       "kredit": {"judul": "Xiaomi Pad 6 display", "pembuat": "Myrat", "lisensi": "CC0", "url_lisensi": "https://creativecommons.org/publicdomain/zero/1.0/", "halaman": "https://commons.wikimedia.org/wiki/File:Xiaomi_Pad_6_display.jpg"}
+    },
+    {
+      "nama_produk": "iPad Air 11 inci M2 128GB",
+      "merek": "Apple",
+      "kategori": "Tablet",
+      "harga": 10999000,
+      "harga_normal": 11999000,
+      "stok": 6,
+      "deskripsi": "Layar Liquid Retina 11 inci, chip Apple M2, Touch ID di tombol atas.",
+      "foto": "ipad-air-m2.jpg",
+      "kredit": {"judul": "IPad Air 11-inch (M2) back side", "pembuat": "茅野ふたば", "lisensi": "CC BY-SA 4.0", "url_lisensi": "https://creativecommons.org/licenses/by-sa/4.0", "halaman": "https://commons.wikimedia.org/wiki/File:IPad_Air_11-inch_(M2)_back_side_(20250525_154602).jpg"}
+    },
+    {
+      "nama_produk": "AirPods 4",
+      "merek": "Apple",
+      "kategori": "Audio",
+      "harga": 2199000,
+      "harga_normal": null,
+      "stok": 18,
+      "deskripsi": "Desain terbuka tanpa ujung karet, chip H2, casing pengisian USB-C.",
+      "foto": "airpods-4.jpg",
+      "kredit": {"judul": "Airpods 4", "pembuat": "AppleFans 1", "lisensi": "CC0", "url_lisensi": "https://creativecommons.org/publicdomain/zero/1.0/", "halaman": "https://commons.wikimedia.org/wiki/File:Airpods_4.jpg"}
+    },
+    {
+      "nama_produk": "Apple Pencil",
+      "merek": "Apple",
+      "kategori": "Aksesoris",
+      "harga": 1999000,
+      "harga_normal": null,
+      "stok": 10,
+      "deskripsi": "Stylus untuk menulis dan menggambar di iPad. Cek kecocokan model iPad sebelum membeli.",
+      "foto": "apple-pencil.jpg",
+      "kredit": {"judul": "Apple pencil", "pembuat": "Peppe2699", "lisensi": "CC BY-SA 4.0", "url_lisensi": "https://creativecommons.org/licenses/by-sa/4.0", "halaman": "https://commons.wikimedia.org/wiki/File:Apple_pencil.jpg"}
+    },
+    {
+      "nama_produk": "MagSafe Charger (USB-C)",
+      "merek": "Apple",
+      "kategori": "Aksesoris",
+      "harga": 749000,
+      "harga_normal": 899000,
+      "stok": 25,
+      "deskripsi": "Pengisi daya nirkabel magnetik untuk iPhone yang mendukung MagSafe. Adaptor daya dijual terpisah.",
+      "foto": "magsafe-charger.jpg",
+      "kredit": {"judul": "MagSafe and USB-C Cable Charger for iPhone", "pembuat": "James Tamim", "lisensi": "CC BY-SA 4.0", "url_lisensi": "https://creativecommons.org/licenses/by-sa/4.0", "halaman": "https://commons.wikimedia.org/wiki/File:MagSafe_and_USB-C_Cable_Charger_for_iPhone.jpg"}
+    },
+    {
+      "nama_produk": "Galaxy Tab S9 8/128GB",
+      "merek": "Samsung",
+      "kategori": "Tablet",
+      "harga": 11999000,
+      "harga_normal": null,
+      "stok": 4,
+      "deskripsi": "Layar Dynamic AMOLED 2X 11 inci, Snapdragon 8 Gen 2 for Galaxy, S Pen di dalam kotak, tahan air IP68.",
+      "foto": "galaxy-tab-s9.jpg",
+      "kredit": {"judul": "Samsung Galaxy Tab S9", "pembuat": "AnVuong1222004", "lisensi": "CC BY-SA 4.0", "url_lisensi": "https://creativecommons.org/licenses/by-sa/4.0", "halaman": "https://commons.wikimedia.org/wiki/File:Samsung_Galaxy_Tab_S9.png"}
+    },
+    {
+      "nama_produk": "Galaxy Buds2 Pro",
+      "merek": "Samsung",
+      "kategori": "Audio",
+      "harga": 2499000,
+      "harga_normal": 3199000,
+      "stok": 14,
+      "deskripsi": "Peredam bising aktif (ANC), audio Hi-Fi 24-bit, tahan air IPX7.",
+      "foto": "galaxy-buds2-pro.jpg",
+      "kredit": {"judul": "Samsung Galaxy Buds2 Pro (Graphite)", "pembuat": "Gannu03", "lisensi": "CC BY-SA 4.0", "url_lisensi": "https://creativecommons.org/licenses/by-sa/4.0", "halaman": "https://commons.wikimedia.org/wiki/File:Samsung_Galaxy_Buds2_Pro_(Graphite).jpg"}
+    },
+    {
+      "nama_produk": "Xiaomi 14 12/256GB",
+      "merek": "Xiaomi",
+      "kategori": "Handphone",
+      "harga": 9999000,
+      "harga_normal": 11999000,
+      "stok": 9,
+      "deskripsi": "Layar 6,36 inci, Snapdragon 8 Gen 3, kamera Leica 50 MP.",
+      "foto": "xiaomi-14.jpg",
+      "kredit": {"judul": "Xiaomi 14 rear (July 10, 2026)", "pembuat": "茅野ふたば", "lisensi": "CC BY-SA 4.0", "url_lisensi": "https://creativecommons.org/licenses/by-sa/4.0", "halaman": "https://commons.wikimedia.org/wiki/File:Xiaomi_14_rear_(July_10,_2026).jpg"}
+    },
+    {
+      "nama_produk": "Xiaomi Smart Band 8",
+      "merek": "Xiaomi",
+      "kategori": "Smartwatch",
+      "harga": 549000,
+      "harga_normal": null,
+      "stok": 30,
+      "deskripsi": "Layar AMOLED 1,62 inci, baterai hingga 16 hari, tahan air 5ATM.",
+      "foto": "xiaomi-smart-band-8.jpg",
+      "kredit": {"judul": "Xiaomi Mi Band 8", "pembuat": "DeadJacb", "lisensi": "CC BY-SA 4.0", "url_lisensi": "https://creativecommons.org/licenses/by-sa/4.0", "halaman": "https://commons.wikimedia.org/wiki/File:Xiaomi_Mi_Band_8.jpg"}
+    },
+    {
+      "nama_produk": "Xiaomi Power Bank 10000mAh",
+      "merek": "Xiaomi",
+      "kategori": "Aksesoris",
+      "harga": 199000,
+      "harga_normal": null,
+      "stok": 40,
+      "deskripsi": "Kapasitas 10000 mAh, port USB-C dan USB-A, bodi ringkas.",
+      "foto": "xiaomi-power-bank.jpg",
+      "kredit": {"judul": "Xiaomi 10000 mAh Power Bank", "pembuat": "YipC", "lisensi": "CC BY-SA 4.0", "url_lisensi": "https://creativecommons.org/licenses/by-sa/4.0", "halaman": "https://commons.wikimedia.org/wiki/File:Xiaomi_10000_mAh_Power_Bank.jpg"}
     }
   ]
 }

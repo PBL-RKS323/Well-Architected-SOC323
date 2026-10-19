@@ -17,6 +17,17 @@ def _safe_next_url(target):
     return None
 
 
+def mulai_sesi(user, ingat):
+    """Sesi baru setelah login / ganti kata sandi. Sesi lama dibuang (anti session fixation).
+
+    `ingat` True: sesi bertahan 7 hari ("Ingat saya"). False: berakhir saat browser ditutup.
+    """
+    session.clear()
+    session["user_id"] = user.id
+    session["sesi_token"] = user.sesi_token
+    session.permanent = ingat
+
+
 def _buat_username(email):
     """Username internal dibuat otomatis dari email (tidak perlu diisi pengguna)."""
     dasar = re.sub(r"[^a-z0-9_.]", "", email.split("@")[0].lower())[:40] or "user"
@@ -68,11 +79,7 @@ def login():
             user.reset_failed_login()
             db.session.commit()
 
-            # Sesi lama dibuang agar tidak terjadi session fixation
-            session.clear()
-            session["user_id"] = user.id
-            # "Ingat saya": sesi bertahan 7 hari. Tanpa centang: sesi berakhir saat browser ditutup.
-            session.permanent = bool(form.ingat_saya.data)
+            mulai_sesi(user, ingat=bool(form.ingat_saya.data))
 
             log_event("SUCCESSFUL_LOGIN", user_id=user.id, username=user.username, role=user.role,
                       remember=int(session.permanent))

@@ -92,12 +92,15 @@ def ubah_status(pesanan_id):
         return kembali
 
     status_lama = pesanan.status
+    resi = None
     if aksi == "tolak":
         keterangan = f"Bukti bayar ditolak: {form.alasan.data}"
     elif aksi == "batal":
         keterangan = f"Dibatalkan admin: {form.alasan.data}"
-    elif aksi == "kirim" and form.nomor_resi.data:
-        keterangan = f"Pesanan dikirim, resi {form.nomor_resi.data}"
+    elif aksi == "kirim":
+        # Resi boleh diisi manual; jika kosong dibuat otomatis (JJN + 10 angka)
+        resi = form.nomor_resi.data.upper() if form.nomor_resi.data else Pesanan.buat_resi()
+        keterangan = f"Pesanan dikirim, resi {resi}"
 
     if not pesanan.ubah_status(status_baru, "admin", keterangan):
         log_event("ORDER_INVALID_TRANSITION", logging.WARNING, user_id=g.user.id, kode=pesanan.kode,
@@ -111,7 +114,7 @@ def ubah_status(pesanan_id):
     elif aksi == "batal":
         pesanan.alasan_tolak = form.alasan.data
     elif aksi == "kirim":
-        pesanan.nomor_resi = form.nomor_resi.data or None
+        pesanan.nomor_resi = resi
     db.session.commit()
 
     log_event(EVENT_LOG.get(aksi, "ORDER_STATUS_CHANGE"), logging.WARNING if aksi in ("tolak", "batal") else logging.INFO,

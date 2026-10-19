@@ -54,7 +54,7 @@ def test_tambah_produk_dan_badge_jumlah(client, app, produk_ids):
 
     html = client.get("/keranjang").get_data(as_text=True)
     assert "iPhone 16 Pro" in html and "2 item" in html
-    assert "Rp 37.998.000" in html  # 2 x 18.999.000
+    assert "Rp\u00a037.998.000" in html  # 2 x 18.999.000
     assert "data-cart-count" in client.get("/").get_data(as_text=True)
 
 
@@ -116,16 +116,33 @@ def test_tidak_bisa_ubah_keranjang_orang_lain(client, app, produk_ids):
     item_budi = _item(app)["iPhone 16 Pro"][0]
     client.post("/logout")
 
-    login(client, "admin@tokoelektronik.id", ADMIN_PASSWORD)
+    with app.app_context():
+        siti = User(username="siti", nama_lengkap="Siti", email="siti@tokoelektronik.id", role=User.ROLE_CUSTOMER)
+        siti.set_password(CUSTOMER_PASSWORD)
+        db.session.add(siti)
+        db.session.commit()
+    login(client, "siti@tokoelektronik.id", CUSTOMER_PASSWORD)
     assert client.post(f"/keranjang/{item_budi}/ubah", data={"jumlah": "5"}).status_code == 404
     assert client.post(f"/keranjang/{item_budi}/hapus").status_code == 404
     assert _item(app)["iPhone 16 Pro"][1] == 1
 
 
-def test_beli_sekarang_ke_keranjang(client, produk_ids):
+def test_beli_sekarang_langsung_ke_checkout(client, produk_ids):
     login(client, "budi@tokoelektronik.id", CUSTOMER_PASSWORD)
     resp = client.post(f"/keranjang/tambah/{produk_ids['iPhone 16 Pro']}", data={"beli": "1"})
-    assert resp.headers["Location"].endswith("/keranjang")
+    assert resp.headers["Location"].endswith("/checkout")
+
+
+def test_admin_tidak_bisa_belanja(client, app, produk_ids):
+    """Pemisahan tugas: admin tidak boleh membuat pesanan lalu menyetujui bukti bayarnya sendiri."""
+    login(client, "admin@tokoelektronik.id", ADMIN_PASSWORD)
+    resp = client.post(f"/keranjang/tambah/{produk_ids['iPhone 16 Pro']}")
+    assert resp.status_code == 302 and resp.headers["Location"].endswith("/admin")
+    assert _item(app, "admin") == {}
+    for url in ["/keranjang", "/checkout", "/pesanan"]:
+        assert client.get(url).headers["Location"].endswith("/admin")
+    html = client.get(f"/produk/{produk_ids['iPhone 16 Pro']}").get_data(as_text=True)
+    assert "masuk sebagai admin" in html and "/keranjang/tambah/" not in html
 
 
 def test_redirect_next_hanya_internal(client, produk_ids):

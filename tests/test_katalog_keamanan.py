@@ -16,7 +16,7 @@ def test_katalog_menampilkan_produk_dan_rupiah(client):
 
     html = client.get("/").get_data(as_text=True)
     assert "Galaxy S25 Ultra" in html
-    assert "Rp 18.999.000" in html
+    assert "Rp\u00a018.999.000" in html
 
 
 def test_katalog_dikelompokkan_per_ekosistem(client):
@@ -29,7 +29,17 @@ def test_katalog_dikelompokkan_per_ekosistem(client):
     html = client.get("/").get_data(as_text=True)
     assert "Ekosistem Apple" in html and "Ekosistem Xiaomi" in html
     assert "Ekosistem Samsung" not in html  # brand tanpa produk tidak ditampilkan
-    assert html.index("Ekosistem Apple") < html.index("iPhone 16") < html.index("Ekosistem Xiaomi")
+    bagian = html[html.index("Ekosistem Apple"):]  # produk juga muncul di carousel di atasnya
+    assert bagian.index("iPhone 16") < bagian.index("Ekosistem Xiaomi")
+
+
+def test_carousel_maksimal_tiga_produk_unggulan(client):
+    login(client, "admin@tokoelektronik.id", ADMIN_PASSWORD)
+    for i in range(5):
+        client.post("/admin/produk/tambah", data=produk_data(nama_produk=f"Produk {i}"),
+                    content_type="multipart/form-data")
+    html = client.get("/").get_data(as_text=True)
+    assert "data-carousel" in html and html.count('aria-roledescription="slide"') == 3
 
 
 def test_merek_di_luar_daftar_ditolak(client):

@@ -2,9 +2,20 @@
 
 // Konfirmasi sebelum submit form yang memiliki atribut data-confirm (mis. hapus produk).
 document.addEventListener("submit", function (event) {
-    const message = event.target.getAttribute("data-confirm");
+    const form = event.target;
+    const message = form.getAttribute("data-confirm");
     if (message && !window.confirm(message)) {
         event.preventDefault();
+        return;
+    }
+    // Form penting (buat pesanan, unggah bukti) dikunci setelah dikirim agar tidak terkirim dua kali.
+    // Server tetap menolak pengiriman ganda; ini hanya mencegah klik ganda yang tidak disengaja.
+    if (form.hasAttribute("data-kirim-sekali")) {
+        setTimeout(function () {
+            form.querySelectorAll('button[type="submit"], input[type="submit"]').forEach(function (b) {
+                b.disabled = true;
+            });
+        }, 0);
     }
 });
 
@@ -72,4 +83,29 @@ document.addEventListener("change", function (event) {
     document.querySelectorAll("[data-kurir][data-ambil]").forEach(function (el) {
         el.textContent = el.dataset[metode];
     });
+});
+
+// Carousel beranda: geser manual (jari / tombol panah / titik). Tidak berganti otomatis.
+document.querySelectorAll("[data-carousel]").forEach(function (carousel) {
+    const track = carousel.querySelector("[data-carousel-track]");
+    const dots = carousel.querySelectorAll("[data-carousel-dot]");
+    const halus = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
+    const posisi = function () { return Math.round(track.scrollLeft / track.clientWidth); };
+    const ke = function (i) {
+        const jumlah = track.children.length;
+        track.scrollTo({ left: ((i + jumlah) % jumlah) * track.clientWidth, behavior: halus });
+    };
+    const prev = carousel.querySelector("[data-carousel-prev]");
+    const next = carousel.querySelector("[data-carousel-next]");
+    if (prev) { prev.addEventListener("click", function () { ke(posisi() - 1); }); }
+    if (next) { next.addEventListener("click", function () { ke(posisi() + 1); }); }
+    dots.forEach(function (dot) {
+        dot.addEventListener("click", function () { ke(parseInt(dot.dataset.carouselDot, 10)); });
+    });
+    track.addEventListener("scroll", function () {
+        const aktif = posisi();
+        dots.forEach(function (dot, i) {
+            dot.querySelector("span").toggleAttribute("data-aktif", i === aktif);
+        });
+    }, { passive: true });
 });

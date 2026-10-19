@@ -5,7 +5,7 @@
 {% block content %}
 <div class="flex flex-wrap items-end justify-between gap-4 mb-6">
     <div>
-        <h1 class="font-display text-3xl font-extrabold">Pesanan</h1>
+        <h1 class="font-display text-2xl lg:text-3xl font-extrabold">Pesanan</h1>
         <p class="text-muted mt-1">Verifikasi pembayaran dan perbarui status pengiriman pesanan.</p>
     </div>
     <form method="GET" class="relative w-full sm:w-80">
@@ -16,7 +16,8 @@
     </form>
 </div>
 
-<nav class="flex gap-2 overflow-x-auto scrollbar-none pb-1 mb-4 text-sm font-medium">
+{# flex-wrap: semua tab terlihat di HP tanpa digeser #}
+<nav class="flex flex-wrap gap-2 mb-4 text-sm font-medium">
     {% for nama, info in tabs.items() %}
     <a href="{{ url_for('admin_pesanan', tab=nama, q=q or None) }}"
        class="whitespace-nowrap inline-flex items-center gap-1 px-4 min-h-11 rounded-full {{ 'bg-brand text-white' if tab == nama else 'bg-white text-muted hover:text-ink' }}">

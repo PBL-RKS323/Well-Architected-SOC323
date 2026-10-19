@@ -1,17 +1,13 @@
 {% extends 'layouts/toko.html' %}
 {% from '_icons.html' import icon %}
-{% from '_macros.html' import field %}
+{% from '_macros.html' import field, judul_halaman %}
 {% block title %}Checkout - {{ app_name }}{% endblock %}
 {% block content %}
 {% set kurir = form.metode_pengiriman.data != 'ambil' %}
 {% set total_kurir = subtotal + ongkir_kurir %}
-<div class="relative flex items-center justify-center mb-6">
-    <a href="{{ url_for('keranjang') }}" aria-label="Kembali ke keranjang"
-       class="absolute left-0 w-10 h-10 rounded-full bg-white border border-slate-100 flex items-center justify-center hover:bg-soft">{{ icon('arrow-left', 'w-5 h-5') }}</a>
-    <h1 class="font-display text-xl md:text-2xl font-extrabold">Checkout</h1>
-</div>
+{{ judul_halaman('Checkout', url_for('keranjang'), 'Kembali ke keranjang') }}
 
-<form method="POST" novalidate class="lg:grid lg:grid-cols-3 lg:gap-6 lg:items-start">
+<form method="POST" novalidate data-kirim-sekali class="lg:grid lg:grid-cols-3 lg:gap-6 lg:items-start">
     {{ form.hidden_tag() }}
     <div class="lg:col-span-2 space-y-7">
         {# 1. Metode pengiriman #}

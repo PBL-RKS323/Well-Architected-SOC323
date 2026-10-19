@@ -1,6 +1,7 @@
 from flask import render_template, redirect, url_for, flash, request, g
 
 from controllers.auth_controller import _safe_next_url
+from middlewares.auth_middleware import pelanggan_required
 from models import db
 from models.keranjang import KeranjangItem
 from models.produk import Produk
@@ -33,6 +34,7 @@ def jumlah_item(user):
     return int(total)
 
 
+@pelanggan_required
 def index():
     items = item_user()
     tersedia = [i for i in items if i.produk.stok > 0]
@@ -51,6 +53,7 @@ def index():
     return render_template("toko/keranjang.html", items=items, ringkasan=ringkasan, rekomendasi=rekomendasi)
 
 
+@pelanggan_required
 def tambah(produk_id):
     produk = db.get_or_404(Produk, produk_id)
     kembali = _safe_next_url(request.form.get("next")) or url_for("produk_detail", produk_id=produk.id)
@@ -77,10 +80,11 @@ def tambah(produk_id):
         flash(f"{produk.nama_produk} ditambahkan ke keranjang.", "success")
 
     if request.form.get("beli"):
-        return redirect(url_for("keranjang"))
+        return redirect(url_for("checkout"))
     return redirect(kembali)
 
 
+@pelanggan_required
 def ubah(item_id):
     item = _item_milik_user(item_id)
     nama = item.produk.nama_produk
@@ -94,6 +98,7 @@ def ubah(item_id):
     return redirect(url_for("keranjang"))
 
 
+@pelanggan_required
 def hapus(item_id):
     item = _item_milik_user(item_id)
     nama = item.produk.nama_produk
@@ -103,6 +108,7 @@ def hapus(item_id):
     return redirect(url_for("keranjang"))
 
 
+@pelanggan_required
 def kosongkan():
     KeranjangItem.query.filter_by(user_id=g.user.id).delete()
     db.session.commit()

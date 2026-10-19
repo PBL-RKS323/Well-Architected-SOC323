@@ -94,7 +94,7 @@ def test_detail_produk_dan_produk_terkait(client, app):
     with app.app_context():
         iphone = Produk.query.filter_by(nama_produk="iPhone 16 Pro").one()
     html = client.get(f"/produk/{iphone.id}").get_data(as_text=True)
-    assert "iPhone 16 Pro" in html and "Rp 21.999.000" in html
+    assert "iPhone 16 Pro" in html and "Rp\u00a021.999.000" in html
     assert "Produk lain dari Apple" in html and "MacBook Air M4" in html
     assert "Redmi Note 14" not in html
 
@@ -110,7 +110,7 @@ def test_diskon_tampil_di_katalog_dan_detail(client, app):
         assert redmi.diskon_persen == 14
     assert "-14%" in client.get("/jelajah").get_data(as_text=True)
     html = client.get(f"/produk/{redmi.id}").get_data(as_text=True)
-    assert "Diskon 14%" in html and "Rp 4.999.000" in html
+    assert "Diskon 14%" in html and "Rp\u00a04.999.000" in html
 
 
 def test_harga_normal_harus_lebih_tinggi(client):

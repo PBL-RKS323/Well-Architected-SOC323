@@ -3,29 +3,29 @@
 {% block body_class %}pb-20 md:pb-0{% endblock %}
 {% block body %}
 {% set ep = request.endpoint %}
+{% set is_admin = current_user and current_user.is_admin() %}
 <header class="sticky top-0 z-30 bg-white border-b border-slate-100">
-    <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
-        <a href="{{ url_for('beranda') }}" class="font-display font-extrabold text-xl tracking-tight text-ink">{{ app_name }}</a>
+    <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between gap-4 md:gap-8">
+        <a href="{{ url_for('beranda') }}" class="shrink-0 font-display font-extrabold text-xl tracking-tight text-ink">{{ app_name }}</a>
 
-        <nav class="hidden md:flex items-center gap-6 text-sm font-medium text-muted">
-            <a href="{{ url_for('beranda') }}" class="{{ 'text-brand' if ep == 'beranda' else 'hover:text-ink' }}">Beranda</a>
-            <a href="{{ url_for('jelajah') }}" class="{{ 'text-brand' if ep in ['jelajah', 'produk_detail'] else 'hover:text-ink' }}">Jelajah</a>
-            {% if current_user %}
-                <a href="{{ url_for('pesanan') }}" class="{{ 'text-brand' if ep and ep.startswith('pesanan') else 'hover:text-ink' }}">Pesanan Saya</a>
-            {% endif %}
-            {% if current_user and current_user.is_admin() %}
-                <a href="{{ url_for('admin_dashboard') }}" class="hover:text-ink">Panel Admin</a>
-            {% endif %}
-        </nav>
+        {# Desktop: kolom pencarian langsung di header #}
+        <form action="{{ url_for('jelajah') }}" method="GET" role="search" class="hidden md:block relative flex-1 max-w-xl">
+            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-muted">{{ icon('search', 'w-4 h-4') }}</span>
+            <input type="search" name="q" value="{{ request.args.get('q', '') if ep == 'jelajah' else '' }}" maxlength="100"
+                   placeholder="Cari handphone, laptop, smartwatch..." aria-label="Cari produk"
+                   class="w-full bg-soft rounded-full pl-11 pr-4 py-3 text-sm outline-none focus:ring-2 focus:ring-brand/40">
+        </form>
 
         <div class="flex items-center gap-1">
-            <a href="{{ url_for('jelajah') }}" aria-label="Cari produk" class="p-3 rounded-full hover:bg-soft">{{ icon('search', 'w-5 h-5') }}</a>
+            <a href="{{ url_for('jelajah') }}" aria-label="Cari produk" class="md:hidden p-3 rounded-full hover:bg-soft">{{ icon('search', 'w-5 h-5') }}</a>
+            {% if not is_admin %}
             <a href="{{ url_for('keranjang') }}" aria-label="Keranjang ({{ cart_count }} item)" class="relative p-3 rounded-full hover:bg-soft">
                 {{ icon('shopping-bag', 'w-5 h-5') }}
                 {% if cart_count %}
                     <span data-cart-count class="absolute top-1 right-0.5 min-w-4 h-4 px-1 rounded-full bg-coral text-white text-[10px] font-bold flex items-center justify-center">{{ cart_count }}</span>
                 {% endif %}
             </a>
+            {% endif %}
             {% if current_user %}
                 <a href="{{ url_for('profil') }}" class="hidden md:flex items-center gap-2 ml-2 pl-3 border-l border-slate-200 text-sm font-medium hover:text-brand">
                     {{ icon('user', 'w-5 h-5') }} {{ current_user.display_name }}
@@ -35,38 +35,105 @@
             {% endif %}
         </div>
     </div>
+
+    {# Desktop: baris navigasi kedua berisi menu utama + kategori #}
+    <nav class="hidden md:block border-t border-slate-100" aria-label="Menu utama">
+        <div class="max-w-6xl mx-auto px-4 flex items-center justify-between gap-6 text-sm font-medium text-muted">
+            <div class="flex items-center gap-6">
+                <a href="{{ url_for('beranda') }}" class="py-3 {{ 'text-brand' if ep == 'beranda' else 'hover:text-ink' }}">Beranda</a>
+                <a href="{{ url_for('jelajah') }}" class="py-3 {{ 'text-brand' if ep == 'jelajah' and not request.args.get('kategori') else 'hover:text-ink' }}">Semua Produk</a>
+                {% for k in kategori_nav %}
+                <a href="{{ url_for('jelajah', kategori=k) }}" class="py-3 {{ 'text-brand' if request.args.get('kategori') == k else 'hover:text-ink' }}">{{ k }}</a>
+                {% endfor %}
+            </div>
+            {% if is_admin %}
+                <a href="{{ url_for('admin_dashboard') }}" class="py-3 hover:text-ink">Panel Admin</a>
+            {% elif current_user %}
+                <a href="{{ url_for('pesanan') }}" class="py-3 {{ 'text-brand' if ep and ep.startswith('pesanan') else 'hover:text-ink' }}">Pesanan Saya</a>
+            {% endif %}
+        </div>
+    </nav>
 </header>
 
-<main class="max-w-6xl mx-auto px-4 pt-5 pb-10">
+<main class="max-w-6xl mx-auto px-4 pt-5 md:pt-8 pb-10 md:pb-16">
     {% include '_flash.html' %}
     {% block content %}{% endblock %}
 </main>
 
-<footer class="border-t border-slate-200 bg-white">
-    <div class="max-w-6xl mx-auto px-4 py-3 md:py-6 text-xs text-muted flex flex-wrap items-center justify-between gap-x-4">
-        <span>&copy; {{ app_name }} &middot; PBL RKS 323</span>
-        <a href="{{ url_for('kredit_foto') }}" class="py-3 underline hover:text-ink">Kredit foto produk</a>
+<footer class="border-t border-slate-200 bg-white text-sm">
+    {# Desktop: 4 kolom info. HP: hanya baris bawah agar tidak memanjang di atas navigasi bawah. #}
+    <div class="hidden md:grid max-w-6xl mx-auto px-4 py-10 grid-cols-4 gap-8">
+        <div>
+            <p class="font-display font-extrabold text-lg">{{ app_name }}</p>
+            <p class="text-muted mt-2">Toko demo produk elektronik Apple, Samsung, dan Xiaomi untuk tugas PBL RKS 323 Politeknik Negeri Batam.</p>
+        </div>
+        <div>
+            <p class="font-semibold mb-3">Belanja</p>
+            <ul class="space-y-2 text-muted">
+                <li><a href="{{ url_for('jelajah') }}" class="hover:text-ink">Semua Produk</a></li>
+                {% for k in kategori_nav[:4] %}<li><a href="{{ url_for('jelajah', kategori=k) }}" class="hover:text-ink">{{ k }}</a></li>{% endfor %}
+            </ul>
+        </div>
+        <div>
+            <p class="font-semibold mb-3">Akun</p>
+            <ul class="space-y-2 text-muted">
+                {% if current_user %}
+                    {% if not is_admin %}
+                    <li><a href="{{ url_for('keranjang') }}" class="hover:text-ink">Keranjang</a></li>
+                    <li><a href="{{ url_for('pesanan') }}" class="hover:text-ink">Pesanan Saya</a></li>
+                    {% endif %}
+                    <li><a href="{{ url_for('profil') }}" class="hover:text-ink">Profil</a></li>
+                    <li><a href="{{ url_for('pengaturan') }}" class="hover:text-ink">Pengaturan</a></li>
+                {% else %}
+                    <li><a href="{{ url_for('login') }}" class="hover:text-ink">Masuk</a></li>
+                    <li><a href="{{ url_for('register') }}" class="hover:text-ink">Daftar</a></li>
+                {% endif %}
+            </ul>
+        </div>
+        <div>
+            <p class="font-semibold mb-3">Toko</p>
+            <ul class="space-y-2 text-muted">
+                <li class="flex gap-2">{{ icon('map-pin', 'w-4 h-4 mt-0.5 shrink-0') }} {{ config.TOKO_ALAMAT }}</li>
+                <li class="flex gap-2">{{ icon('clock', 'w-4 h-4 mt-0.5 shrink-0') }} {{ config.TOKO_JAM_BUKA }}</li>
+                <li class="flex gap-2">{{ icon('truck', 'w-4 h-4 mt-0.5 shrink-0') }} Ongkir flat {{ config.ONGKIR_FLAT | rupiah }} atau ambil di toko</li>
+            </ul>
+        </div>
+    </div>
+    <div class="border-t border-slate-100">
+        <div class="max-w-6xl mx-auto px-4 py-1 md:py-2 text-xs text-muted flex flex-wrap items-center justify-between gap-x-4">
+            <span>&copy; {{ app_name }} &middot; PBL RKS 323</span>
+            <a href="{{ url_for('kredit_foto') }}" class="py-3 underline hover:text-ink">Kredit foto produk</a>
+        </div>
     </div>
 </footer>
 
 {# Navigasi bawah khusus layar HP (halaman checkout menggantinya dengan tombol bayar).
-   Tamu tidak melihat menu Pesanan/Profil; keranjang tetap ada dan mengarah ke login. #}
+   Tamu: keranjang tetap ada (mengarah ke login) + Masuk. Pelanggan: + Pesanan & Profil.
+   Admin tidak berbelanja, jadi keranjang & pesanan diganti Panel Admin. #}
 {% block bottom_nav scoped %}
 <nav class="md:hidden fixed bottom-0 inset-x-0 z-30 bg-white border-t border-slate-100 shadow-[0_-4px_16px_rgba(15,23,42,0.04)]">
     {% set items = [
         ('beranda', 'store', 'Beranda', ['beranda']),
         ('jelajah', 'layout-grid', 'Jelajah', ['jelajah', 'produk_detail']),
-        ('keranjang', 'shopping-bag', 'Keranjang', ['keranjang']),
     ] %}
-    {% if current_user %}
+    {% if is_admin %}
         {% set items = items + [
+            ('admin_dashboard', 'layout-dashboard', 'Admin', []),
+            ('profil', 'user', 'Profil', ['profil', 'pengaturan']),
+        ] %}
+    {% elif current_user %}
+        {% set items = items + [
+            ('keranjang', 'shopping-bag', 'Keranjang', ['keranjang']),
             ('pesanan', 'receipt-text', 'Pesanan', ['pesanan', 'pesanan_detail', 'pesanan_konfirmasi']),
             ('profil', 'user', 'Profil', ['profil', 'pengaturan']),
         ] %}
     {% else %}
-        {% set items = items + [('login', 'user', 'Masuk', ['login', 'register'])] %}
+        {% set items = items + [
+            ('keranjang', 'shopping-bag', 'Keranjang', ['keranjang']),
+            ('login', 'user', 'Masuk', ['login', 'register']),
+        ] %}
     {% endif %}
-    <div class="grid {{ 'grid-cols-5' if current_user else 'grid-cols-4' }} text-[11px] font-medium">
+    <div class="grid {{ 'grid-cols-5' if items | length == 5 else 'grid-cols-4' }} text-[11px] font-medium">
         {% for endpoint, ic, label, active in items %}
         <a href="{{ url_for(endpoint) }}" class="flex flex-col items-center gap-1 py-2.5 {{ 'text-brand' if ep in active else 'text-muted' }}">
             {{ icon(ic, 'w-6 h-6') }}<span>{{ label }}</span>

@@ -17,9 +17,15 @@ def init_auth_middleware(app):
         g.user = None
         user_id = session.get("user_id")
         if user_id is not None:
-            g.user = db.session.get(User, user_id)
-            if g.user is None:
-                # Akun sudah dihapus tetapi sesinya masih ada
+            user = db.session.get(User, user_id)
+            if user is not None and session.get("sesi_token") == user.sesi_token:
+                g.user = user
+            else:
+                # Akun sudah dihapus, atau kata sandinya sudah diganti di perangkat lain
+                if user is not None:
+                    log_event("SESSION_INVALIDATED", logging.WARNING, user_id=user.id, username=user.username,
+                              reason="password_changed")
+                    flash("Sesi berakhir karena kata sandi akun diganti. Silakan login lagi.", "warning")
                 session.clear()
 
         # 1. Rute statis dan 404 dibebaskan
@@ -51,5 +57,17 @@ def admin_required(view):
         if g.get("user") is None or not g.user.is_admin():
             flash("Akses ditolak! Halaman ini khusus untuk Admin.", "danger")
             return redirect(url_for("beranda"))
+        return view(*args, **kwargs)
+    return wrapped
+
+
+def pelanggan_required(view):
+    """Keranjang & pesanan khusus pelanggan. Admin tidak boleh berbelanja agar tidak bisa membuat
+    pesanan lalu menyetujui bukti bayarnya sendiri (pemisahan tugas)."""
+    @wraps(view)
+    def wrapped(*args, **kwargs):
+        if g.get("user") is not None and g.user.is_admin():
+            flash("Akun admin tidak bisa berbelanja. Gunakan akun pelanggan untuk mencoba alur belanja.", "warning")
+            return redirect(url_for("admin_dashboard"))
         return view(*args, **kwargs)
     return wrapped

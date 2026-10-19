@@ -1,3 +1,4 @@
+import hashlib
 from datetime import timedelta
 
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -31,6 +32,12 @@ class User(db.Model):
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
+
+    @property
+    def sesi_token(self):
+        """Sidik hash kata sandi untuk disimpan di sesi. Berubah setiap ganti kata sandi, sehingga
+        sesi lama di perangkat lain otomatis tidak berlaku lagi."""
+        return hashlib.sha256(self.password_hash.encode()).hexdigest()[:16]
 
     @staticmethod
     def check_dummy_password(password):

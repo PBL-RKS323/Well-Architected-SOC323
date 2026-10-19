@@ -4,7 +4,7 @@ import os
 
 from werkzeug.datastructures import FileStorage
 
-from helpers.image_security import upload_secure_image
+from helpers.image_security import upload_secure_image, delete_image
 from models import db
 from models.produk import Produk
 
@@ -18,23 +18,38 @@ def baca_katalog(app):
         return json.load(f)["produk"]
 
 
-def isi_katalog(app):
-    """Tambahkan produk contoh yang belum ada (dicek dari nama). Mengembalikan jumlah produk baru."""
-    folder_foto = os.path.join(app.root_path, "seed", "foto")
-    dibuat = 0
+def _simpan_foto(app, nama_foto):
+    """Foto tetap lewat validasi yang sama dengan upload admin (ukuran, magic number, nama acak)."""
+    path = os.path.join(app.root_path, "seed", "foto", nama_foto)
+    with open(path, "rb") as f:
+        nama_file = upload_secure_image(FileStorage(f, filename=nama_foto), app.config["UPLOAD_FOLDER"])
+    if not nama_file:
+        raise ValueError(f"Foto {nama_foto} ditolak validasi gambar.")
+    return nama_file
+
+
+def isi_katalog(app, perbarui_foto=False):
+    """Tambahkan produk contoh yang belum ada (dicek dari nama).
+
+    perbarui_foto=True: foto produk contoh yang sudah ada diganti dengan versi terbaru di seed/foto
+    (data lain seperti harga & stok yang mungkin sudah diubah admin tidak disentuh).
+    Mengembalikan (jumlah produk baru, jumlah foto diperbarui).
+    """
+    dibuat = diperbarui = 0
     for p in baca_katalog(app):
-        if Produk.query.filter_by(nama_produk=p["nama_produk"]).first():
+        produk = Produk.query.filter_by(nama_produk=p["nama_produk"]).first()
+        if produk is not None:
+            if perbarui_foto:
+                lama = produk.gambar
+                produk.gambar = _simpan_foto(app, p["foto"])
+                delete_image(lama, app.config["UPLOAD_FOLDER"])
+                diperbarui += 1
             continue
-        # Foto tetap lewat validasi yang sama dengan upload admin (ukuran, magic number, nama acak)
-        with open(os.path.join(folder_foto, p["foto"]), "rb") as f:
-            nama_file = upload_secure_image(FileStorage(f, filename=p["foto"]), app.config["UPLOAD_FOLDER"])
-        if not nama_file:
-            raise ValueError(f"Foto {p['foto']} ditolak validasi gambar.")
         db.session.add(Produk(
             nama_produk=p["nama_produk"], merek=p["merek"], kategori=p["kategori"],
             harga=p["harga"], harga_normal=p["harga_normal"], stok=p["stok"],
-            deskripsi=p["deskripsi"], gambar=nama_file,
+            deskripsi=p["deskripsi"], gambar=_simpan_foto(app, p["foto"]),
         ))
         dibuat += 1
     db.session.commit()
-    return dibuat
+    return dibuat, diperbarui

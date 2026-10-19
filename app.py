@@ -53,7 +53,8 @@ def create_app(config_class=Config):
 
     @app.template_filter("rupiah")
     def rupiah(value):
-        return "Rp " + f"{int(value or 0):,}".replace(",", ".")
+        #   (spasi tak terputus): "Rp" tidak pernah terpisah dari angkanya saat layar sempit
+        return "Rp " + f"{int(value or 0):,}".replace(",", ".")
 
     @app.template_filter("tanggal")
     def tanggal(value, jam=True):
@@ -63,7 +64,7 @@ def create_app(config_class=Config):
     def inject_globals():
         user = g.get("user")
         data = {"app_name": app.config["APP_NAME"], "current_user": user,
-                "cart_count": keranjang_controller.jumlah_item(user)}
+                "cart_count": keranjang_controller.jumlah_item(user), "kategori_nav": Produk.KATEGORI}
         if user is not None and user.is_admin():
             data["perlu_verifikasi"] = admin_pesanan_controller.jumlah_perlu_verifikasi()
         return data
@@ -275,12 +276,13 @@ def register_commands(app):
         click.echo(f"Akun admin '{admin.username}' berhasil dibuat.")
 
     @app.cli.command("seed-katalog")
-    def seed_katalog():
+    @click.option("--perbarui-foto", is_flag=True, help="Ganti foto produk contoh yang sudah ada.")
+    def seed_katalog(perbarui_foto):
         """Mengisi katalog contoh dari seed/katalog.json. Perintah: flask seed-katalog"""
         try:
-            dibuat = isi_katalog(app)
+            dibuat, diperbarui = isi_katalog(app, perbarui_foto=perbarui_foto)
         except ValueError as e:
             raise click.ClickException(str(e))
-        click.echo(f"{dibuat} produk contoh ditambahkan.")
+        click.echo(f"{dibuat} produk contoh ditambahkan, {diperbarui} foto diperbarui.")
 
 # Tidak ada objek `app` global: perintah `flask run` / `flask db ...` otomatis memanggil create_app().

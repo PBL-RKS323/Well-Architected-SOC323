@@ -8,6 +8,7 @@ from controllers.toko_controller import _escape_like
 from forms.pesanan_form import CheckoutForm, BuktiBayarForm
 from helpers.image_security import upload_secure_image, delete_image
 from helpers.security_logger import log_event
+from middlewares.auth_middleware import pelanggan_required
 from models import db, utcnow
 from models.keranjang import KeranjangItem
 from models.pesanan import Pesanan, PesananItem, PesananRiwayat
@@ -51,6 +52,7 @@ def _prefill_alamat(form):
         form.kode_pos.data = terakhir.kode_pos
 
 
+@pelanggan_required
 def checkout():
     items = (KeranjangItem.query.filter_by(user_id=g.user.id)
              .order_by(KeranjangItem.created_at.desc()).all())
@@ -69,9 +71,13 @@ def checkout():
         _prefill_alamat(form)
 
     if form.validate_on_submit():
-        belum_bayar = Pesanan.query.filter_by(user_id=g.user.id, status=Pesanan.MENUNGGU_PEMBAYARAN).count()
-        if belum_bayar >= current_app.config["MAKS_PESANAN_BELUM_BAYAR"]:
-            flash("Kamu masih punya beberapa pesanan yang belum dibayar. Selesaikan atau batalkan dulu.", "warning")
+        # Pesanan yang bukti bayarnya belum diverifikasi ikut dihitung, supaya batas ini tidak bisa
+        # diakali dengan mengunggah bukti palsu agar stok tetap tertahan
+        belum_lunas = Pesanan.query.filter(
+            Pesanan.user_id == g.user.id,
+            Pesanan.status.in_([Pesanan.MENUNGGU_PEMBAYARAN, Pesanan.MENUNGGU_VERIFIKASI])).count()
+        if belum_lunas >= current_app.config["MAKS_PESANAN_BELUM_BAYAR"]:
+            flash("Kamu masih punya beberapa pesanan yang belum lunas. Selesaikan atau batalkan dulu.", "warning")
             return redirect(url_for("pesanan"))
 
         kurir = form.metode_pengiriman.data == Pesanan.KURIR
@@ -86,6 +92,16 @@ def checkout():
         )
         db.session.add(pesanan)
 
+        # Kosongkan keranjang lebih dulu. Jika jumlah baris yang terhapus kurang, berarti keranjang ini
+        # sudah diproses request lain (mis. tombol diklik dua kali), jadi pesanan kedua dibatalkan.
+        ids = [i.id for i in items]
+        terhapus = (KeranjangItem.query.filter(KeranjangItem.id.in_(ids), KeranjangItem.user_id == g.user.id)
+                    .delete(synchronize_session=False))
+        if terhapus != len(ids):
+            db.session.rollback()
+            flash("Pesanan ini sudah dibuat. Cek di Pesanan Saya.", "info")
+            return redirect(url_for("pesanan"))
+
         for item in items:
             produk = item.produk
             nama = produk.nama_produk
@@ -99,7 +115,6 @@ def checkout():
                 return redirect(url_for("keranjang"))
             pesanan.items.append(PesananItem(produk_id=produk.id, nama_produk=produk.nama_produk,
                                              merek=produk.merek, harga=produk.harga, jumlah=item.jumlah))
-            db.session.delete(item)
 
         pesanan.riwayat.append(PesananRiwayat(status=Pesanan.MENUNGGU_PEMBAYARAN, oleh="pelanggan",
                                               keterangan="Pesanan dibuat"))
@@ -113,11 +128,13 @@ def checkout():
                            ongkir_kurir=_ongkir(Pesanan.KURIR))
 
 
+@pelanggan_required
 def konfirmasi(kode):
     pesanan = _pesanan_milik_user(kode)
     return render_template("toko/pesanan_konfirmasi.html", pesanan=pesanan)
 
 
+@pelanggan_required
 def index():
     Pesanan.batalkan_kedaluwarsa()
     tab = request.args.get("tab", "semua")
@@ -138,12 +155,14 @@ def index():
     return render_template("toko/pesanan.html", halaman=halaman, tab=tab, q=q, jumlah_tab=jumlah_tab)
 
 
+@pelanggan_required
 def detail(kode):
     Pesanan.batalkan_kedaluwarsa()
     pesanan = _pesanan_milik_user(kode)
     return render_template("toko/pesanan_detail.html", pesanan=pesanan, form_bukti=BuktiBayarForm())
 
 
+@pelanggan_required
 def unggah_bukti(kode):
     pesanan = _pesanan_milik_user(kode)
     form = BuktiBayarForm()
@@ -195,6 +214,7 @@ def bukti(kode):
     return response
 
 
+@pelanggan_required
 def batal(kode):
     pesanan = _pesanan_milik_user(kode)
     # Pelanggan hanya boleh membatalkan sebelum mengirim bukti bayar
@@ -209,6 +229,7 @@ def batal(kode):
     return redirect(url_for("pesanan_detail", kode=kode))
 
 
+@pelanggan_required
 def terima(kode):
     pesanan = _pesanan_milik_user(kode)
     if pesanan.status != Pesanan.DIKIRIM or \
@@ -221,6 +242,7 @@ def terima(kode):
     return redirect(url_for("pesanan_detail", kode=kode))
 
 
+@pelanggan_required
 def beli_lagi(kode):
     pesanan = _pesanan_milik_user(kode)
     ditambah = 0

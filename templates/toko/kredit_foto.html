@@ -1,13 +1,9 @@
 {% extends 'layouts/toko.html' %}
-{% from '_icons.html' import icon %}
+{% from '_macros.html' import judul_halaman %}
 {% block title %}Kredit Foto - {{ app_name }}{% endblock %}
 {% block content %}
 <div class="max-w-3xl mx-auto">
-    <div class="relative flex items-center justify-center mb-6">
-        <a href="{{ url_for('beranda') }}" aria-label="Kembali ke beranda"
-           class="absolute left-0 w-11 h-11 rounded-full bg-white border border-slate-100 flex items-center justify-center hover:bg-soft">{{ icon('arrow-left', 'w-5 h-5') }}</a>
-        <h1 class="font-display text-xl md:text-2xl font-extrabold">Kredit Foto</h1>
-    </div>
+    {{ judul_halaman('Kredit Foto', url_for('beranda'), 'Kembali ke beranda') }}
 
     <p class="text-sm text-muted mb-4">
         Foto produk contoh diambil dari Wikimedia Commons, lalu dipotong dan diperkecil. Hasil ubahan dari foto

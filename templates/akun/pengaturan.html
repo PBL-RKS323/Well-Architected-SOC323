@@ -1,11 +1,14 @@
 {% extends 'layouts/admin.html' if current_user.is_admin() else 'layouts/toko.html' %}
 {% from '_macros.html' import field, tombol_utama %}
 {% from '_icons.html' import icon %}
+{% from '_akun.html' import area_akun %}
 {% block title %}Pengaturan Akun - {{ app_name }}{% endblock %}
 {% block content %}
-<div class="max-w-4xl {{ '' if current_user.is_admin() else 'mx-auto' }}">
+{# Isi yang sama dipakai di panel admin dan area akun pelanggan (dengan sidebar di desktop) #}
+{% set isi %}
+<div class="max-w-4xl">
     {% if not current_user.is_admin() %}
-    <a href="{{ url_for('profil') }}" class="inline-flex items-center gap-2 text-sm font-medium text-muted hover:text-ink mb-4">
+    <a href="{{ url_for('profil') }}" class="lg:hidden inline-flex items-center gap-2 text-sm font-medium text-muted hover:text-ink mb-4">
         <span class="w-11 h-11 rounded-full bg-white border border-slate-100 flex items-center justify-center">{{ icon('arrow-left', 'w-4 h-4') }}</span>
         Profil
     </a>
@@ -46,4 +49,10 @@
         </section>
     </div>
 </div>
+{% endset %}
+{% if current_user.is_admin() %}
+    {{ isi }}
+{% else %}
+    {% call area_akun('pengaturan') %}{{ isi }}{% endcall %}
+{% endif %}
 {% endblock %}

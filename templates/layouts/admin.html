@@ -2,12 +2,13 @@
 {% from '_icons.html' import icon %}
 {% block body %}
 {% set ep = request.endpoint or '' %}
+{# (endpoint, ikon, label sidebar, label menu bawah HP, aktif) #}
 {% set menu = [
-    ('admin_dashboard', 'layout-dashboard', 'Dasbor', ep == 'admin_dashboard'),
-    ('admin_produk', 'package', 'Produk', ep.startswith('admin_produk')),
-    ('admin_pesanan', 'shopping-bag', 'Pesanan', ep.startswith('admin_pesanan')),
-    ('pengaturan', 'settings', 'Pengaturan', ep == 'pengaturan'),
-    ('beranda', 'store', 'Lihat Toko', false),
+    ('admin_dashboard', 'layout-dashboard', 'Dasbor', 'Dasbor', ep == 'admin_dashboard'),
+    ('admin_produk', 'package', 'Produk', 'Produk', ep.startswith('admin_produk')),
+    ('admin_pesanan', 'shopping-bag', 'Pesanan', 'Pesanan', ep.startswith('admin_pesanan')),
+    ('pengaturan', 'settings', 'Pengaturan', 'Akun', ep == 'pengaturan'),
+    ('beranda', 'store', 'Lihat Toko', 'Toko', false),
 ] %}
 <div class="min-h-screen lg:flex">
     <aside class="hidden lg:flex lg:flex-col w-64 shrink-0 bg-white border-r border-slate-100 p-5 sticky top-0 h-screen">
@@ -19,7 +20,7 @@
             </span>
         </a>
         <nav class="space-y-1 text-sm font-medium">
-            {% for endpoint, ic, label, active in menu %}
+            {% for endpoint, ic, label, _, active in menu %}
             <a href="{{ url_for(endpoint) }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl {{ 'bg-brand text-white' if active else 'text-muted hover:bg-soft hover:text-ink' }}">
                 {{ icon(ic, 'w-5 h-5') }} <span class="flex-1">{{ label }}</span>
                 {% if endpoint == 'admin_pesanan' and perlu_verifikasi %}
@@ -41,13 +42,17 @@
         </div>
     </aside>
 
-    <div class="flex-1 min-w-0">
-        {# Menu ringkas untuk layar kecil #}
-        <div class="lg:hidden bg-white border-b border-slate-100 px-4 py-3 flex items-center gap-2 overflow-x-auto scrollbar-none text-sm font-medium">
-            <span class="font-display font-extrabold mr-2 whitespace-nowrap">{{ app_name }}</span>
-            {% for endpoint, ic, label, active in menu %}
-            <a href="{{ url_for(endpoint) }}" class="whitespace-nowrap inline-flex items-center gap-1 px-4 min-h-11 rounded-full {{ 'bg-brand text-white' if active else 'bg-soft text-muted' }}">{{ label }}{% if endpoint == 'admin_pesanan' and perlu_verifikasi %} <span class="font-bold {{ 'text-white' if active else 'text-coral' }}">({{ perlu_verifikasi }})</span>{% endif %}</a>
-            {% endfor %}
+    <div class="flex-1 min-w-0 pb-20 lg:pb-0">
+        {# Header ringkas untuk layar kecil; menu ada di navigasi bawah #}
+        <div class="lg:hidden sticky top-0 z-30 bg-white border-b border-slate-100 px-4 h-14 flex items-center justify-between">
+            <a href="{{ url_for('admin_dashboard') }}" class="flex items-center gap-2">
+                <span class="font-display font-extrabold">{{ app_name }}</span>
+                <span class="text-[11px] font-semibold bg-brand-soft text-brand px-2 py-0.5 rounded-full">Admin</span>
+            </a>
+            <form action="{{ url_for('logout') }}" method="POST">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" aria-label="Logout" class="w-11 h-11 -mr-2 rounded-full flex items-center justify-center text-muted hover:text-coral cursor-pointer">{{ icon('log-out', 'w-5 h-5') }}</button>
+            </form>
         </div>
 
         <header class="hidden lg:flex items-center justify-between gap-4 px-8 h-16 bg-white border-b border-slate-100">
@@ -72,4 +77,18 @@
         </main>
     </div>
 </div>
+
+{# Navigasi bawah admin di HP: semua menu terlihat tanpa digeser #}
+<nav class="lg:hidden fixed bottom-0 inset-x-0 z-30 bg-white border-t border-slate-100 shadow-[0_-4px_16px_rgba(15,23,42,0.04)]">
+    <div class="grid grid-cols-5 text-[11px] font-medium">
+        {% for endpoint, ic, _, label, active in menu %}
+        <a href="{{ url_for(endpoint) }}" class="relative flex flex-col items-center gap-1 py-2.5 {{ 'text-brand' if active else 'text-muted' }}">
+            {{ icon(ic, 'w-6 h-6') }}<span>{{ label }}</span>
+            {% if endpoint == 'admin_pesanan' and perlu_verifikasi %}
+            <span class="absolute top-1.5 left-1/2 ml-2 min-w-4 h-4 px-1 rounded-full bg-coral text-white text-[10px] font-bold flex items-center justify-center">{{ perlu_verifikasi }}</span>
+            {% endif %}
+        </a>
+        {% endfor %}
+    </div>
+</nav>
 {% endblock %}

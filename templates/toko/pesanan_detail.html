@@ -1,14 +1,11 @@
 {% extends 'layouts/toko.html' %}
 {% from '_icons.html' import icon %}
 {% from '_pesanan.html' import badge_status, foto_item, info_status %}
+{% from '_macros.html' import judul_halaman %}
 {% block title %}Pesanan #{{ pesanan.kode }} - {{ app_name }}{% endblock %}
 {% block content %}
 <div class="max-w-4xl mx-auto">
-    <div class="relative flex items-center justify-center mb-6">
-        <a href="{{ url_for('pesanan') }}" aria-label="Kembali ke Pesanan Saya"
-           class="absolute left-0 w-10 h-10 rounded-full bg-white border border-slate-100 flex items-center justify-center hover:bg-soft">{{ icon('arrow-left', 'w-5 h-5') }}</a>
-        <h1 class="font-display text-xl md:text-2xl font-extrabold">Detail Pesanan</h1>
-    </div>
+    {{ judul_halaman('Detail Pesanan', url_for('pesanan'), 'Kembali ke Pesanan Saya') }}
 
     <div class="lg:grid lg:grid-cols-5 lg:gap-6 lg:items-start">
     <div class="lg:col-span-3 space-y-4">
@@ -87,7 +84,7 @@
                     <button type="button" data-copy="{{ config.BANK_NOREK }}" class="inline-flex items-center gap-1.5 text-brand text-sm font-semibold px-2 min-h-11 cursor-pointer">{{ icon('copy', 'w-4 h-4') }} <span data-copy-label>Salin</span></button>
                 </div>
 
-                <form action="{{ url_for('pesanan_bayar', kode=pesanan.kode) }}" method="POST" enctype="multipart/form-data" class="mt-4">
+                <form action="{{ url_for('pesanan_bayar', kode=pesanan.kode) }}" method="POST" enctype="multipart/form-data" data-kirim-sekali class="mt-4">
                     {{ form_bukti.hidden_tag() }}
                     <label class="flex flex-col items-center justify-center gap-2 border-2 border-dashed border-slate-200 hover:border-brand rounded-2xl p-6 text-center cursor-pointer">
                         <span class="w-12 h-12 rounded-full bg-brand-soft text-brand flex items-center justify-center">{{ icon('upload', 'w-6 h-6') }}</span>

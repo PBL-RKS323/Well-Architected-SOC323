@@ -32,8 +32,9 @@ def beranda():
     """Halaman utama: produk unggulan, kategori, dan produk per ekosistem brand"""
     diskon = case((Produk.harga_normal > Produk.harga, (Produk.harga_normal - Produk.harga) / Produk.harga_normal),
                   else_=0)
+    # Carousel: 3 produk tersedia dengan diskon terbesar (atau terbaru jika tidak ada diskon)
     unggulan = (Produk.query.filter(Produk.stok > 0)
-                .order_by(diskon.desc(), Produk.created_at.desc()).first())
+                .order_by(diskon.desc(), Produk.created_at.desc()).limit(3).all())
 
     ekosistem = []
     for merek in Produk.MEREK:
