@@ -1,0 +1,66 @@
+# Python & Flask
+pycache/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg
+*.egg-info/
+.installed.cfg
+
+# Virtual Environment
+.venv/
+venv/
+ENV/
+env/
+env.bak/
+venv.bak/
+
+#Environment Variables & Secrets
+.env
+.env.*
+!.env.example
+
+#Build & Distribution
+build/
+dist/
+downloads/
+eggs/
+.eggs/
+wheels/
+parts/
+sdist/
+develop-eggs/
+lib/
+lib64/
+var/
+
+#IDE & Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+#Operating System
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+#Logs
+logs/
+*.log
+
+#Figma Temporary Metadata
+.figma/runtime/
+.figma/design-context/
+.figaro/
+
+#Test & Coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+#Local Database (if created)
+instance/.db
+instance/.sqlite
+instance/*.sqlite3

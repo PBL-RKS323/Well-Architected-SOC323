@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block title %}Pusat Bantuan & Garansi — Gadgetin{% endblock %}
+
+{% block content %}
+<main class="mx-auto max-w-4xl px-5 py-12 lg:py-16">
+  
+  <!-- Breadcrumb -->
+  <nav aria-label="Breadcrumb" class="mb-7 flex items-center gap-2 text-xs text-muted">
+    <a href="/" class="hover:text-blue transition">Beranda</a>
+    <i data-lucide="chevron-right" class="size-3"></i>
+    <span class="text-ink font-medium">Pusat bantuan</span>
+  </nav>
+
+  <!-- Header -->
+  <p class="mb-2 text-xs font-bold uppercase tracking-widest text-blue">
+    PUSAT BANTUAN GADGETIN
+  </p>
+  <h1 class="font-display text-3xl font-extrabold text-ink lg:text-4xl">
+    Ada yang bisa kami bantu?
+  </h1>
+  <p class="mt-3 text-sm leading-7 text-muted">
+    Semua informasi mengenai cara belanja, garansi resmi merek, status pengiriman, dan layanan pelanggan Gadgetin tersedia di sini.
+  </p>
+
+  <!-- 3 Info Topic Cards -->
+  <div class="my-10 grid gap-6 md:grid-cols-3">
+    <div class="rounded-xl border border-line bg-white p-6 shadow-sm">
+      <i data-lucide="shopping-bag" class="size-7 mb-4 text-blue"></i>
+      <h3 class="font-display text-lg font-bold text-ink">Belanja & checkout COD</h3>
+      <p class="mt-3 text-sm leading-6 text-muted">
+        Pilih gadget impianmu dan selesaikan pesanan dengan bayar saat barang tiba.
+      </p>
+    </div>
+    <div class="rounded-xl border border-line bg-white p-6 shadow-sm">
+      <i data-lucide="truck" class="size-7 mb-4 text-blue"></i>
+      <h3 class="font-display text-lg font-bold text-ink">Pengiriman & status pesanan</h3>
+      <p class="mt-3 text-sm leading-6 text-muted">
+        Pengiriman aman ke seluruh nusantara dengan kemasan ekstra tebal dan perlindungan penuh.
+      </p>
+    </div>
+    <div class="rounded-xl border border-line bg-white p-6 shadow-sm">
+      <i data-lucide="shield-check" class="size-7 mb-4 text-blue"></i>
+      <h3 class="font-display text-lg font-bold text-ink">Garansi & bantuan toko</h3>
+      <p class="mt-3 text-sm leading-6 text-muted">
+        Semua produk dijamin 100% original dan dilindungi garansi resmi sesuai kebijakan produsen.
+      </p>
+    </div>
+  </div>
+
+  <!-- FAQ Section -->
+  <h2 class="font-display text-2xl font-extrabold text-ink mb-6">
+    Pertanyaan yang sering ditanyakan
+  </h2>
+  
+  <div class="divide-y divide-line rounded-xl border border-line bg-white px-6">
+    <details class="group py-5" open>
+      <summary class="cursor-pointer text-sm font-bold text-ink flex items-center justify-between list-none">
+        <span>Bagaimana cara berbelanja?</span>
+        <i data-lucide="chevron-down" class="size-4 text-muted group-open:rotate-180 transition"></i>
+      </summary>
+      <p class="mt-4 text-sm leading-7 text-muted">
+        Pilih produk, tambahkan ke keranjang, lalu masuk atau daftar akun. Lengkapi alamat pengiriman di halaman checkout dan pilih bayar di tempat (COD). Pesananmu akan tersimpan dan dapat dilacak di halaman Akun saya.
+      </p>
+    </details>
+
+    <details class="group py-5">
+      <summary class="cursor-pointer text-sm font-bold text-ink flex items-center justify-between list-none">
+        <span>Apakah pembayaran online sudah tersedia?</span>
+        <i data-lucide="chevron-down" class="size-4 text-muted group-open:rotate-180 transition"></i>
+      </summary>
+      <p class="mt-4 text-sm leading-7 text-muted">
+        Saat ini checkout toko kami menggunakan bayar di tempat (COD). Tidak ada kartu kredit, transfer otomatis, atau payment gateway online yang aktif. Jangan mengirim informasi kartu atau PIN melalui formulir mana pun.
+      </p>
+    </details>
+
+    <details class="group py-5">
+      <summary class="cursor-pointer text-sm font-bold text-ink flex items-center justify-between list-none">
+        <span>Bagaimana cara melihat status pesanan?</span>
+        <i data-lucide="chevron-down" class="size-4 text-muted group-open:rotate-180 transition"></i>
+      </summary>
+      <p class="mt-4 text-sm leading-7 text-muted">
+        Masuk ke akunmu dan buka halaman Pesanan saya. Status pesanan akan diperbarui mulai dari Menunggu konfirmasi, Sedang diproses, Dalam pengiriman, hingga Selesai.
+      </p>
+    </details>
+
+    <details class="group py-5">
+      <summary class="cursor-pointer text-sm font-bold text-ink flex items-center justify-between list-none">
+        <span>Bagaimana ketentuan garansi dan pengembalian?</span>
+        <i data-lucide="chevron-down" class="size-4 text-muted group-open:rotate-180 transition"></i>
+      </summary>
+      <p class="mt-4 text-sm leading-7 text-muted">
+        Garansi mengikuti kebijakan resmi dari masing-masing merek produk. Jika barang rusak saat diterima atau tidak sesuai, simpan kemasan asli, invoice, dan rekam video unboxing saat paket pertama kali dibuka. Hubungi tim toko dengan menyertakan nomor pesanan untuk proses verifikasi.
+      </p>
+    </details>
+  </div>
+
+  <div class="mt-8">
+    <a
+      href="/katalog"
+      class="inline-flex items-center gap-2 rounded-lg bg-ink px-6 py-3.5 text-sm font-bold text-white hover:bg-gray-800 transition"
+    >
+      <span>Kembali belanja</span>
+      <i data-lucide="arrow-right" class="size-4"></i>
+    </a>
+  </div>
+</main>
+{% endblock %}
+

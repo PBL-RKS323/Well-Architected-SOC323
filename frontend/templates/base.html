@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Gadgetin — Your Tech Companion{% endblock %}</title>
+  <meta name="description" content="{% block description %}Belanja smartphone, laptop, smartwatch, dan gadget original langsung dari Gadgetin.{% endblock %}">
+  
+  <!-- Favicon -->
+  <link rel="icon" href="{{ url_for('static', filename='images/725b0.svg') }}" type="image/svg+xml">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            ink: '#232321',
+            brand: '#fcbd01',
+            'brand-hover': '#eeb200',
+            blue: '#0c59b6',
+            hero: '#0c3976',
+            surface: '#f4f5f6',
+            line: '#e4e7e9',
+            muted: '#666b71',
+            faint: '#929fa5',
+            'soft-yellow': '#fff3cc',
+            'soft-peach': '#ffecdf',
+          },
+          fontFamily: {
+            sans: ['Lato', 'sans-serif'],
+            display: ['Lato', 'sans-serif'],
+            card: ['Rubik', 'sans-serif'],
+            public: ['"Public Sans"', 'sans-serif'],
+          },
+          fontSize: {
+            micro: '10px',
+            logo: '30px',
+            heading: '28px',
+            'display-hero': '52px',
+          },
+          maxWidth: {
+            store: '1320px',
+          },
+          minHeight: {
+            hero: '360px',
+          },
+          spacing: {
+            hero: '360px',
+            'hero-circle': '530px',
+          },
+          scale: {
+            '105': '1.05',
+            '110': '1.1',
+            '200': '2',
+            '250': '2.5',
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Custom CSS with Google Fonts -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="min-h-screen bg-white text-zinc-950 antialiased font-sans flex flex-col">
+
+  <!-- Header Section -->
+  <header class="bg-white">
+    <!-- Top Bar -->
+    <div class="bg-ink text-white">
+      <div class="mx-auto flex max-w-store items-center justify-between gap-4 px-5 py-2.5 text-xs lg:px-0">
+        <p class="flex items-center gap-2">
+          <span class="size-1.5 rounded-full bg-brand"></span>
+          Selamat datang di Gadgetin. Upgrade your everyday.
+        </p>
+        <div class="hidden items-center gap-5 text-gray-300 md:flex">
+          <span class="flex items-center gap-1.5">
+            <i data-lucide="map-pin" class="size-3.5"></i>
+            Kirim ke seluruh Indonesia
+          </span>
+          <span class="h-3 border-l border-white/20"></span>
+          <a href="/akun" class="flex items-center gap-1.5 hover:text-brand transition">
+            <i data-lucide="truck" class="size-3.5"></i>
+            Lacak pesanan
+          </a>
+          <span class="h-3 border-l border-white/20"></span>
+          <a href="/katalog?promo=1" class="flex items-center gap-1.5 hover:text-brand transition">
+            <i data-lucide="zap" class="size-3.5"></i>
+            Semua promo
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Header Bar -->
+    <div class="border-b border-line">
+      <div class="mx-auto flex max-w-store flex-wrap items-center gap-4 px-5 py-5 lg:flex-nowrap lg:gap-8 lg:px-0">
+        
+        <!-- Mobile/Desktop Menu Toggle Button -->
+        <button
+          type="button"
+          id="menu-toggle-btn"
+          aria-label="Buka menu kategori"
+          class="hidden rounded-lg bg-surface p-2 text-muted hover:text-ink lg:flex items-center justify-center cursor-pointer transition"
+        >
+          <i data-lucide="menu" class="size-6"></i>
+        </button>
+
+        <!-- Brand Logo -->
+        <a href="/" aria-label="Gadgetin — Beranda" class="inline-flex shrink-0 items-center gap-2.5 font-display text-logo font-extrabold tracking-tight text-ink">
+          <span class="flex size-9 items-center justify-center rounded-lg bg-brand text-ink">
+            <i data-lucide="zap" class="size-6 fill-current"></i>
+          </span>
+          gadgetin<span class="-ml-2 text-brand">.</span>
+        </a>
+
+        <!-- Flash Sale Tag (Figma Style) -->
+        <a href="/katalog?promo=1" class="hidden shrink-0 -rotate-6 text-center lg:block">
+          <span class="block font-display text-xs font-extrabold italic text-red-600">FLASH</span>
+          <span class="bg-brand px-2 py-0.5 text-xs font-extrabold italic text-ink inline-flex items-center gap-1">
+            SALE <i data-lucide="zap" class="size-3 fill-current inline"></i>
+          </span>
+        </a>
+
+        <!-- Search Bar -->
+        <form
+          id="header-search-form"
+          role="search"
+          action="/katalog"
+          method="GET"
+          class="order-last flex w-full items-center rounded-lg bg-surface px-4 lg:order-none lg:ml-2 lg:flex-1"
+        >
+          <i data-lucide="search" class="size-5 shrink-0 text-muted"></i>
+          <input
+            id="header-search-input"
+            type="text"
+            name="q"
+            value="{{ query or '' }}"
+            aria-label="Cari produk"
+            placeholder="Cari smartphone, laptop, dan gadget impianmu..."
+            class="w-full border-0 bg-transparent px-3 py-3.5 text-sm text-ink outline-none focus:ring-0 placeholder:text-faint"
+          >
+          <button
+            type="submit"
+            aria-label="Cari"
+            class="hidden rounded-lg p-2 text-muted hover:text-ink sm:inline-flex cursor-pointer transition"
+          >
+            <i data-lucide="arrow-right" class="size-4.5"></i>
+          </button>
+        </form>
+
+        <!-- User, Wishlist & Cart Links -->
+        <div class="ml-auto flex shrink-0 items-center gap-3 lg:ml-0 lg:gap-5">
+          <!-- User Account -->
+          <a href="/akun" class="flex items-center gap-2 text-sm text-ink hover:text-blue transition">
+            <i data-lucide="user-round" class="size-5.5"></i>
+            <span id="header-user-text" class="hidden sm:block">Masuk / Daftar</span>
+          </a>
+
+          <span class="h-6 border-l border-line"></span>
+
+          <!-- Favorites / Wishlist -->
+          <a href="/favorit" aria-label="Produk favorit" class="relative hidden text-ink hover:text-blue sm:block transition">
+            <i data-lucide="heart" class="size-5.5"></i>
+            <span class="fav-badge-count absolute -right-2 -top-2 hidden size-4 items-center justify-center rounded-full bg-brand text-micro font-bold text-ink">
+              0
+            </span>
+          </a>
+
+          <!-- Cart -->
+          <a href="/keranjang" class="flex items-center gap-2 text-sm text-ink hover:text-blue transition">
+            <span class="relative">
+              <i data-lucide="shopping-bag" class="size-5.5"></i>
+              <span class="cart-badge-count absolute -right-2 -top-2 hidden min-w-4 items-center justify-center rounded-full bg-brand px-1 text-micro font-bold text-ink">
+                0
+              </span>
+            </span>
+            <span class="hidden sm:block">Keranjang</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Category Navigation Bar -->
+    <nav aria-label="Kategori produk" class="border-b border-line">
+      <div class="mx-auto flex max-w-store items-center justify-between gap-3 overflow-x-auto px-5 py-3.5 lg:px-0 scrollbar-none">
+        <a
+          href="/katalog"
+          class="flex shrink-0 items-center gap-2 rounded-full px-5 py-2 text-sm font-semibold transition {% if active_page == 'katalog' and not active_category %}bg-brand text-ink{% else %}bg-ink text-white hover:bg-gray-800{% endif %}"
+        >
+          <i data-lucide="menu" class="size-4"></i>
+          Semua kategori
+          <i data-lucide="chevron-down" class="size-3.5"></i>
+        </a>
+
+        {% for cat in ['Smartphone', 'Laptop', 'Smartwatch', 'Audio', 'Gaming', 'Kamera'] %}
+        <a
+          href="/katalog?kategori={{ cat }}"
+          class="flex shrink-0 items-center gap-2 rounded-full px-4 py-2 text-sm transition {% if active_category == cat %}bg-brand text-ink font-semibold{% else %}bg-surface text-ink hover:bg-brand/20{% endif %}"
+        >
+          {{ cat }}
+          <i data-lucide="chevron-down" class="size-3 text-muted"></i>
+        </a>
+        {% endfor %}
+
+        <a
+          href="/katalog?promo=1"
+          class="flex shrink-0 items-center gap-1 text-sm font-bold text-blue hover:underline"
+        >
+          <i data-lucide="zap" class="size-4"></i>
+          Promo spesial
+        </a>
+      </div>
+    </nav>
+
+    <!-- Floating Dropdown Menu -->
+    <div id="menu-dropdown" class="hidden absolute left-5 z-40 mt-2 w-64 rounded-xl border border-line bg-white p-3 shadow-xl lg:left-auto lg:ml-10">
+      <p class="px-3 py-2 text-xs font-bold uppercase tracking-wider text-muted">Jelajahi Gadgetin</p>
+      {% for cat in ['Smartphone', 'Laptop', 'Smartwatch', 'Audio', 'Gaming', 'Kamera', 'Aksesori'] %}
+      <a
+        href="/katalog?kategori={{ cat }}"
+        class="flex items-center justify-between rounded-lg px-3 py-2.5 text-sm hover:bg-surface text-ink transition"
+      >
+        {{ cat }}
+        <i data-lucide="arrow-right" class="size-3.5 text-muted"></i>
+      </a>
+      {% endfor %}
+      <a
+        href="/katalog?promo=1"
+        class="mt-2 flex items-center justify-between border-t border-line px-3 pt-3 text-sm font-semibold text-blue hover:bg-surface rounded-lg"
+      >
+        <span>Promo Spesial</span>
+        <i data-lucide="zap" class="size-4 text-brand"></i>
+      </a>
+    </div>
+  </header>
+
+  <!-- Main Body Content -->
+  <div class="flex-1">
+    {% block content %}{% endblock %}
+  </div>
+
+  <!-- Footer Section -->
+  <footer class="mt-20 bg-ink text-white">
+    <div class="mx-auto grid max-w-store gap-10 px-5 py-14 md:grid-cols-2 lg:grid-cols-5 lg:gap-12 lg:px-0">
+      <!-- Column 1: Brand Info -->
+      <div class="lg:col-span-2">
+        <a href="/" aria-label="Gadgetin — Beranda" class="inline-flex shrink-0 items-center gap-2.5 font-display text-logo font-extrabold tracking-tight text-white">
+          <span class="flex size-9 items-center justify-center rounded-lg bg-brand text-ink">
+            <i data-lucide="zap" class="size-6 fill-current"></i>
+          </span>
+          gadgetin<span class="-ml-2 text-brand">.</span>
+        </a>
+        <p class="mb-5 mt-4 max-w-sm text-sm leading-6 text-gray-400">
+          Satu destinasi untuk semua kebutuhan gadgetmu. Produk original, harga bersahabat, langsung dari Gadgetin.
+        </p>
+        <div class="flex items-center gap-3">
+          <i data-lucide="headphones" class="size-6 text-brand"></i>
+          <div>
+            <p class="text-xs text-gray-400">Layanan pelanggan</p>
+            <a href="/bantuan" class="text-sm font-semibold hover:text-brand transition flex items-center gap-1">
+              Pusat bantuan Gadgetin
+              <i data-lucide="arrow-up-right" class="size-3.5"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Column 2: Categories -->
+      <div>
+        <p class="mb-5 text-sm font-bold uppercase tracking-wide">Jelajahi kategori</p>
+        <div class="flex flex-col gap-3 text-sm text-gray-400">
+          {% for cat in ['Smartphone', 'Laptop', 'Smartwatch', 'Audio', 'Gaming'] %}
+          <a href="/katalog?kategori={{ cat }}" class="hover:text-brand transition">{{ cat }}</a>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Column 3: Customer Links -->
+      <div>
+        <p class="mb-5 text-sm font-bold uppercase tracking-wide">Gadgetin untukmu</p>
+        <div class="flex flex-col gap-3 text-sm text-gray-400">
+          <a href="/akun" class="hover:text-brand transition">Akun saya</a>
+          <a href="/keranjang" class="hover:text-brand transition">Keranjang belanja</a>
+          <a href="/favorit" class="hover:text-brand transition">Produk favorit</a>
+          <a href="/akun" class="hover:text-brand transition">Pesanan saya</a>
+          <a href="/bantuan" class="hover:text-brand transition">Bantuan & garansi</a>
+        </div>
+      </div>
+
+      <!-- Column 4: Guarantees -->
+      <div>
+        <p class="mb-5 text-sm font-bold uppercase tracking-wide">Belanja tanpa ragu</p>
+        <div class="space-y-4 text-sm text-gray-400">
+          <p class="flex items-center gap-2">
+            <i data-lucide="shield-check" class="size-5 shrink-0 text-brand"></i>
+            100% produk original
+          </p>
+          <p class="flex items-center gap-2">
+            <i data-lucide="truck" class="size-5 shrink-0 text-brand"></i>
+            Pengiriman terlindungi
+          </p>
+          <p class="flex items-center gap-2">
+            <i data-lucide="shopping-bag" class="size-5 shrink-0 text-brand"></i>
+            Bayar saat diterima (COD)
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Footer Bar -->
+    <div class="border-t border-white/10">
+      <div class="mx-auto flex max-w-store flex-wrap items-center justify-between gap-4 px-5 py-5 text-xs text-gray-400 lg:px-0">
+        <p>© 2026 Gadgetin. Semua hak dilindungi.</p>
+        <p>Indonesia <span class="mx-2 text-gray-600">|</span> IDR (Rp)</p>
+        <div class="flex items-center gap-5">
+          <img src="{{ url_for('static', filename='images/98b6f.png') }}" alt="Visa" width="48" height="15" class="h-auto opacity-60 grayscale">
+          <img src="{{ url_for('static', filename='images/5775d.png') }}" alt="Mastercard" width="30" height="24" class="h-auto opacity-60 grayscale">
+          <img src="{{ url_for('static', filename='images/54c54.png') }}" alt="PayPal" width="50" height="15" class="h-auto opacity-60 grayscale">
+        </div>
+      </div>
+      <p class="pb-4 text-center text-micro text-gray-500">
+        Checkout saat ini mendukung bayar di tempat (COD); pembayaran kartu belum tersedia.
+      </p>
+    </div>
+  </footer>
+
+  <!-- Main JavaScript -->
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>
+

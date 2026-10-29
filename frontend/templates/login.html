@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+
+{% block title %}Masuk — Gadgetin{% endblock %}
+
+{% block content %}
+<main class="mx-auto max-w-store px-5 py-12 lg:py-16">
+  <div class="mx-auto grid max-w-5xl overflow-hidden rounded-2xl border border-line bg-white lg:grid-cols-2">
+    
+    <!-- Left Hero Banner -->
+    <div class="relative hidden flex-col justify-between overflow-hidden bg-hero p-12 text-white lg:flex">
+      <div class="absolute -right-36 -top-24 size-96 rounded-full border border-white/15 p-8">
+        <div class="h-full rounded-full border border-white/15 p-8">
+          <div class="h-full rounded-full bg-brand"></div>
+        </div>
+      </div>
+      
+      <span class="relative flex size-14 items-center justify-center rounded-xl bg-brand text-ink shadow-md">
+        <i data-lucide="zap" class="size-8 fill-current"></i>
+      </span>
+
+      <div class="relative py-16">
+        <p class="mb-4 text-xs font-semibold uppercase tracking-widest text-blue-100">
+          YOUR TECH COMPANION
+        </p>
+        <h2 class="font-display text-4xl leading-tight text-white">
+          Upgrade gadget.<br>
+          Upgrade harimu.
+        </h2>
+        <p class="mt-5 max-w-xs text-sm leading-7 text-blue-100">
+          Semua gadget impianmu, dalam satu tempat. Original dan langsung dari Gadgetin.
+        </p>
+      </div>
+
+      <p class="relative flex items-center gap-2 text-xs text-white/70">
+        <i data-lucide="shield-check" class="size-4 text-brand"></i>
+        Akun aman. Belanja nyaman.
+      </p>
+    </div>
+
+    <!-- Right Login Form -->
+    <div class="p-7 sm:p-12">
+      <a href="/" class="mb-8 inline-flex items-center gap-2 text-xs text-muted hover:text-blue transition">
+        <i data-lucide="arrow-left" class="size-3.5"></i>
+        <span>Kembali ke toko</span>
+      </a>
+
+      <h1 class="font-display text-3xl font-extrabold text-ink">
+        Senang kamu kembali.
+      </h1>
+      <p class="mb-7 mt-3 text-sm leading-6 text-muted">
+        Masuk untuk melihat pesanan dan menyimpan gadget favoritmu.
+      </p>
+
+      <form id="login-form" class="space-y-5">
+        <div>
+          <label for="login-email" class="block text-sm font-semibold text-ink mb-2">Email</label>
+          <input
+            id="login-email"
+            type="email"
+            placeholder="nama@email.com"
+            value="user@gadgetin.id"
+            required
+            class="w-full rounded-lg border border-line bg-white px-4 py-3 text-sm text-ink outline-none transition focus:border-blue focus:ring-2 focus:ring-blue/10"
+          >
+        </div>
+
+        <div>
+          <label for="login-password" class="block text-sm font-semibold text-ink mb-2">Kata sandi</label>
+          <div class="relative">
+            <input
+              id="login-password"
+              type="password"
+              placeholder="Minimal 8 karakter"
+              value="secret123"
+              required
+              class="w-full rounded-lg border border-line bg-white px-4 py-3 text-sm text-ink outline-none transition focus:border-blue focus:ring-2 focus:ring-blue/10"
+            >
+            <button
+              type="button"
+              id="toggle-pwd-btn"
+              class="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-ink p-1 cursor-pointer"
+            >
+              <i data-lucide="eye" class="size-4.5"></i>
+            </button>
+          </div>
+        </div>
+
+        <button
+          type="submit"
+          class="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-ink px-6 py-3.5 text-sm font-bold text-white hover:bg-gray-800 transition cursor-pointer"
+        >
+          <span>Masuk ke akun</span>
+          <i data-lucide="arrow-right" class="size-4"></i>
+        </button>
+      </form>
+
+      <p class="mt-8 text-center text-sm text-muted">
+        Belum punya akun?
+        <a href="/daftar" class="font-semibold text-blue hover:underline">
+          Buat akun sekarang
+        </a>
+      </p>
+    </div>
+  </div>
+</main>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const pwdInput = document.getElementById("login-password");
+    const toggleBtn = document.getElementById("toggle-pwd-btn");
+    if (pwdInput && toggleBtn) {
+      toggleBtn.addEventListener("click", () => {
+        const isPwd = pwdInput.type === "password";
+        pwdInput.type = isPwd ? "text" : "password";
+        toggleBtn.innerHTML = `<i data-lucide="${isPwd ? 'eye-off' : 'eye'}" class="size-4.5"></i>`;
+        if (window.lucide) lucide.createIcons({ root: toggleBtn });
+      });
+    }
+
+    const form = document.getElementById("login-form");
+    if (form) {
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const email = document.getElementById("login-email").value;
+        const name = email.split("@")[0];
+        saveUser({ name: name.charAt(0).toUpperCase() + name.slice(1), email: email });
+        showToast("Berhasil masuk. Selamat berbelanja!");
+        setTimeout(() => {
+          window.location.href = "/akun";
+        }, 500);
+      });
+    }
+  });
+</script>
+{% endblock %}
+
