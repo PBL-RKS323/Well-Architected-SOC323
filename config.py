@@ -12,6 +12,9 @@ class Config:
     SECRET_KEY = os.getenv("SECRET_KEY")
     SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL")
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    # Koneksi DB di pool dicek dulu sebelum dipakai: jika PostgreSQL sempat restart (mis. update otomatis),
+    # koneksi mati diganti baru, bukan jadi error 500 untuk pengunjung pertama.
+    SQLALCHEMY_ENGINE_OPTIONS = {"pool_pre_ping": True, "pool_recycle": 1800}
 
     APP_NAME = os.getenv("APP_NAME", "Elektronik Store")
     # Isi 1 di server publik: tampilkan pemberitahuan bahwa ini toko demo (rekening & produk bukan asli)
