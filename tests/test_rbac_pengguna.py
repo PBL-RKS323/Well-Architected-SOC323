@@ -208,6 +208,23 @@ def test_cli_buat_pengguna_simpan_password_di_file_privat(app, tmp_path):
     assert runner.invoke(args=["buat-pengguna", "--nama", "X", "--email", "x@y.id", "--peran", "dewa"]).exit_code != 0
 
 
+def test_cli_menolak_email_yang_tidak_bisa_dipakai_login(app, client):
+    """CLI memakai validator yang sama dengan form login. Domain khusus (.test, .local) ditolak form login,
+    jadi akun dengan email seperti itu tidak boleh dibuat (tidak akan pernah bisa masuk)."""
+    runner = app.test_cli_runner()
+    for email in ["admin@uji.test", "bukan-email", "a@lokal.local"]:
+        hasil = runner.invoke(args=["seed-admin", "--username", "admin2", "--nama", "Admin Dua", "--email", email,
+                                    "--password", "AdminDua123!"])
+        assert hasil.exit_code != 0 and "Format email tidak valid" in hasil.output, email
+        hasil = runner.invoke(args=["buat-pengguna", "--nama", "Staf Baru", "--email", email, "--peran", "staf"])
+        assert hasil.exit_code != 0 and "Format email tidak valid" in hasil.output, email
+
+    hasil = runner.invoke(args=["seed-admin", "--username", "admin2", "--nama", "Admin Dua",
+                                "--email", " Admin2@Contoh.ID ", "--password", "AdminDua123!"])
+    assert hasil.exit_code == 0, hasil.output
+    assert login(client, "admin2@contoh.id", "AdminDua123!").status_code == 302  # akun hasil CLI bisa login
+
+
 # --- EDIT DATA & RESET KATA SANDI OLEH ADMIN ---
 
 def test_admin_edit_nama_dan_email_pengguna(app, client):

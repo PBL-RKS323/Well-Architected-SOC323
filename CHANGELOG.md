@@ -3,6 +3,21 @@
 Setiap perubahan dicatat di sini: apa yang berubah, alasannya, dan cara mengujinya.
 Format tanggal: YYYY-MM-DD (WIB).
 
+## [0.10.1] - 2026-10-30 - Siap Dijalankan dari Clone GitHub
+
+Diuji dengan meng-clone branch `development` ke folder kosong, venv baru, dan SQLite.
+
+### Diperbaiki
+- Versi dependensi tidak langsung dikunci di `requirements.txt` (SQLAlchemy 2.1.5, alembic 1.20.0, WTForms 3.2.2,
+  Werkzeug 3.1.9, Jinja2 3.1.6), sama dengan server produksi. Tanpa ini, instalasi baru mendapat SQLAlchemy 2.1.6
+  yang DLL-nya diblokir Smart App Control Windows 11 sehingga `flask db upgrade` gagal.
+- `flask seed-admin` dan `flask buat-pengguna` memakai validator email yang sama dengan form login. Sebelumnya
+  email berdomain khusus (mis. `.test`) diterima CLI, padahal akun itu tidak akan pernah bisa login.
+
+### Ditambahkan
+- Contoh `DATABASE_URL` SQLite di `.env.example` dan tabel pemecahan masalah di README.
+- `docs/PANDUAN-KODE.md`: panduan memahami kode untuk tim (alur, file per peran, pertanyaan dosen, urutan demo).
+
 ## [0.10.0] - 2026-10-30 - Blueprint & Detail Produk Lengkap
 
 ### Diubah

@@ -4,6 +4,7 @@ import re
 
 import click
 from dotenv import load_dotenv
+from email_validator import validate_email, EmailNotValidError
 from flask import Flask, render_template, request, g
 from flask_migrate import Migrate
 from flask_wtf.csrf import CSRFProtect, CSRFError
@@ -133,6 +134,19 @@ def register_error_handlers(app):
         return render_template("error.html", code=500, message="Terjadi kesalahan pada server."), 500
 
 
+def _email_cli(email):
+    """Email dari perintah CLI dicek dengan validator yang sama dengan form login, agar tidak terbentuk
+    akun yang emailnya ditolak saat login (mis. domain khusus seperti .test atau .local)."""
+    email = email.strip().lower()
+    try:
+        validate_email(email, check_deliverability=False)
+    except EmailNotValidError as e:
+        raise click.ClickException(f"Format email tidak valid: {e}")
+    if len(email) > 100:
+        raise click.ClickException("Email maksimal 100 karakter.")
+    return email
+
+
 def register_commands(app):
     @app.cli.command("seed-admin")
     @click.option("--username", prompt="Username admin")
@@ -141,7 +155,7 @@ def register_commands(app):
     @click.option("--password", prompt="Kata sandi admin", hide_input=True, confirmation_prompt=True)
     def seed_admin(username, nama, email, password):
         """Membuat akun admin pertama. Perintah: flask seed-admin"""
-        email = email.strip().lower()
+        email = _email_cli(email)
         if not re.match(PASSWORD_POLICY, password) or len(password) < 8:
             raise click.ClickException(PASSWORD_POLICY_MESSAGE + " Minimal 8 karakter.")
         if User.query.filter((User.email == email) | (User.username == username)).first():
@@ -176,12 +190,10 @@ def register_commands(app):
         pemilik akun langsung menggantinya di Pengaturan, lalu hapus file tersebut.
         Perintah: flask buat-pengguna --nama "Nama" --email nama@contoh.id --peran staf
         """
-        email = email.strip().lower()
+        email = _email_cli(email)
         nama = " ".join(nama.split())
         if not re.match(NAMA_POLICY, nama) or not 3 <= len(nama) <= 100:
             raise click.ClickException("Nama hanya boleh huruf, spasi, titik, tanda hubung, apostrof (3-100 karakter).")
-        if not re.match(r"^[^@\s]+@[^@\s]+\.[a-z]{2,}$", email) or len(email) > 100:
-            raise click.ClickException("Format email tidak valid.")
         if User.query.filter_by(email=email).first():
             raise click.ClickException(f"Email {email} sudah terdaftar.")
 

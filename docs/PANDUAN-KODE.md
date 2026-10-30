@@ -101,7 +101,7 @@ Langkah demi langkah:
 | `templates/_macros.html`, `templates/_produk.html` | Komponen yang dipakai ulang (field form, kartu produk) |
 | `static/js/app.js` | JavaScript (carousel, tab, tombol jumlah). Tidak ada script inline karena CSP |
 | `migrations/versions/` | 8 file migrasi, berurutan dari tabel pertama sampai kolom spesifikasi |
-| `tests/` | 165 tes; `tests/conftest.py` menyiapkan aplikasi uji dengan database sementara |
+| `tests/` | 166 tes; `tests/conftest.py` menyiapkan aplikasi uji dengan database sementara |
 | `docs/KEAMANAN.md` | Daftar kontrol keamanan dan semua jenis event log |
 
 Alur status pesanan (`models/pesanan.py`):

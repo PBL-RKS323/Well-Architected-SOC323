@@ -53,7 +53,7 @@ Aplikasi memakai pola **MVC + Blueprint**. Analogi restoran:
 | `middlewares/` | Satpam | Wajib login & hak akses per peran (RBAC) |
 | `helpers/` | Alat dapur | Upload aman, log keamanan, email |
 | `migrations/` | Catatan renovasi | Riwayat perubahan struktur tabel |
-| `tests/` | Pencicip | 165 tes otomatis (`pytest -q`) |
+| `tests/` | Pencicip | 166 tes otomatis (`pytest -q`) |
 
 Contoh alur tombol **Masuk**: `routes/auth.py` → `forms/auth_form.py` (cek input + CSRF) →
 `controllers/auth_controller.py` → `models/user.py` (cocokkan hash kata sandi) →
@@ -186,6 +186,18 @@ docs/                   # dokumentasi keamanan
    ```
 
    Buka http://127.0.0.1:5000
+
+### Jika ada masalah saat menjalankan
+
+| Pesan | Penyebab & solusi |
+|---|---|
+| `Error: No such command 'db'` | venv belum aktif atau `pip install` gagal. Jalankan `venv\Scripts\activate` lalu ulangi `pip install -r requirements.txt` dan baca pesan error pertamanya. |
+| `DLL load failed ... An Application Control policy has blocked this file` | Smart App Control Windows 11 memblokir library versi baru. `requirements.txt` sudah mengunci versi yang lolos (SQLAlchemy 2.1.5); pastikan menginstal dari file itu, bukan `pip install flask-sqlalchemy` terpisah. |
+| `RuntimeError: SECRET_KEY belum diisi` / `DATABASE_URL belum diisi` | File `.env` belum dibuat dari `.env.example`, atau isinya belum diganti. |
+| `Format email tidak valid` saat login/seed-admin | Domain khusus seperti `.test`, `.local`, `.localhost` ditolak. Pakai email dengan domain biasa. |
+
+Langkah di atas sudah diuji dari clone baru repo GitHub (venv baru + SQLite): migrasi, seed-admin,
+seed-katalog, seluruh tes, dan login admin berjalan.
 
 ## Alur Pesanan
 

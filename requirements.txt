@@ -9,6 +9,13 @@ Pillow==12.3.0  # encode ulang foto profil (buang EXIF)
 Flask-Mail==0.10.0  # kirim kode OTP lewat email (Gmail SMTP)
 Authlib==1.9.1  # login dengan Google (OAuth 2.0 / OpenID Connect)
 requests==2.34.2  # dipakai Authlib untuk menghubungi Google
+# Dependensi tidak langsung dikunci ke versi yang sudah diuji (sama dengan server produksi), agar setiap
+# laptop anggota mendapat versi yang sama. SQLAlchemy 2.1.6 sempat diblokir Smart App Control Windows 11.
+SQLAlchemy==2.1.5
+alembic==1.20.0
+WTForms==3.2.2
+Werkzeug==3.1.9
+Jinja2==3.1.6
 # Driver database: pilih sesuai server yang dipakai (DATABASE_URL di .env)
 PyMySQL==1.2.3
 psycopg2-binary==2.9.13
