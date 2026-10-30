@@ -5,8 +5,8 @@
 {% from '_akun.html' import area_akun %}
 {% block title %}Pesanan Saya - {{ app_name }}{% endblock %}
 {% block content %}
-{% call area_akun('pesanan') %}
-<div class="lg:hidden">{{ judul_halaman('Pesanan Saya', url_for('profil'), 'Kembali ke profil') }}</div>
+{% call area_akun('belanja.pesanan') %}
+<div class="lg:hidden">{{ judul_halaman('Pesanan Saya', url_for('akun.profil'), 'Kembali ke profil') }}</div>
 <h1 class="hidden lg:block font-display text-2xl font-extrabold mb-5">Pesanan Saya</h1>
 
 <div class="lg:flex lg:items-center lg:gap-4 mb-5">
@@ -20,7 +20,7 @@
     {# 4 kolom sama lebar: semua tab terlihat di HP tanpa digeser #}
     <nav class="grid grid-cols-4 gap-1.5 lg:w-[28rem] text-[13px] sm:text-sm font-medium" aria-label="Filter status">
         {% for nama, label in [('semua', 'Semua'), ('aktif', 'Aktif'), ('selesai', 'Selesai'), ('dibatalkan', 'Batal')] %}
-        <a href="{{ url_for('pesanan', tab=nama, q=q or None) }}"
+        <a href="{{ url_for('belanja.pesanan', tab=nama, q=q or None) }}"
            class="flex flex-col sm:flex-row items-center justify-center sm:gap-1 min-h-11 py-1 rounded-2xl sm:rounded-full {{ 'bg-brand text-white' if tab == nama else 'bg-white text-muted hover:text-ink' }}">
             <span>{{ label }}</span> <span class="text-xs sm:text-sm">({{ jumlah_tab[nama] }})</span>
         </a>
@@ -40,7 +40,7 @@
             {{ badge_status(p) }}
         </div>
 
-        <a href="{{ url_for('pesanan_detail', kode=p.kode) }}" class="block mt-4 group">
+        <a href="{{ url_for('belanja.pesanan_detail', kode=p.kode) }}" class="block mt-4 group">
             <div class="relative">
                 {{ info_status(p) }}
                 <span class="absolute right-3 top-1/2 -translate-y-1/2 text-muted group-hover:text-ink">{{ icon('chevron-right', 'w-5 h-5') }}</span>
@@ -73,16 +73,16 @@
         </div>
 
         <div class="grid grid-cols-2 gap-3 mt-4">
-            <a href="{{ url_for('pesanan_detail', kode=p.kode) }}" class="flex items-center justify-center bg-brand-soft hover:bg-blue-100 font-medium py-3 rounded-full">Detail Pesanan</a>
+            <a href="{{ url_for('belanja.pesanan_detail', kode=p.kode) }}" class="flex items-center justify-center bg-brand-soft hover:bg-blue-100 font-medium py-3 rounded-full">Detail Pesanan</a>
             {% if p.status == 'menunggu_pembayaran' %}
-                <a href="{{ url_for('pesanan_detail', kode=p.kode) }}#bayar" class="flex items-center justify-center gap-2 bg-brand hover:bg-brand-dark text-white font-medium py-3 rounded-full">{{ icon('wallet', 'w-4 h-4') }} Bayar</a>
+                <a href="{{ url_for('belanja.pesanan_detail', kode=p.kode) }}#bayar" class="flex items-center justify-center gap-2 bg-brand hover:bg-brand-dark text-white font-medium py-3 rounded-full">{{ icon('wallet', 'w-4 h-4') }} Bayar</a>
             {% elif p.status in ['selesai', 'dibatalkan'] %}
-                <form action="{{ url_for('pesanan_beli_lagi', kode=p.kode) }}" method="POST">
+                <form action="{{ url_for('belanja.pesanan_beli_lagi', kode=p.kode) }}" method="POST">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <button type="submit" class="w-full flex items-center justify-center gap-2 bg-brand hover:bg-brand-dark text-white font-medium py-3 rounded-full cursor-pointer">{{ icon('rotate-ccw', 'w-4 h-4') }} Beli Lagi</button>
                 </form>
             {% else %}
-                <a href="{{ url_for('pesanan_detail', kode=p.kode) }}#lacak" class="flex items-center justify-center gap-2 bg-brand hover:bg-brand-dark text-white font-medium py-3 rounded-full">{{ icon('navigation-2', 'w-4 h-4') }} Lacak</a>
+                <a href="{{ url_for('belanja.pesanan_detail', kode=p.kode) }}#lacak" class="flex items-center justify-center gap-2 bg-brand hover:bg-brand-dark text-white font-medium py-3 rounded-full">{{ icon('navigation-2', 'w-4 h-4') }} Lacak</a>
             {% endif %}
         </div>
     </article>
@@ -94,11 +94,11 @@
     {% if q or tab != 'semua' %}
         <h2 class="font-display text-xl font-extrabold mt-5">Pesanan tidak ditemukan</h2>
         <p class="text-muted mt-2">Coba kata kunci lain atau lihat semua pesanan.</p>
-        <a href="{{ url_for('pesanan') }}" class="inline-flex mt-5 text-brand font-semibold py-3">Lihat semua pesanan</a>
+        <a href="{{ url_for('belanja.pesanan') }}" class="inline-flex mt-5 text-brand font-semibold py-3">Lihat semua pesanan</a>
     {% else %}
         <h2 class="font-display text-xl font-extrabold mt-5">Belum ada pesanan</h2>
         <p class="text-muted mt-2">Pesanan yang kamu buat akan muncul di sini.</p>
-        <a href="{{ url_for('jelajah') }}" class="inline-flex items-center gap-2 mt-5 bg-brand hover:bg-brand-dark text-white font-medium px-7 py-3 rounded-full">Lihat Produk</a>
+        <a href="{{ url_for('toko.jelajah') }}" class="inline-flex items-center gap-2 mt-5 bg-brand hover:bg-brand-dark text-white font-medium px-7 py-3 rounded-full">Lihat Produk</a>
     {% endif %}
 </section>
 {% endif %}
@@ -107,7 +107,7 @@
 <nav class="flex items-center justify-center gap-2 mt-6" aria-label="Halaman">
     {% for n in halaman.iter_pages() %}
         {% if n %}
-        <a href="{{ url_for('pesanan', tab=tab, q=q or None, page=n) }}"
+        <a href="{{ url_for('belanja.pesanan', tab=tab, q=q or None, page=n) }}"
            class="w-11 h-11 rounded-full flex items-center justify-center text-sm font-semibold {{ 'bg-brand text-white' if n == halaman.page else 'bg-white hover:bg-brand-soft' }}">{{ n }}</a>
         {% else %}<span class="px-1 text-muted">…</span>{% endif %}
     {% endfor %}

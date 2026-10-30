@@ -12,10 +12,7 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 load_dotenv()
 
 from config import Config  # noqa: E402  (dibaca setelah .env dimuat)
-from controllers import (auth_controller, admin_controller, produk_controller, toko_controller,  # noqa: E402
-                         akun_controller, keranjang_controller, pesanan_controller, admin_pesanan_controller,
-                         admin_pengguna_controller, alamat_controller, ulasan_controller,
-                         admin_laporan_controller, otp_controller, google_controller)
+from controllers import auth_controller, keranjang_controller, admin_pesanan_controller, google_controller  # noqa: E402
 from forms.auth_form import PASSWORD_POLICY, PASSWORD_POLICY_MESSAGE, NAMA_POLICY  # noqa: E402
 from helpers.kata_sandi import buat_kata_sandi_sementara  # noqa: E402
 from helpers.email import mail, email_aktif  # noqa: E402
@@ -31,6 +28,7 @@ from models.alamat import Alamat  # noqa: E402,F401
 from models.ulasan import Ulasan  # noqa: E402,F401
 from models.kode_otp import KodeOtp  # noqa: E402,F401
 from models.user import User  # noqa: E402
+from routes import register_blueprints  # noqa: E402
 
 migrate = Migrate()
 csrf = CSRFProtect()
@@ -57,7 +55,7 @@ def create_app(config_class=Config):
     mail.init_app(app)
     google_controller.init_google(app)
 
-    register_routes(app)
+    register_blueprints(app)  # route per area ada di folder routes/ (toko, auth, belanja, akun, admin)
     register_error_handlers(app)
     register_commands(app)
 
@@ -112,261 +110,6 @@ def create_app(config_class=Config):
         return response
 
     return app
-
-
-def register_routes(app):
-    # --- TOKO (publik) ---
-    @app.route("/")
-    def beranda():
-        return toko_controller.beranda()
-
-    @app.route("/jelajah")
-    def jelajah():
-        return toko_controller.jelajah()
-
-    @app.route("/produk/<int:produk_id>")
-    def produk_detail(produk_id):
-        return toko_controller.detail(produk_id)
-
-    # --- ULASAN (pembeli yang pesanannya sudah selesai) ---
-    @app.route("/produk/<int:produk_id>/ulasan", methods=["POST"])
-    def ulasan_simpan(produk_id):
-        return ulasan_controller.simpan(produk_id)
-
-    @app.route("/produk/<int:produk_id>/ulasan/hapus", methods=["POST"])
-    def ulasan_hapus(produk_id):
-        return ulasan_controller.hapus_milik_sendiri(produk_id)
-
-    @app.route("/kredit-foto")
-    def kredit_foto():
-        return toko_controller.kredit_foto()
-
-    # --- AUTENTIKASI ---
-    @app.route("/register", methods=["GET", "POST"])
-    def register():
-        return auth_controller.register()
-
-    @app.route("/login", methods=["GET", "POST"])
-    def login():
-        return auth_controller.login()
-
-    # --- KODE OTP EMAIL & LUPA KATA SANDI ---
-    @app.route("/verifikasi", methods=["GET", "POST"])
-    def verifikasi_kode():
-        return otp_controller.verifikasi()
-
-    @app.route("/verifikasi/kirim-ulang", methods=["POST"])
-    def verifikasi_kirim_ulang():
-        return otp_controller.verifikasi_kirim_ulang()
-
-    @app.route("/lupa-password", methods=["GET", "POST"])
-    def lupa_password():
-        return otp_controller.lupa_password()
-
-    @app.route("/lupa-password/kode", methods=["GET", "POST"])
-    def lupa_password_kode():
-        return otp_controller.lupa_password_kode()
-
-    @app.route("/lupa-password/kirim-ulang", methods=["POST"])
-    def lupa_password_kirim_ulang():
-        return otp_controller.lupa_password_kirim_ulang()
-
-    # --- MASUK DENGAN GOOGLE ---
-    @app.route("/login/google")
-    def login_google():
-        return google_controller.login()
-
-    @app.route("/login/google/callback")
-    def login_google_callback():
-        return google_controller.callback()
-
-    @app.route("/logout", methods=["POST"])
-    def logout():
-        return auth_controller.logout()
-
-    # --- KERANJANG (wajib login) ---
-    @app.route("/keranjang")
-    def keranjang():
-        return keranjang_controller.index()
-
-    @app.route("/keranjang/tambah/<int:produk_id>", methods=["POST"])
-    def keranjang_tambah(produk_id):
-        return keranjang_controller.tambah(produk_id)
-
-    @app.route("/keranjang/<int:item_id>/ubah", methods=["POST"])
-    def keranjang_ubah(item_id):
-        return keranjang_controller.ubah(item_id)
-
-    @app.route("/keranjang/<int:item_id>/hapus", methods=["POST"])
-    def keranjang_hapus(item_id):
-        return keranjang_controller.hapus(item_id)
-
-    @app.route("/keranjang/kosongkan", methods=["POST"])
-    def keranjang_kosongkan():
-        return keranjang_controller.kosongkan()
-
-    # --- CHECKOUT & PESANAN (wajib login, hanya pesanan milik sendiri) ---
-    @app.route("/checkout", methods=["GET", "POST"])
-    def checkout():
-        return pesanan_controller.checkout()
-
-    @app.route("/pesanan")
-    def pesanan():
-        return pesanan_controller.index()
-
-    @app.route("/pesanan/<kode>")
-    def pesanan_detail(kode):
-        return pesanan_controller.detail(kode)
-
-    @app.route("/pesanan/<kode>/konfirmasi")
-    def pesanan_konfirmasi(kode):
-        return pesanan_controller.konfirmasi(kode)
-
-    @app.route("/pesanan/<kode>/bayar", methods=["POST"])
-    def pesanan_bayar(kode):
-        return pesanan_controller.unggah_bukti(kode)
-
-    @app.route("/pesanan/<kode>/bukti")
-    def pesanan_bukti(kode):
-        return pesanan_controller.bukti(kode)
-
-    @app.route("/pesanan/<kode>/batal", methods=["POST"])
-    def pesanan_batal(kode):
-        return pesanan_controller.batal(kode)
-
-    @app.route("/pesanan/<kode>/terima", methods=["POST"])
-    def pesanan_terima(kode):
-        return pesanan_controller.terima(kode)
-
-    @app.route("/pesanan/<kode>/beli-lagi", methods=["POST"])
-    def pesanan_beli_lagi(kode):
-        return pesanan_controller.beli_lagi(kode)
-
-    # --- PROFIL & PENGATURAN AKUN (semua user yang login) ---
-    @app.route("/profil")
-    def profil():
-        return akun_controller.profil()
-
-    @app.route("/pengaturan")
-    def pengaturan():
-        return akun_controller.pengaturan()
-
-    @app.route("/pengaturan/nama", methods=["POST"])
-    def pengaturan_nama():
-        return akun_controller.ubah_nama()
-
-    @app.route("/pengaturan/email", methods=["POST"])
-    def pengaturan_email():
-        return akun_controller.ubah_email()
-
-    @app.route("/pengaturan/password", methods=["POST"])
-    def pengaturan_password():
-        return akun_controller.ubah_password()
-
-    @app.route("/pengaturan/foto", methods=["POST"])
-    def pengaturan_foto():
-        return akun_controller.ubah_avatar()
-
-    @app.route("/pengaturan/foto/hapus", methods=["POST"])
-    def pengaturan_foto_hapus():
-        return akun_controller.hapus_avatar()
-
-    # --- ALAMAT TERSIMPAN (pelanggan) ---
-    @app.route("/alamat")
-    def alamat():
-        return alamat_controller.index()
-
-    @app.route("/alamat/tambah", methods=["POST"])
-    def alamat_tambah():
-        return alamat_controller.tambah()
-
-    @app.route("/alamat/<int:alamat_id>/edit", methods=["GET", "POST"])
-    def alamat_edit(alamat_id):
-        return alamat_controller.edit(alamat_id)
-
-    @app.route("/alamat/<int:alamat_id>/hapus", methods=["POST"])
-    def alamat_hapus(alamat_id):
-        return alamat_controller.hapus(alamat_id)
-
-    @app.route("/alamat/<int:alamat_id>/utama", methods=["POST"])
-    def alamat_utama(alamat_id):
-        return alamat_controller.jadikan_utama(alamat_id)
-
-    # --- ADMIN ---
-    @app.route("/admin")
-    def admin_dashboard():
-        return admin_controller.dashboard()
-
-    @app.route("/admin/produk")
-    def admin_produk():
-        return produk_controller.index()
-
-    @app.route("/admin/produk/tambah", methods=["GET", "POST"])
-    def admin_produk_tambah():
-        return produk_controller.create()
-
-    @app.route("/admin/produk/<int:produk_id>/edit", methods=["GET", "POST"])
-    def admin_produk_edit(produk_id):
-        return produk_controller.edit(produk_id)
-
-    @app.route("/admin/produk/<int:produk_id>/hapus", methods=["POST"])
-    def admin_produk_hapus(produk_id):
-        return produk_controller.destroy(produk_id)
-
-    @app.route("/admin/pesanan")
-    def admin_pesanan():
-        return admin_pesanan_controller.index()
-
-    @app.route("/admin/pesanan/<int:pesanan_id>")
-    def admin_pesanan_detail(pesanan_id):
-        return admin_pesanan_controller.detail(pesanan_id)
-
-    @app.route("/admin/pesanan/<int:pesanan_id>/status", methods=["POST"])
-    def admin_pesanan_status(pesanan_id):
-        return admin_pesanan_controller.ubah_status(pesanan_id)
-
-    # --- ULASAN: moderasi & balasan toko (izin kelola_produk) ---
-    @app.route("/admin/ulasan")
-    def admin_ulasan():
-        return ulasan_controller.index()
-
-    @app.route("/admin/ulasan/<int:ulasan_id>/balas", methods=["POST"])
-    def admin_ulasan_balas(ulasan_id):
-        return ulasan_controller.balas(ulasan_id)
-
-    @app.route("/admin/ulasan/<int:ulasan_id>/hapus", methods=["POST"])
-    def admin_ulasan_hapus(ulasan_id):
-        return ulasan_controller.hapus(ulasan_id)
-
-    # --- LAPORAN TRANSAKSI (izin lihat_laporan, hanya admin) ---
-    @app.route("/admin/laporan")
-    def admin_laporan():
-        return admin_laporan_controller.index()
-
-    @app.route("/admin/laporan/csv")
-    def admin_laporan_csv():
-        return admin_laporan_controller.ekspor_csv()
-
-    # --- KELOLA PENGGUNA (izin kelola_user, hanya admin) ---
-    @app.route("/admin/pengguna")
-    def admin_pengguna():
-        return admin_pengguna_controller.index()
-
-    @app.route("/admin/pengguna/tambah", methods=["GET", "POST"])
-    def admin_pengguna_tambah():
-        return admin_pengguna_controller.tambah()
-
-    @app.route("/admin/pengguna/<int:user_id>")
-    def admin_pengguna_detail(user_id):
-        return admin_pengguna_controller.detail(user_id)
-
-    @app.route("/admin/pengguna/<int:user_id>/aksi", methods=["POST"])
-    def admin_pengguna_aksi(user_id):
-        return admin_pengguna_controller.aksi(user_id)
-
-    @app.route("/admin/pengguna/<int:user_id>/edit", methods=["POST"])
-    def admin_pengguna_edit(user_id):
-        return admin_pengguna_controller.edit(user_id)
 
 
 def register_error_handlers(app):

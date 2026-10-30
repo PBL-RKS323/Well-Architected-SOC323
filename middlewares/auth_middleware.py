@@ -8,9 +8,14 @@ from models import db
 from models.user import User
 
 # Endpoint yang boleh diakses tanpa login. Endpoint lain otomatis wajib login (default deny).
-PUBLIC_ENDPOINTS = {"static", "beranda", "jelajah", "produk_detail", "kredit_foto", "login", "register",
-                    "verifikasi_kode", "verifikasi_kirim_ulang", "lupa_password", "lupa_password_kode",
-                    "lupa_password_kirim_ulang", "login_google", "login_google_callback"}
+# Nama endpoint memakai awalan Blueprint ("toko.", "auth.").
+PUBLIC_ENDPOINTS = {
+    "static",
+    "toko.beranda", "toko.jelajah", "toko.produk_detail", "toko.kredit_foto",
+    "auth.login", "auth.register", "auth.verifikasi_kode", "auth.verifikasi_kirim_ulang",
+    "auth.lupa_password", "auth.lupa_password_kode", "auth.lupa_password_kirim_ulang",
+    "auth.login_google", "auth.login_google_callback",
+}
 
 
 def _muat_user():
@@ -34,7 +39,7 @@ def _tolak(izin=None):
     log_event("ACCESS_DENIED", logging.WARNING, user_id=g.user.id, username=g.user.username,
               role=g.user.role, path=request.path, **({"permission": izin} if izin else {}))
     flash("Akses ditolak! Kamu tidak punya izin untuk halaman ini.", "danger")
-    return redirect(url_for("admin_dashboard" if g.user.is_staf_toko() else "beranda"))
+    return redirect(url_for("admin.dashboard" if g.user.is_staf_toko() else "toko.beranda"))
 
 
 def init_auth_middleware(app):
@@ -50,7 +55,7 @@ def init_auth_middleware(app):
         if g.user is None:
             flash("Silakan login terlebih dahulu untuk mengakses halaman ini.", "warning")
             # next hanya untuk GET (URL aksi POST tidak bisa dibuka ulang setelah login)
-            return redirect(url_for("login", next=request.path if request.method == "GET" else None))
+            return redirect(url_for("auth.login", next=request.path if request.method == "GET" else None))
 
         # 3. Otorisasi area panel: peran dibaca dari database setiap request, bukan dari sesi.
         #    Izin rinci (kelola_produk, kelola_user, ...) dicek lagi oleh izin_required di controller.
@@ -68,7 +73,7 @@ def izin_required(izin):
         @wraps(view)
         def wrapped(*args, **kwargs):
             if g.get("user") is None:
-                return redirect(url_for("login"))
+                return redirect(url_for("auth.login"))
             if not g.user.punya_izin(izin):
                 return _tolak(izin)
             return view(*args, **kwargs)
@@ -84,6 +89,6 @@ def pelanggan_required(view):
         if g.get("user") is not None and not g.user.punya_izin("belanja"):
             flash("Akun admin/staf tidak bisa berbelanja. Gunakan akun pelanggan untuk mencoba alur belanja.",
                   "warning")
-            return redirect(url_for("admin_dashboard"))
+            return redirect(url_for("admin.dashboard"))
         return view(*args, **kwargs)
     return wrapped

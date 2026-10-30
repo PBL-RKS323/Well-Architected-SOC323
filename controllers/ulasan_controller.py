@@ -21,7 +21,7 @@ FILTER = {"semua": "Semua", "belum_dibalas": "Belum dibalas", "rendah": "Rating 
 def simpan(produk_id):
     """Tambah atau ubah ulasan sendiri. Hanya untuk pembeli yang pesanannya sudah selesai."""
     produk = db.get_or_404(Produk, produk_id)
-    tujuan = url_for("produk_detail", produk_id=produk.id, _anchor="ulasan")
+    tujuan = url_for("toko.produk_detail", produk_id=produk.id, _anchor="ulasan")
     if not Ulasan.boleh_mengulas(g.user, produk.id):
         log_event("REVIEW_REJECTED", logging.WARNING, user_id=g.user.id, product_id=produk.id,
                   reason="not_purchased")
@@ -59,7 +59,7 @@ def hapus_milik_sendiri(produk_id):
     db.session.commit()
     log_event("REVIEW_DELETE", user_id=g.user.id, product_id=produk_id, review_id=ulasan.id, by="owner")
     flash("Ulasan dihapus.", "success")
-    return redirect(url_for("produk_detail", produk_id=produk_id, _anchor="ulasan"))
+    return redirect(url_for("toko.produk_detail", produk_id=produk_id, _anchor="ulasan"))
 
 
 # --- STAF TOKO (moderasi & balasan) ---
@@ -81,7 +81,7 @@ def index():
 
 def _kembali():
     """Kembali ke halaman daftar ulasan dengan filter & halaman yang sama (hanya path internal)."""
-    return redirect(url_for("admin_ulasan", filter=request.form.get("filter") or None,
+    return redirect(url_for("admin.ulasan", filter=request.form.get("filter") or None,
                             page=request.form.get("page", type=int)))
 
 

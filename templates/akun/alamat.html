@@ -4,8 +4,8 @@
 {% from '_akun.html' import area_akun %}
 {% block title %}Alamat Saya - {{ app_name }}{% endblock %}
 {% block content %}
-{% call area_akun('alamat') %}
-<div class="lg:hidden">{{ judul_halaman('Alamat Saya', url_for('profil'), 'Kembali ke profil') }}</div>
+{% call area_akun('akun.alamat') %}
+<div class="lg:hidden">{{ judul_halaman('Alamat Saya', url_for('akun.profil'), 'Kembali ke profil') }}</div>
 <h1 class="hidden lg:block font-display text-2xl font-extrabold mb-1">Alamat Saya</h1>
 <p class="text-sm text-muted mb-5">Alamat utama otomatis dipakai saat checkout. Maksimal {{ maks }} alamat.</p>
 
@@ -20,14 +20,14 @@
             <p class="text-sm mt-1">{{ a.nama_penerima }} &middot; {{ a.telepon }}</p>
             <p class="text-sm text-muted break-words">{{ a.alamat }}, {{ a.kota }} {{ a.kode_pos }}</p>
             <div class="flex flex-wrap gap-2 mt-3 text-sm">
-                <a href="{{ url_for('alamat_edit', alamat_id=a.id) }}" class="inline-flex items-center gap-1.5 min-h-11 px-4 rounded-full border border-slate-200 hover:border-brand hover:text-brand">{{ icon('pencil', 'w-4 h-4') }} Ubah</a>
+                <a href="{{ url_for('akun.alamat_edit', alamat_id=a.id) }}" class="inline-flex items-center gap-1.5 min-h-11 px-4 rounded-full border border-slate-200 hover:border-brand hover:text-brand">{{ icon('pencil', 'w-4 h-4') }} Ubah</a>
                 {% if not a.utama %}
-                <form action="{{ url_for('alamat_utama', alamat_id=a.id) }}" method="POST">
+                <form action="{{ url_for('akun.alamat_utama', alamat_id=a.id) }}" method="POST">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <button type="submit" class="min-h-11 px-4 rounded-full bg-brand-soft text-brand font-medium cursor-pointer">Jadikan Utama</button>
                 </form>
                 {% endif %}
-                <form action="{{ url_for('alamat_hapus', alamat_id=a.id) }}" method="POST" data-confirm="Hapus alamat {{ a.label }}?">
+                <form action="{{ url_for('akun.alamat_hapus', alamat_id=a.id) }}" method="POST" data-confirm="Hapus alamat {{ a.label }}?">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <button type="submit" class="inline-flex items-center gap-1.5 min-h-11 px-4 rounded-full bg-red-50 hover:bg-red-100 text-coral cursor-pointer">{{ icon('trash-2', 'w-4 h-4') }} Hapus</button>
                 </form>
@@ -45,7 +45,7 @@
     {% if daftar | length < maks %}
     <section class="bg-white rounded-2xl border border-slate-100 p-5">
         <h2 class="font-display text-lg font-bold mb-4">Tambah Alamat</h2>
-        <form action="{{ url_for('alamat_tambah') }}" method="POST" novalidate class="space-y-4">
+        <form action="{{ url_for('akun.alamat_tambah') }}" method="POST" novalidate class="space-y-4">
             {{ form.hidden_tag() }}
             {{ field(form.label, placeholder='Rumah, Kos, Kantor') }}
             <div class="grid sm:grid-cols-2 gap-4">

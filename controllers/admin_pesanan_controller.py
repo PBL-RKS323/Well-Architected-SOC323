@@ -69,7 +69,7 @@ def detail(pesanan_id):
 def ubah_status(pesanan_id):
     pesanan = db.get_or_404(Pesanan, pesanan_id)
     form = AksiPesananForm()
-    kembali = redirect(url_for("admin_pesanan_detail", pesanan_id=pesanan.id))
+    kembali = redirect(url_for("admin.pesanan_detail", pesanan_id=pesanan.id))
 
     if not form.validate_on_submit():
         for errors in form.errors.values():

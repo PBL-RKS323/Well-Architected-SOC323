@@ -9,7 +9,7 @@
         <span class="text-xs font-semibold bg-brand-soft text-brand px-2.5 py-1 rounded-full">{{ cart_count }} item</span>
     </h1>
     {% if items %}
-    <form action="{{ url_for('keranjang_kosongkan') }}" method="POST" data-confirm="Kosongkan semua isi keranjang?">
+    <form action="{{ url_for('belanja.keranjang_kosongkan') }}" method="POST" data-confirm="Kosongkan semua isi keranjang?">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <button type="submit" class="inline-flex items-center gap-1.5 text-sm text-muted hover:text-coral py-3 cursor-pointer">{{ icon('trash-2', 'w-4 h-4') }} Kosongkan</button>
     </form>
@@ -21,7 +21,7 @@
         <span class="inline-flex w-28 h-28 rounded-full bg-brand-soft items-center justify-center text-brand">{{ icon('shopping-bag', 'w-12 h-12') }}</span>
         <h2 class="font-display text-2xl font-extrabold mt-6">Keranjangmu masih kosong</h2>
         <p class="text-muted mt-2 max-w-sm mx-auto">Handphone, laptop, dan gadget lainnya bisa dilihat di halaman Jelajah.</p>
-        <a href="{{ url_for('jelajah') }}" class="inline-flex items-center gap-2 mt-6 bg-brand hover:bg-brand-dark text-white font-medium px-8 py-3.5 rounded-full">
+        <a href="{{ url_for('toko.jelajah') }}" class="inline-flex items-center gap-2 mt-6 bg-brand hover:bg-brand-dark text-white font-medium px-8 py-3.5 rounded-full">
             Lihat Produk
         </a>
     </section>
@@ -40,13 +40,13 @@
         {% for item in items %}
         {% set p = item.produk %}
         <li class="bg-white rounded-2xl border border-slate-100 p-3 flex gap-3">
-            <a href="{{ url_for('produk_detail', produk_id=p.id) }}" class="shrink-0">
+            <a href="{{ url_for('toko.produk_detail', produk_id=p.id) }}" class="shrink-0">
                 <img src="{{ url_for('static', filename='uploads/' ~ p.gambar) }}" alt="{{ p.nama_produk }}" class="w-24 h-24 rounded-xl object-cover bg-soft">
             </a>
             <div class="flex-1 min-w-0 flex flex-col">
                 <div class="flex items-start justify-between gap-2">
-                    <a href="{{ url_for('produk_detail', produk_id=p.id) }}" class="font-semibold leading-snug line-clamp-2 hover:text-brand">{{ p.nama_produk }}</a>
-                    <form action="{{ url_for('keranjang_hapus', item_id=item.id) }}" method="POST">
+                    <a href="{{ url_for('toko.produk_detail', produk_id=p.id) }}" class="font-semibold leading-snug line-clamp-2 hover:text-brand">{{ p.nama_produk }}</a>
+                    <form action="{{ url_for('belanja.keranjang_hapus', item_id=item.id) }}" method="POST">
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                         <button type="submit" aria-label="Hapus {{ p.nama_produk }}" class="p-3 -m-2 text-muted hover:text-coral cursor-pointer">{{ icon('trash-2', 'w-5 h-5') }}</button>
                     </form>
@@ -66,7 +66,7 @@
                         {% if p.diskon_persen %}<p class="text-xs text-muted line-through">{{ p.harga_normal | rupiah }}</p>{% endif %}
                     </div>
                     {% if p.stok > 0 %}
-                    <form action="{{ url_for('keranjang_ubah', item_id=item.id) }}" method="POST" class="flex items-center gap-1 bg-soft rounded-full p-0.5">
+                    <form action="{{ url_for('belanja.keranjang_ubah', item_id=item.id) }}" method="POST" class="flex items-center gap-1 bg-soft rounded-full p-0.5">
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                         <button type="submit" name="jumlah" value="{{ item.jumlah - 1 }}" aria-label="Kurangi jumlah {{ p.nama_produk }}"
                                 class="w-11 h-11 rounded-full bg-white flex items-center justify-center cursor-pointer">{{ icon('minus', 'w-4 h-4') }}</button>
@@ -96,7 +96,7 @@
             <span class="font-display text-2xl font-extrabold text-brand">{{ ringkasan.subtotal | rupiah }}</span>
         </div>
         {% if ringkasan.bisa_checkout %}
-        <a href="{{ url_for('checkout') }}"
+        <a href="{{ url_for('belanja.checkout') }}"
            class="mt-5 w-full flex items-center justify-between bg-brand hover:bg-brand-dark text-white font-medium px-5 py-3.5 rounded-full">
             <span class="text-xs tracking-wide">{{ ringkasan.jumlah }} ITEM</span>
             <span>Checkout</span>

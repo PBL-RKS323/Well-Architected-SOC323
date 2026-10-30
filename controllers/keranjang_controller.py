@@ -56,7 +56,7 @@ def index():
 @pelanggan_required
 def tambah(produk_id):
     produk = db.get_or_404(Produk, produk_id)
-    kembali = _safe_next_url(request.form.get("next")) or url_for("produk_detail", produk_id=produk.id)
+    kembali = _safe_next_url(request.form.get("next")) or url_for("toko.produk_detail", produk_id=produk.id)
 
     if produk.stok == 0:
         flash(f"Maaf, {produk.nama_produk} sedang habis.", "danger")
@@ -80,7 +80,7 @@ def tambah(produk_id):
         flash(f"{produk.nama_produk} ditambahkan ke keranjang.", "success")
 
     if request.form.get("beli"):
-        return redirect(url_for("checkout"))
+        return redirect(url_for("belanja.checkout"))
     return redirect(kembali)
 
 
@@ -95,7 +95,7 @@ def ubah(item_id):
     else:
         item.jumlah = min(jumlah, max(item.batas, 1))
     db.session.commit()
-    return redirect(url_for("keranjang"))
+    return redirect(url_for("belanja.keranjang"))
 
 
 @pelanggan_required
@@ -105,7 +105,7 @@ def hapus(item_id):
     db.session.delete(item)
     db.session.commit()
     flash(f"{nama} dihapus dari keranjang.", "info")
-    return redirect(url_for("keranjang"))
+    return redirect(url_for("belanja.keranjang"))
 
 
 @pelanggan_required
@@ -113,4 +113,4 @@ def kosongkan():
     KeranjangItem.query.filter_by(user_id=g.user.id).delete()
     db.session.commit()
     flash("Keranjang dikosongkan.", "info")
-    return redirect(url_for("keranjang"))
+    return redirect(url_for("belanja.keranjang"))

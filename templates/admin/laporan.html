@@ -8,7 +8,7 @@
         <h1 class="font-display text-2xl lg:text-3xl font-extrabold">Laporan Transaksi</h1>
         <p class="text-muted mt-1">{{ dari | tanggal_singkat }} &ndash; {{ sampai | tanggal_singkat }} &middot; berdasarkan tanggal pesanan dibuat (WIB)</p>
     </div>
-    <a href="{{ url_for('admin_laporan_csv', status=status or None, **args_dasar) }}"
+    <a href="{{ url_for('admin.laporan_csv', status=status or None, **args_dasar) }}"
        class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-brand hover:bg-brand-dark text-white font-medium px-5 py-3 rounded-full">
         {{ icon('download', 'w-5 h-5') }} Unduh CSV
     </a>
@@ -18,7 +18,7 @@
 <section class="bg-white border border-slate-100 rounded-2xl p-4 mb-6">
     <nav class="flex flex-wrap gap-2 text-sm font-medium" aria-label="Rentang cepat">
         {% for kode, label in presets.items() %}
-        <a href="{{ url_for('admin_laporan', preset=kode) }}"
+        <a href="{{ url_for('admin.laporan', preset=kode) }}"
            class="inline-flex items-center px-4 min-h-11 rounded-full {{ 'bg-brand text-white' if preset == kode else 'bg-soft text-muted hover:text-ink' }}">{{ label }}</a>
         {% endfor %}
     </nav>
@@ -95,7 +95,7 @@
         <ul class="mt-3 divide-y divide-slate-100 text-sm">
             {% for kode, label, jumlah in lap.per_status %}
             <li>
-                <a href="{{ url_for('admin_laporan', status=kode, **args_dasar) }}#transaksi" class="flex items-center justify-between min-h-11 {{ 'text-brand font-semibold' if status == kode else 'hover:text-brand' }}">
+                <a href="{{ url_for('admin.laporan', status=kode, **args_dasar) }}#transaksi" class="flex items-center justify-between min-h-11 {{ 'text-brand font-semibold' if status == kode else 'hover:text-brand' }}">
                     <span>{{ label }}</span><span class="font-semibold">{{ jumlah }}</span>
                 </a>
             </li>
@@ -153,7 +153,7 @@
             <h2 class="font-display text-lg font-bold">Daftar Transaksi</h2>
             <p class="text-sm text-muted">{{ halaman.total }} pesanan{{ ' berstatus ' ~ status_label if status else '' }}</p>
         </div>
-        {% if status %}<a href="{{ url_for('admin_laporan', **args_dasar) }}#transaksi" class="inline-flex items-center gap-1.5 min-h-11 px-4 rounded-full bg-soft text-sm font-medium">{{ icon('x', 'w-4 h-4') }} Semua status</a>{% endif %}
+        {% if status %}<a href="{{ url_for('admin.laporan', **args_dasar) }}#transaksi" class="inline-flex items-center gap-1.5 min-h-11 px-4 rounded-full bg-soft text-sm font-medium">{{ icon('x', 'w-4 h-4') }} Semua status</a>{% endif %}
     </div>
     {% if not halaman.items %}
     <p class="px-5 pb-10 pt-4 text-center text-muted">Tidak ada transaksi.</p>
@@ -161,7 +161,7 @@
     <ul class="lg:hidden divide-y divide-slate-100 border-t border-slate-100">
         {% for p in halaman.items %}
         <li>
-            <a href="{{ url_for('admin_pesanan_detail', pesanan_id=p.id) }}" class="flex items-center gap-3 px-5 py-4 hover:bg-soft/50">
+            <a href="{{ url_for('admin.pesanan_detail', pesanan_id=p.id) }}" class="flex items-center gap-3 px-5 py-4 hover:bg-soft/50">
                 <span class="min-w-0 flex-1">
                     <span class="block font-semibold">#{{ p.kode }}</span>
                     <span class="block text-xs text-muted truncate">{{ p.user.display_name }} &middot; {{ p.created_at | tanggal }}</span>
@@ -180,7 +180,7 @@
             <tbody class="divide-y divide-slate-100">
                 {% for p in halaman.items %}
                 <tr class="hover:bg-soft/50">
-                    <td class="px-5 py-3"><a href="{{ url_for('admin_pesanan_detail', pesanan_id=p.id) }}" class="font-semibold text-brand hover:underline">#{{ p.kode }}</a></td>
+                    <td class="px-5 py-3"><a href="{{ url_for('admin.pesanan_detail', pesanan_id=p.id) }}" class="font-semibold text-brand hover:underline">#{{ p.kode }}</a></td>
                     <td class="px-5 py-3">{{ p.user.display_name }}</td>
                     <td class="px-5 py-3 text-muted whitespace-nowrap">{{ p.created_at | tanggal }}</td>
                     <td class="px-5 py-3">{{ badge_status(p, 'text-sm') }}</td>
@@ -196,7 +196,7 @@
     <nav class="flex flex-wrap items-center justify-center gap-1 px-5 py-4 border-t border-slate-100 text-sm" aria-label="Halaman">
         {% for n in halaman.iter_pages() %}
             {% if n %}
-            <a href="{{ url_for('admin_laporan', status=status or None, page=n, **args_dasar) }}#transaksi"
+            <a href="{{ url_for('admin.laporan', status=status or None, page=n, **args_dasar) }}#transaksi"
                class="w-11 h-11 rounded-full flex items-center justify-center font-semibold {{ 'bg-brand text-white' if n == halaman.page else 'hover:bg-soft text-ink' }}">{{ n }}</a>
             {% else %}<span class="px-1">…</span>{% endif %}
         {% endfor %}

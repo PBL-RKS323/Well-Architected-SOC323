@@ -74,10 +74,10 @@ def checkout():
              .order_by(KeranjangItem.created_at.desc()).all())
     if not items:
         flash("Keranjangmu masih kosong.", "info")
-        return redirect(url_for("keranjang"))
+        return redirect(url_for("belanja.keranjang"))
     if any(i.produk.stok == 0 or i.jumlah > i.produk.stok for i in items):
         flash("Ada produk yang stoknya habis atau kurang. Perbaiki keranjang terlebih dahulu.", "warning")
-        return redirect(url_for("keranjang"))
+        return redirect(url_for("belanja.keranjang"))
 
     form = CheckoutForm()
     subtotal = sum(i.subtotal for i in items)
@@ -96,7 +96,7 @@ def checkout():
             Pesanan.status.in_([Pesanan.MENUNGGU_PEMBAYARAN, Pesanan.MENUNGGU_VERIFIKASI])).count()
         if belum_lunas >= current_app.config["MAKS_PESANAN_BELUM_BAYAR"]:
             flash("Kamu masih punya beberapa pesanan yang belum lunas. Selesaikan atau batalkan dulu.", "warning")
-            return redirect(url_for("pesanan"))
+            return redirect(url_for("belanja.pesanan"))
 
         kurir = form.metode_pengiriman.data == Pesanan.KURIR
         ongkir = _ongkir(form.metode_pengiriman.data)
@@ -118,7 +118,7 @@ def checkout():
         if terhapus != len(ids):
             db.session.rollback()
             flash("Pesanan ini sudah dibuat. Cek di Pesanan Saya.", "info")
-            return redirect(url_for("pesanan"))
+            return redirect(url_for("belanja.pesanan"))
 
         for item in items:
             produk = item.produk
@@ -130,7 +130,7 @@ def checkout():
             if not berhasil:
                 db.session.rollback()
                 flash(f"Stok {nama} baru saja berubah. Periksa kembali keranjangmu.", "warning")
-                return redirect(url_for("keranjang"))
+                return redirect(url_for("belanja.keranjang"))
             pesanan.items.append(PesananItem(produk_id=produk.id, nama_produk=produk.nama_produk,
                                              merek=produk.merek, harga=produk.harga, jumlah=item.jumlah))
 
@@ -142,7 +142,7 @@ def checkout():
 
         log_event("ORDER_CREATE", user_id=g.user.id, kode=pesanan.kode, total=int(pesanan.total),
                   items=len(pesanan.items), shipping=pesanan.metode_pengiriman)
-        return redirect(url_for("pesanan_konfirmasi", kode=pesanan.kode))
+        return redirect(url_for("belanja.pesanan_konfirmasi", kode=pesanan.kode))
 
     return render_template("toko/checkout.html", form=form, items=items, subtotal=subtotal, hemat=hemat,
                            ongkir_kurir=_ongkir(Pesanan.KURIR), daftar_alamat=daftar_alamat,
@@ -193,12 +193,12 @@ def unggah_bukti(kode):
     form = BuktiBayarForm()
     if pesanan.status != Pesanan.MENUNGGU_PEMBAYARAN:
         flash("Bukti bayar tidak bisa diunggah untuk pesanan ini.", "warning")
-        return redirect(url_for("pesanan_detail", kode=kode))
+        return redirect(url_for("belanja.pesanan_detail", kode=kode))
 
     if not form.validate_on_submit():
         for error in form.bukti.errors:
             flash(error, "danger")
-        return redirect(url_for("pesanan_detail", kode=kode))
+        return redirect(url_for("belanja.pesanan_detail", kode=kode))
 
     folder = current_app.config["BUKTI_BAYAR_FOLDER"]
     nama_file = upload_secure_image(form.bukti.data, folder)
@@ -206,12 +206,12 @@ def unggah_bukti(kode):
         log_event("UPLOAD_REJECTED", logging.WARNING, user_id=g.user.id, filename=form.bukti.data.filename,
                   context="bukti_bayar", kode=kode)
         flash("File ditolak! Pastikan file benar-benar gambar JPG/PNG dan ukurannya maksimal 2 MB.", "danger")
-        return redirect(url_for("pesanan_detail", kode=kode))
+        return redirect(url_for("belanja.pesanan_detail", kode=kode))
 
     if not pesanan.ubah_status(Pesanan.MENUNGGU_VERIFIKASI, "pelanggan", "Bukti transfer diunggah"):
         delete_image(nama_file, folder)
         flash("Status pesanan sudah berubah. Muat ulang halaman.", "warning")
-        return redirect(url_for("pesanan_detail", kode=kode))
+        return redirect(url_for("belanja.pesanan_detail", kode=kode))
 
     delete_image(pesanan.bukti_bayar, folder)  # bukti lama yang pernah ditolak
     pesanan.bukti_bayar = nama_file
@@ -221,7 +221,7 @@ def unggah_bukti(kode):
 
     log_event("PAYMENT_PROOF_UPLOADED", user_id=g.user.id, kode=kode)
     flash("Bukti bayar terkirim. Admin akan memeriksanya segera.", "success")
-    return redirect(url_for("pesanan_detail", kode=kode))
+    return redirect(url_for("belanja.pesanan_detail", kode=kode))
 
 
 def bukti(kode):
@@ -246,12 +246,12 @@ def batal(kode):
     if pesanan.status != Pesanan.MENUNGGU_PEMBAYARAN or \
             not pesanan.ubah_status(Pesanan.DIBATALKAN, "pelanggan", "Dibatalkan oleh pelanggan"):
         flash("Pesanan ini tidak bisa dibatalkan lagi. Hubungi admin jika perlu bantuan.", "warning")
-        return redirect(url_for("pesanan_detail", kode=kode))
+        return redirect(url_for("belanja.pesanan_detail", kode=kode))
     pesanan.alasan_tolak = "Dibatalkan oleh pelanggan."
     db.session.commit()
     log_event("ORDER_CANCELLED", user_id=g.user.id, kode=kode, by="customer")
     flash("Pesanan dibatalkan dan stok dikembalikan.", "info")
-    return redirect(url_for("pesanan_detail", kode=kode))
+    return redirect(url_for("belanja.pesanan_detail", kode=kode))
 
 
 @pelanggan_required
@@ -260,11 +260,11 @@ def terima(kode):
     if pesanan.status != Pesanan.DIKIRIM or \
             not pesanan.ubah_status(Pesanan.SELESAI, "pelanggan", "Pesanan diterima pelanggan"):
         flash("Pesanan belum bisa dikonfirmasi diterima.", "warning")
-        return redirect(url_for("pesanan_detail", kode=kode))
+        return redirect(url_for("belanja.pesanan_detail", kode=kode))
     db.session.commit()
     log_event("ORDER_STATUS_CHANGE", user_id=g.user.id, kode=kode, status=Pesanan.SELESAI, by="customer")
     flash("Terima kasih! Pesanan ditandai selesai.", "success")
-    return redirect(url_for("pesanan_detail", kode=kode))
+    return redirect(url_for("belanja.pesanan_detail", kode=kode))
 
 
 @pelanggan_required
@@ -287,4 +287,4 @@ def beli_lagi(kode):
         flash(f"{ditambah} produk dari pesanan {kode} ditambahkan ke keranjang.", "success")
     else:
         flash("Produk dari pesanan ini sudah tidak tersedia.", "warning")
-    return redirect(url_for("keranjang"))
+    return redirect(url_for("belanja.keranjang"))

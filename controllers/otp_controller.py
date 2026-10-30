@@ -45,7 +45,7 @@ def mulai_verifikasi(user, tujuan, ingat=False, next_url=None):
         flash(error, "warning")
     else:
         flash(f"Kode 6 digit sudah dikirim ke {samarkan_email(user.email)}. Cek juga folder Spam.", "info")
-    return redirect(url_for("verifikasi_kode"))
+    return redirect(url_for("auth.verifikasi_kode"))
 
 
 def _tertunda():
@@ -64,7 +64,7 @@ def verifikasi():
     data, user = _tertunda()
     if data is None:
         flash("Waktu verifikasi habis. Silakan masuk lagi.", "warning")
-        return redirect(url_for("login"))
+        return redirect(url_for("auth.login"))
 
     form = KodeOtpForm()
     if form.validate_on_submit():
@@ -84,7 +84,7 @@ def verifikasi():
             session.pop("otp_tertunda", None)
             log_event("OTP_LOCKED", logging.WARNING, user_id=user.id, purpose=data["tujuan"])
             flash("Kode salah terlalu banyak. Silakan masuk lagi untuk mendapat kode baru.", "danger")
-            return redirect(url_for("login"))
+            return redirect(url_for("auth.login"))
         log_event("OTP_FAILED", logging.WARNING, user_id=user.id, purpose=data["tujuan"], result=hasil)
         form.kode.errors.append(PESAN_KODE_SALAH)
     return render_template("auth/verifikasi.html", form=form, email=samarkan_email(user.email),
@@ -94,10 +94,10 @@ def verifikasi():
 def verifikasi_kirim_ulang():
     data, user = _tertunda()
     if data is None:
-        return redirect(url_for("login"))
+        return redirect(url_for("auth.login"))
     error = _kirim(user, data["tujuan"])
     flash(error or f"Kode baru sudah dikirim ke {samarkan_email(user.email)}.", "warning" if error else "info")
-    return redirect(url_for("verifikasi_kode"))
+    return redirect(url_for("auth.verifikasi_kode"))
 
 
 # --- LUPA KATA SANDI ---
@@ -113,7 +113,7 @@ def _user_aktif(email):
 
 def lupa_password():
     if g.user:
-        return redirect(url_for("pengaturan"))
+        return redirect(url_for("akun.pengaturan"))
     form = LupaPasswordForm()
     if email_aktif() and form.validate_on_submit():
         email = form.email.data.strip().lower()
@@ -123,14 +123,14 @@ def lupa_password():
         log_event("PASSWORD_RESET_REQUESTED", logging.WARNING, email=email, known=int(user is not None))
         session["reset_email"] = email
         flash(PESAN_UMUM, "info")
-        return redirect(url_for("lupa_password_kode"))
+        return redirect(url_for("auth.lupa_password_kode"))
     return render_template("auth/lupa_password.html", form=form, aktif=email_aktif())
 
 
 def lupa_password_kode():
     email = session.get("reset_email")
     if g.user or not email or not email_aktif():
-        return redirect(url_for("lupa_password"))
+        return redirect(url_for("auth.lupa_password"))
 
     form = ResetPasswordForm()
     if form.validate_on_submit():
@@ -146,11 +146,11 @@ def lupa_password_kode():
             session.pop("reset_email", None)
             log_event("PASSWORD_RESET_OTP", logging.WARNING, user_id=user.id, username=user.username)
             flash("Kata sandi berhasil diganti. Silakan masuk dengan kata sandi baru.", "success")
-            return redirect(url_for("login"))
+            return redirect(url_for("auth.login"))
         if hasil == KodeOtp.HANGUS:
             log_event("OTP_LOCKED", logging.WARNING, user_id=user.id, purpose=KodeOtp.RESET_PASSWORD)
             flash("Kode salah terlalu banyak. Minta kode baru.", "danger")
-            return redirect(url_for("lupa_password"))
+            return redirect(url_for("auth.lupa_password"))
         log_event("OTP_FAILED", logging.WARNING, email=email, purpose=KodeOtp.RESET_PASSWORD, result=hasil)
         form.kode.errors.append(PESAN_KODE_SALAH)
     return render_template("auth/reset_password.html", form=form, email=samarkan_email(email))
@@ -159,9 +159,9 @@ def lupa_password_kode():
 def lupa_password_kirim_ulang():
     email = session.get("reset_email")
     if not email or not email_aktif():
-        return redirect(url_for("lupa_password"))
+        return redirect(url_for("auth.lupa_password"))
     user = _user_aktif(email)
     if user:
         _kirim(user, KodeOtp.RESET_PASSWORD)
     flash(PESAN_UMUM, "info")
-    return redirect(url_for("lupa_password_kode"))
+    return redirect(url_for("auth.lupa_password_kode"))

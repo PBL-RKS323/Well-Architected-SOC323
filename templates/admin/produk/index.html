@@ -10,9 +10,9 @@
 {% endmacro %}
 
 {% macro tombol_aksi(produk, cls="") %}
-<a href="{{ url_for('admin_produk_edit', produk_id=produk.id) }}" aria-label="Edit {{ produk.nama_produk }}"
+<a href="{{ url_for('admin.produk_edit', produk_id=produk.id) }}" aria-label="Edit {{ produk.nama_produk }}"
    class="inline-flex items-center justify-center gap-1.5 min-h-11 border border-slate-200 hover:border-brand hover:text-brand px-4 rounded-full {{ cls }}">{{ icon('pencil', 'w-4 h-4') }} Edit</a>
-<form action="{{ url_for('admin_produk_hapus', produk_id=produk.id) }}" method="POST" class="{{ cls }}"
+<form action="{{ url_for('admin.produk_hapus', produk_id=produk.id) }}" method="POST" class="{{ cls }}"
       data-confirm="Hapus produk '{{ produk.nama_produk }}' secara permanen?">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <button type="submit" aria-label="Hapus {{ produk.nama_produk }}"
@@ -26,7 +26,7 @@
         <h1 class="font-display text-2xl lg:text-3xl font-extrabold">Produk</h1>
         <p class="text-muted mt-1">{{ produk_list | length }} produk{{ ' untuk pencarian "' ~ q ~ '"' if q }}</p>
     </div>
-    <a href="{{ url_for('admin_produk_tambah') }}" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-brand hover:bg-brand-dark text-white font-medium px-5 py-3 rounded-full">
+    <a href="{{ url_for('admin.produk_tambah') }}" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-brand hover:bg-brand-dark text-white font-medium px-5 py-3 rounded-full">
         {{ icon('plus', 'w-5 h-5') }} Tambah Produk
     </a>
 </div>

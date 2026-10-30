@@ -61,7 +61,7 @@ def create():
 
         log_event("PRODUCT_CREATE", user_id=g.user.id, product_id=produk.id, name=produk.nama_produk)
         flash("Produk berhasil ditambahkan!", "success")
-        return redirect(url_for("admin_produk"))
+        return redirect(url_for("admin.produk"))
     return render_template("admin/produk/form.html", form=form, mode="tambah")
 
 
@@ -84,7 +84,7 @@ def edit(produk_id):
 
         log_event("PRODUCT_UPDATE", user_id=g.user.id, product_id=produk.id, name=produk.nama_produk)
         flash("Produk berhasil diperbarui!", "success")
-        return redirect(url_for("admin_produk"))
+        return redirect(url_for("admin.produk"))
     return render_template("admin/produk/form.html", form=form, mode="edit", produk=produk)
 
 
@@ -101,4 +101,4 @@ def destroy(produk_id):
 
     log_event("PRODUCT_DELETE", logging.WARNING, user_id=g.user.id, product_id=produk_id, name=produk.nama_produk)
     flash("Produk berhasil dihapus!", "success")
-    return redirect(url_for("admin_produk"))
+    return redirect(url_for("admin.produk"))

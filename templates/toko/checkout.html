@@ -5,7 +5,7 @@
 {% block content %}
 {% set kurir = form.metode_pengiriman.data != 'ambil' %}
 {% set total_kurir = subtotal + ongkir_kurir %}
-{{ judul_halaman('Checkout', url_for('keranjang'), 'Kembali ke keranjang') }}
+{{ judul_halaman('Checkout', url_for('belanja.keranjang'), 'Kembali ke keranjang') }}
 
 <form method="POST" novalidate data-kirim-sekali class="lg:grid lg:grid-cols-3 lg:gap-6 lg:items-start">
     {{ form.hidden_tag() }}
@@ -59,12 +59,12 @@
                         <p class="text-sm font-semibold mb-1.5">Alamat tersimpan</p>
                         <div class="flex flex-wrap gap-2 text-sm">
                             {% for a in daftar_alamat %}
-                            <a href="{{ url_for('checkout', alamat=a.id) }}"
+                            <a href="{{ url_for('belanja.checkout', alamat=a.id) }}"
                                class="inline-flex items-center gap-1.5 min-h-11 px-4 rounded-full border {{ 'border-brand bg-brand-soft text-brand font-semibold' if a.id == alamat_dipakai else 'border-slate-200 hover:border-brand' }}">
                                 {{ icon('map-pin', 'w-4 h-4') }} {{ a.label }}
                             </a>
                             {% endfor %}
-                            <a href="{{ url_for('alamat') }}" class="inline-flex items-center min-h-11 px-3 text-brand font-medium">Kelola</a>
+                            <a href="{{ url_for('akun.alamat') }}" class="inline-flex items-center min-h-11 px-3 text-brand font-medium">Kelola</a>
                         </div>
                     </div>
                     {% endif %}

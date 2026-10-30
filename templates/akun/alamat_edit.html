@@ -3,8 +3,8 @@
 {% from '_akun.html' import area_akun %}
 {% block title %}Ubah Alamat - {{ app_name }}{% endblock %}
 {% block content %}
-{% call area_akun('alamat') %}
-{{ judul_halaman('Ubah Alamat ' ~ alamat.label, url_for('alamat'), 'Kembali ke Alamat Saya') }}
+{% call area_akun('akun.alamat') %}
+{{ judul_halaman('Ubah Alamat ' ~ alamat.label, url_for('akun.alamat'), 'Kembali ke Alamat Saya') }}
 <form method="POST" novalidate class="max-w-2xl bg-white rounded-2xl border border-slate-100 p-5 space-y-4">
     {{ form.hidden_tag() }}
     {{ field(form.label, placeholder='Rumah, Kos, Kantor') }}

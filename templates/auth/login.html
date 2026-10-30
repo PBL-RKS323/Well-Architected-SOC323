@@ -14,12 +14,12 @@
         {{ field(form.password, ikon='lock', autocomplete="current-password", placeholder="Kata sandi") }}
         <div class="flex items-center justify-between gap-3">
             {{ checkbox(form.ingat_saya) }}
-            <a href="{{ url_for('lupa_password') }}" class="inline-flex items-center min-h-11 text-sm font-semibold text-brand hover:underline">Lupa kata sandi?</a>
+            <a href="{{ url_for('auth.lupa_password') }}" class="inline-flex items-center min-h-11 text-sm font-semibold text-brand hover:underline">Lupa kata sandi?</a>
         </div>
         {{ tombol_utama(form.submit) }}
     </form>
 </div>
 <p class="mt-6 text-center text-sm text-muted">
-    Belum punya akun? <a href="{{ url_for('register') }}" class="text-brand font-semibold hover:underline">Daftar di sini</a>
+    Belum punya akun? <a href="{{ url_for('auth.register') }}" class="text-brand font-semibold hover:underline">Daftar di sini</a>
 </p>
 {% endblock %}

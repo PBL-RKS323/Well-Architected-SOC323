@@ -62,7 +62,7 @@ def tambah():
         log_event("USER_CREATED", logging.WARNING, user_id=g.user.id, target_id=user.id,
                   target=user.username, role=user.role)
         flash(f"Akun {user.display_name} ({user.label_role}) berhasil dibuat.", "success")
-        return redirect(url_for("admin_pengguna_detail", user_id=user.id))
+        return redirect(url_for("admin.pengguna_detail", user_id=user.id))
     return render_template("admin/pengguna/tambah.html", form=form)
 
 
@@ -95,7 +95,7 @@ def edit(user_id):
     user = db.get_or_404(User, user_id)
     if user.id == g.user.id:
         flash("Ubah data akunmu sendiri lewat halaman Pengaturan.", "warning")
-        return redirect(url_for("pengaturan"))
+        return redirect(url_for("akun.pengaturan"))
     form = EditPenggunaForm(prefix="data", user_id=user.id)
     if not form.validate_on_submit():
         return _render_detail(user, data_form=form)
@@ -110,7 +110,7 @@ def edit(user_id):
         log_event("USER_UPDATED", logging.WARNING, user_id=g.user.id, target_id=user.id, target=user.username,
                   fields=",".join(berubah))
         flash(f"Data akun {user.display_name} diperbarui.", "success")
-    return redirect(url_for("admin_pengguna_detail", user_id=user.id))
+    return redirect(url_for("admin.pengguna_detail", user_id=user.id))
 
 
 def _admin_aktif_lain(user):
@@ -121,7 +121,7 @@ def _admin_aktif_lain(user):
 def aksi(user_id):
     user = db.get_or_404(User, user_id)
     form = AksiPenggunaForm()
-    kembali = redirect(url_for("admin_pengguna_detail", user_id=user.id))
+    kembali = redirect(url_for("admin.pengguna_detail", user_id=user.id))
     if not form.validate_on_submit():
         for errors in form.errors.values():
             for error in errors:

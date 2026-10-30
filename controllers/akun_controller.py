@@ -40,7 +40,7 @@ def ubah_avatar():
         delete_image(lama, folder_avatar())
         log_event("AVATAR_CHANGED", user_id=g.user.id, username=g.user.username)
         flash("Foto profil berhasil diperbarui.", "success")
-        return redirect(url_for("pengaturan"))
+        return redirect(url_for("akun.pengaturan"))
     return _render(avatar_form=form)
 
 
@@ -51,7 +51,7 @@ def hapus_avatar():
         db.session.commit()
         log_event("AVATAR_REMOVED", user_id=g.user.id, username=g.user.username)
         flash("Foto profil dihapus.", "success")
-    return redirect(url_for("pengaturan"))
+    return redirect(url_for("akun.pengaturan"))
 
 
 def profil():
@@ -76,7 +76,7 @@ def ubah_nama():
         g.user.nama_lengkap = " ".join(form.nama_lengkap.data.split())
         db.session.commit()
         flash("Nama berhasil diperbarui.", "success")
-        return redirect(url_for("pengaturan"))
+        return redirect(url_for("akun.pengaturan"))
     return _render(nama_form=form)
 
 
@@ -93,7 +93,7 @@ def ubah_email():
         db.session.commit()
         log_event("EMAIL_CHANGED", logging.WARNING, user_id=g.user.id, username=g.user.username)
         flash("Email berhasil diperbarui.", "success")
-        return redirect(url_for("pengaturan"))
+        return redirect(url_for("akun.pengaturan"))
     return _render(email_form=form)
 
 
@@ -118,5 +118,5 @@ def ubah_password():
 
         log_event("PASSWORD_CHANGED", logging.WARNING, user_id=g.user.id, username=g.user.username)
         flash("Kata sandi berhasil diperbarui.", "success")
-        return redirect(url_for("pengaturan"))
+        return redirect(url_for("akun.pengaturan"))
     return _render(password_form=form)

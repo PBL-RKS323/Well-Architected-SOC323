@@ -3,7 +3,7 @@
 {% from '_produk.html' import kartu %}
 {% block title %}{{ 'Cari "' ~ f.q ~ '"' if f.q else 'Jelajah Produk' }} - {{ app_name }}{% endblock %}
 {% block content %}
-<form action="{{ url_for('jelajah') }}" method="GET">
+<form action="{{ url_for('toko.jelajah') }}" method="GET">
     {# Pencarian #}
     <label class="relative block">
         <span class="sr-only">Cari produk</span>
@@ -49,7 +49,7 @@
                 </select>
             </label>
             <div class="col-span-2 md:col-span-5 flex gap-2 justify-end">
-                <a href="{{ url_for('jelajah', q=f.q) if f.q else url_for('jelajah') }}" class="px-4 py-3 rounded-full border border-slate-200 hover:bg-soft">Reset</a>
+                <a href="{{ url_for('toko.jelajah', q=f.q) if f.q else url_for('toko.jelajah') }}" class="px-4 py-3 rounded-full border border-slate-200 hover:bg-soft">Reset</a>
                 <button type="submit" class="px-5 py-3 rounded-full bg-brand hover:bg-brand-dark text-white font-medium cursor-pointer">Terapkan</button>
             </div>
         </div>
@@ -79,10 +79,10 @@
         </div>
         <div class="flex gap-2">
             {% if halaman.has_prev %}
-            <a href="{{ url_for('jelajah', page=halaman.prev_num, **args_dasar) }}" class="inline-flex items-center gap-1 px-4 py-3 rounded-full bg-white border border-slate-200 text-sm hover:border-brand">{{ icon('chevron-left', 'w-4 h-4') }} Sebelumnya</a>
+            <a href="{{ url_for('toko.jelajah', page=halaman.prev_num, **args_dasar) }}" class="inline-flex items-center gap-1 px-4 py-3 rounded-full bg-white border border-slate-200 text-sm hover:border-brand">{{ icon('chevron-left', 'w-4 h-4') }} Sebelumnya</a>
             {% endif %}
             {% if halaman.has_next %}
-            <a href="{{ url_for('jelajah', page=halaman.next_num, **args_dasar) }}" class="inline-flex items-center gap-1 px-4 py-3 rounded-full bg-brand-soft text-brand text-sm font-medium hover:bg-brand hover:text-white">Selanjutnya {{ icon('chevron-right', 'w-4 h-4') }}</a>
+            <a href="{{ url_for('toko.jelajah', page=halaman.next_num, **args_dasar) }}" class="inline-flex items-center gap-1 px-4 py-3 rounded-full bg-brand-soft text-brand text-sm font-medium hover:bg-brand hover:text-white">Selanjutnya {{ icon('chevron-right', 'w-4 h-4') }}</a>
             {% endif %}
         </div>
     </nav>
@@ -92,7 +92,7 @@
         <span class="inline-flex w-14 h-14 rounded-full bg-brand-soft text-brand items-center justify-center">{{ icon('search', 'w-6 h-6') }}</span>
         <p class="font-semibold mt-3">Produk tidak ditemukan</p>
         <p class="text-sm text-muted mt-1">Coba kata kunci lain atau ubah filter.</p>
-        <a href="{{ url_for('jelajah') }}" class="inline-block mt-4 text-sm font-semibold text-brand">Lihat semua produk</a>
+        <a href="{{ url_for('toko.jelajah') }}" class="inline-block mt-4 text-sm font-semibold text-brand">Lihat semua produk</a>
     </div>
 {% endif %}
 {% endblock %}

@@ -3,21 +3,21 @@
 
 {# Area akun pelanggan: di desktop (lg) ada sidebar menu di kiri agar halaman tidak kosong,
    di HP hanya isi halaman (menu ada di navigasi bawah & halaman Profil).
-   Pakai: {% call area_akun('pesanan') %} ...isi... {% endcall %}
+   Pakai: {% call area_akun('belanja.pesanan') %} ...isi... {% endcall %}
    g.user dipakai karena macro yang di-import tidak membawa variabel template. #}
 {% macro area_akun(aktif) %}
 {% if g.user.punya_izin('belanja') %}
 {% set menu = [
-    ('profil', 'user', 'Profil'),
-    ('pesanan', 'receipt-text', 'Pesanan Saya'),
-    ('alamat', 'map-pin', 'Alamat Saya'),
-    ('pengaturan', 'shield-check', 'Pengaturan & Keamanan'),
+    ('akun.profil', 'user', 'Profil'),
+    ('belanja.pesanan', 'receipt-text', 'Pesanan Saya'),
+    ('akun.alamat', 'map-pin', 'Alamat Saya'),
+    ('akun.pengaturan', 'shield-check', 'Pengaturan & Keamanan'),
 ] %}
 {% else %}
 {% set menu = [
-    ('profil', 'user', 'Profil'),
-    ('admin_dashboard', 'layout-dashboard', 'Panel Toko'),
-    ('pengaturan', 'shield-check', 'Pengaturan & Keamanan'),
+    ('akun.profil', 'user', 'Profil'),
+    ('admin.dashboard', 'layout-dashboard', 'Panel Toko'),
+    ('akun.pengaturan', 'shield-check', 'Pengaturan & Keamanan'),
 ] %}
 {% endif %}
 <div class="lg:grid lg:grid-cols-[16rem_minmax(0,1fr)] lg:gap-8 lg:items-start">
@@ -36,7 +36,7 @@
             </a>
             {% endfor %}
         </nav>
-        <form action="{{ url_for('logout') }}" method="POST" class="mt-2 pt-2 border-t border-slate-100">
+        <form action="{{ url_for('auth.logout') }}" method="POST" class="mt-2 pt-2 border-t border-slate-100">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <button type="submit" class="w-full flex items-center gap-3 px-3 min-h-11 rounded-xl text-sm font-medium text-coral hover:bg-red-50 cursor-pointer">{{ icon('log-out', 'w-5 h-5') }} Keluar</button>
         </form>

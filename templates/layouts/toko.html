@@ -8,20 +8,20 @@
 {% set is_admin = current_user and current_user.is_staf_toko() %}
 <header class="sticky top-0 z-30 bg-white border-b border-slate-100">
     <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between gap-4 md:gap-8">
-        <a href="{{ url_for('beranda') }}" class="shrink-0 font-display font-extrabold text-xl tracking-tight text-ink">{{ app_name }}</a>
+        <a href="{{ url_for('toko.beranda') }}" class="shrink-0 font-display font-extrabold text-xl tracking-tight text-ink">{{ app_name }}</a>
 
         {# Desktop: kolom pencarian langsung di header #}
-        <form action="{{ url_for('jelajah') }}" method="GET" role="search" class="hidden md:block relative flex-1 max-w-xl">
+        <form action="{{ url_for('toko.jelajah') }}" method="GET" role="search" class="hidden md:block relative flex-1 max-w-xl">
             <span class="absolute left-4 top-1/2 -translate-y-1/2 text-muted">{{ icon('search', 'w-4 h-4') }}</span>
-            <input type="search" name="q" value="{{ request.args.get('q', '') if ep == 'jelajah' else '' }}" maxlength="100"
+            <input type="search" name="q" value="{{ request.args.get('q', '') if ep == 'toko.jelajah' else '' }}" maxlength="100"
                    placeholder="Cari handphone, laptop, smartwatch..." aria-label="Cari produk"
                    class="w-full bg-soft rounded-full pl-11 pr-4 py-3 text-sm outline-none focus:ring-2 focus:ring-brand/40">
         </form>
 
         <div class="flex items-center gap-1">
-            <a href="{{ url_for('jelajah') }}" aria-label="Cari produk" class="md:hidden p-3 rounded-full hover:bg-soft">{{ icon('search', 'w-5 h-5') }}</a>
+            <a href="{{ url_for('toko.jelajah') }}" aria-label="Cari produk" class="md:hidden p-3 rounded-full hover:bg-soft">{{ icon('search', 'w-5 h-5') }}</a>
             {% if not is_admin %}
-            <a href="{{ url_for('keranjang') }}" aria-label="Keranjang ({{ cart_count }} item)" class="relative p-3 rounded-full hover:bg-soft">
+            <a href="{{ url_for('belanja.keranjang') }}" aria-label="Keranjang ({{ cart_count }} item)" class="relative p-3 rounded-full hover:bg-soft">
                 {{ icon('shopping-bag', 'w-5 h-5') }}
                 {% if cart_count %}
                     <span data-cart-count class="absolute top-1 right-0.5 min-w-4 h-4 px-1 rounded-full bg-coral text-white text-[10px] font-bold flex items-center justify-center">{{ cart_count }}</span>
@@ -29,11 +29,11 @@
             </a>
             {% endif %}
             {% if current_user %}
-                <a href="{{ url_for('profil') }}" class="hidden md:flex items-center gap-2 ml-2 pl-3 border-l border-slate-200 text-sm font-medium hover:text-brand">
+                <a href="{{ url_for('akun.profil') }}" class="hidden md:flex items-center gap-2 ml-2 pl-3 border-l border-slate-200 text-sm font-medium hover:text-brand">
                     {{ avatar(current_user, 'w-8 h-8 text-xs') }} {{ current_user.display_name }}
                 </a>
             {% else %}
-                <a href="{{ url_for('login') }}" class="hidden md:inline-flex ml-2 bg-brand hover:bg-brand-dark text-white text-sm font-medium px-5 py-3 rounded-full">Masuk</a>
+                <a href="{{ url_for('auth.login') }}" class="hidden md:inline-flex ml-2 bg-brand hover:bg-brand-dark text-white text-sm font-medium px-5 py-3 rounded-full">Masuk</a>
             {% endif %}
         </div>
     </div>
@@ -42,16 +42,16 @@
     <nav class="hidden md:block border-t border-slate-100" aria-label="Menu utama">
         <div class="max-w-6xl mx-auto px-4 flex items-center justify-between gap-6 text-sm font-medium text-muted">
             <div class="flex items-center gap-6">
-                <a href="{{ url_for('beranda') }}" class="py-3 {{ 'text-brand' if ep == 'beranda' else 'hover:text-ink' }}">Beranda</a>
-                <a href="{{ url_for('jelajah') }}" class="py-3 {{ 'text-brand' if ep == 'jelajah' and not request.args.get('kategori') else 'hover:text-ink' }}">Semua Produk</a>
+                <a href="{{ url_for('toko.beranda') }}" class="py-3 {{ 'text-brand' if ep == 'toko.beranda' else 'hover:text-ink' }}">Beranda</a>
+                <a href="{{ url_for('toko.jelajah') }}" class="py-3 {{ 'text-brand' if ep == 'toko.jelajah' and not request.args.get('kategori') else 'hover:text-ink' }}">Semua Produk</a>
                 {% for k in kategori_nav %}
-                <a href="{{ url_for('jelajah', kategori=k) }}" class="py-3 {{ 'text-brand' if request.args.get('kategori') == k else 'hover:text-ink' }}">{{ k }}</a>
+                <a href="{{ url_for('toko.jelajah', kategori=k) }}" class="py-3 {{ 'text-brand' if request.args.get('kategori') == k else 'hover:text-ink' }}">{{ k }}</a>
                 {% endfor %}
             </div>
             {% if is_admin %}
-                <a href="{{ url_for('admin_dashboard') }}" class="py-3 hover:text-ink">Panel Admin</a>
+                <a href="{{ url_for('admin.dashboard') }}" class="py-3 hover:text-ink">Panel Admin</a>
             {% elif current_user %}
-                <a href="{{ url_for('pesanan') }}" class="py-3 {{ 'text-brand' if ep and ep.startswith('pesanan') else 'hover:text-ink' }}">Pesanan Saya</a>
+                <a href="{{ url_for('belanja.pesanan') }}" class="py-3 {{ 'text-brand' if ep and ep.startswith('belanja.pesanan') else 'hover:text-ink' }}">Pesanan Saya</a>
             {% endif %}
         </div>
     </nav>
@@ -72,8 +72,8 @@
         <div>
             <p class="font-semibold mb-3">Belanja</p>
             <ul class="space-y-2 text-muted">
-                <li><a href="{{ url_for('jelajah') }}" class="hover:text-ink">Semua Produk</a></li>
-                {% for k in kategori_nav[:4] %}<li><a href="{{ url_for('jelajah', kategori=k) }}" class="hover:text-ink">{{ k }}</a></li>{% endfor %}
+                <li><a href="{{ url_for('toko.jelajah') }}" class="hover:text-ink">Semua Produk</a></li>
+                {% for k in kategori_nav[:4] %}<li><a href="{{ url_for('toko.jelajah', kategori=k) }}" class="hover:text-ink">{{ k }}</a></li>{% endfor %}
             </ul>
         </div>
         <div>
@@ -81,14 +81,14 @@
             <ul class="space-y-2 text-muted">
                 {% if current_user %}
                     {% if not is_admin %}
-                    <li><a href="{{ url_for('keranjang') }}" class="hover:text-ink">Keranjang</a></li>
-                    <li><a href="{{ url_for('pesanan') }}" class="hover:text-ink">Pesanan Saya</a></li>
+                    <li><a href="{{ url_for('belanja.keranjang') }}" class="hover:text-ink">Keranjang</a></li>
+                    <li><a href="{{ url_for('belanja.pesanan') }}" class="hover:text-ink">Pesanan Saya</a></li>
                     {% endif %}
-                    <li><a href="{{ url_for('profil') }}" class="hover:text-ink">Profil</a></li>
-                    <li><a href="{{ url_for('pengaturan') }}" class="hover:text-ink">Pengaturan</a></li>
+                    <li><a href="{{ url_for('akun.profil') }}" class="hover:text-ink">Profil</a></li>
+                    <li><a href="{{ url_for('akun.pengaturan') }}" class="hover:text-ink">Pengaturan</a></li>
                 {% else %}
-                    <li><a href="{{ url_for('login') }}" class="hover:text-ink">Masuk</a></li>
-                    <li><a href="{{ url_for('register') }}" class="hover:text-ink">Daftar</a></li>
+                    <li><a href="{{ url_for('auth.login') }}" class="hover:text-ink">Masuk</a></li>
+                    <li><a href="{{ url_for('auth.register') }}" class="hover:text-ink">Daftar</a></li>
                 {% endif %}
             </ul>
         </div>
@@ -104,7 +104,7 @@
     <div class="border-t border-slate-100">
         <div class="max-w-6xl mx-auto px-4 py-1 md:py-2 text-xs text-muted flex flex-wrap items-center justify-between gap-x-4">
             <span>&copy; {{ app_name }} &middot; PBL RKS 323</span>
-            <a href="{{ url_for('kredit_foto') }}" class="py-3 underline hover:text-ink">Kredit foto produk</a>
+            <a href="{{ url_for('toko.kredit_foto') }}" class="py-3 underline hover:text-ink">Kredit foto produk</a>
         </div>
     </div>
 </footer>
@@ -115,24 +115,24 @@
 {% block bottom_nav scoped %}
 <nav class="md:hidden fixed bottom-0 inset-x-0 z-30 bg-white border-t border-slate-100 shadow-[0_-4px_16px_rgba(15,23,42,0.04)]">
     {% set items = [
-        ('beranda', 'store', 'Beranda', ['beranda']),
-        ('jelajah', 'layout-grid', 'Jelajah', ['jelajah', 'produk_detail']),
+        ('toko.beranda', 'store', 'Beranda', ['toko.beranda']),
+        ('toko.jelajah', 'layout-grid', 'Jelajah', ['toko.jelajah', 'toko.produk_detail']),
     ] %}
     {% if is_admin %}
         {% set items = items + [
-            ('admin_dashboard', 'layout-dashboard', 'Admin', []),
-            ('profil', 'user', 'Profil', ['profil', 'pengaturan']),
+            ('admin.dashboard', 'layout-dashboard', 'Admin', []),
+            ('akun.profil', 'user', 'Profil', ['akun.profil', 'akun.pengaturan']),
         ] %}
     {% elif current_user %}
         {% set items = items + [
-            ('keranjang', 'shopping-bag', 'Keranjang', ['keranjang']),
-            ('pesanan', 'receipt-text', 'Pesanan', ['pesanan', 'pesanan_detail', 'pesanan_konfirmasi']),
-            ('profil', 'user', 'Profil', ['profil', 'pengaturan']),
+            ('belanja.keranjang', 'shopping-bag', 'Keranjang', ['belanja.keranjang']),
+            ('belanja.pesanan', 'receipt-text', 'Pesanan', ['belanja.pesanan', 'belanja.pesanan_detail', 'belanja.pesanan_konfirmasi']),
+            ('akun.profil', 'user', 'Profil', ['akun.profil', 'akun.pengaturan']),
         ] %}
     {% else %}
         {% set items = items + [
-            ('keranjang', 'shopping-bag', 'Keranjang', ['keranjang']),
-            ('login', 'user', 'Masuk', ['login', 'register']),
+            ('belanja.keranjang', 'shopping-bag', 'Keranjang', ['belanja.keranjang']),
+            ('auth.login', 'user', 'Masuk', ['auth.login', 'auth.register']),
         ] %}
     {% endif %}
     <div class="grid {{ 'grid-cols-5' if items | length == 5 else 'grid-cols-4' }} text-[11px] font-medium">

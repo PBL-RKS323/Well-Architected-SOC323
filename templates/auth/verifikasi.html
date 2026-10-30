@@ -12,7 +12,7 @@
         {{ kolom_kode(form.kode) }}
         {{ tombol_utama(form.submit) }}
     </form>
-    <form method="POST" action="{{ url_for('verifikasi_kirim_ulang') }}" class="mt-4 text-center">
+    <form method="POST" action="{{ url_for('auth.verifikasi_kirim_ulang') }}" class="mt-4 text-center">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <span class="text-sm text-muted">Belum menerima kode?</span>
         <button type="submit" class="min-h-11 px-2 text-sm font-semibold text-brand hover:underline cursor-pointer">Kirim ulang</button>
@@ -20,6 +20,6 @@
     <p class="text-xs text-muted text-center">Kode berlaku {{ config.OTP_BERLAKU_MENIT }} menit. Cek juga folder Spam atau Promosi.</p>
 </div>
 <p class="mt-6 text-center text-sm text-muted">
-    Salah akun? <a href="{{ url_for('login') }}" class="text-brand font-semibold hover:underline">Kembali ke halaman masuk</a>
+    Salah akun? <a href="{{ url_for('auth.login') }}" class="text-brand font-semibold hover:underline">Kembali ke halaman masuk</a>
 </p>
 {% endblock %}

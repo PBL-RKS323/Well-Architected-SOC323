@@ -33,7 +33,7 @@ def tambah():
     daftar = Alamat.milik(g.user.id).all()
     if len(daftar) >= Alamat.MAKS_PER_USER:
         flash(f"Maksimal {Alamat.MAKS_PER_USER} alamat. Hapus salah satu dulu.", "warning")
-        return redirect(url_for("alamat"))
+        return redirect(url_for("akun.alamat"))
     if not form.validate_on_submit():
         return render_template("akun/alamat.html", daftar=daftar, form=form, maks=Alamat.MAKS_PER_USER)
 
@@ -45,7 +45,7 @@ def tambah():
         alamat.jadikan_utama()
     db.session.commit()
     flash(f"Alamat {alamat.label} disimpan.", "success")
-    return redirect(url_for("alamat"))
+    return redirect(url_for("akun.alamat"))
 
 
 @pelanggan_required
@@ -58,7 +58,7 @@ def edit(alamat_id):
             alamat.jadikan_utama()
         db.session.commit()
         flash(f"Alamat {alamat.label} diperbarui.", "success")
-        return redirect(url_for("alamat"))
+        return redirect(url_for("akun.alamat"))
     return render_template("akun/alamat_edit.html", form=form, alamat=alamat)
 
 
@@ -74,7 +74,7 @@ def hapus(alamat_id):
             pengganti.jadikan_utama()
     db.session.commit()
     flash(f"Alamat {label} dihapus.", "info")
-    return redirect(url_for("alamat"))
+    return redirect(url_for("akun.alamat"))
 
 
 @pelanggan_required
@@ -83,4 +83,4 @@ def jadikan_utama(alamat_id):
     alamat.jadikan_utama()
     db.session.commit()
     flash(f"{alamat.label} sekarang alamat utama.", "success")
-    return redirect(url_for("alamat"))
+    return redirect(url_for("akun.alamat"))

@@ -8,7 +8,7 @@
 {% set isi %}
 <div class="max-w-4xl">
     {% if not current_user.is_staf_toko() %}
-    <a href="{{ url_for('profil') }}" class="lg:hidden inline-flex items-center gap-2 text-sm font-medium text-muted hover:text-ink mb-4">
+    <a href="{{ url_for('akun.profil') }}" class="lg:hidden inline-flex items-center gap-2 text-sm font-medium text-muted hover:text-ink mb-4">
         <span class="w-11 h-11 rounded-full bg-white border border-slate-100 flex items-center justify-center">{{ icon('arrow-left', 'w-4 h-4') }}</span>
         Profil
     </a>
@@ -21,7 +21,7 @@
             <h2 class="font-display text-lg font-bold mb-4">Foto Profil</h2>
             <div class="flex flex-col sm:flex-row sm:items-center gap-5">
                 {{ avatar(current_user, 'w-20 h-20 font-display text-2xl font-extrabold') }}
-                <form method="POST" action="{{ url_for('pengaturan_foto') }}" enctype="multipart/form-data" class="flex-1 min-w-0" novalidate data-kirim-sekali>
+                <form method="POST" action="{{ url_for('akun.pengaturan_foto') }}" enctype="multipart/form-data" class="flex-1 min-w-0" novalidate data-kirim-sekali>
                     {{ avatar_form.hidden_tag() }}
                     {{ avatar_form.avatar.label(class="block text-sm font-semibold mb-1.5") }}
                     <div class="flex flex-col sm:flex-row gap-3">
@@ -32,7 +32,7 @@
                     {% for error in avatar_form.avatar.errors %}<span class="text-coral text-xs block mt-1.5">{{ error }}</span>{% endfor %}
                 </form>
                 {% if current_user.avatar %}
-                <form method="POST" action="{{ url_for('pengaturan_foto_hapus') }}" data-confirm="Hapus foto profil?">
+                <form method="POST" action="{{ url_for('akun.pengaturan_foto_hapus') }}" data-confirm="Hapus foto profil?">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <button type="submit" class="inline-flex items-center gap-2 min-h-11 px-4 rounded-full text-sm font-semibold text-coral hover:bg-red-50 cursor-pointer">{{ icon('trash-2', 'w-4 h-4') }} Hapus foto</button>
                 </form>
@@ -42,7 +42,7 @@
 
         <section class="bg-white p-6 rounded-2xl border border-slate-100 md:col-span-2">
             <h2 class="font-display text-lg font-bold mb-4">Nama Tampilan</h2>
-            <form method="POST" action="{{ url_for('pengaturan_nama') }}" class="flex flex-col sm:flex-row gap-3 sm:items-end" novalidate>
+            <form method="POST" action="{{ url_for('akun.pengaturan_nama') }}" class="flex flex-col sm:flex-row gap-3 sm:items-end" novalidate>
                 {{ nama_form.hidden_tag() }}
                 <div class="flex-1">{{ field(nama_form.nama_lengkap, ikon='user', autocomplete="name") }}</div>
                 {{ nama_form.submit(class="sm:w-auto bg-brand hover:bg-brand-dark text-white font-medium px-6 py-3 rounded-full cursor-pointer") }}
@@ -51,7 +51,7 @@
 
         <section class="bg-white p-6 rounded-2xl border border-slate-100">
             <h2 class="font-display text-lg font-bold mb-4">Ubah Email</h2>
-            <form method="POST" action="{{ url_for('pengaturan_email') }}" class="space-y-4" novalidate>
+            <form method="POST" action="{{ url_for('akun.pengaturan_email') }}" class="space-y-4" novalidate>
                 {{ email_form.hidden_tag() }}
                 {{ field(email_form.email_baru, ikon='mail', autocomplete="email", placeholder="nama@email.com") }}
                 {{ field(email_form.password_sekarang, ikon='lock', autocomplete="current-password") }}
@@ -61,7 +61,7 @@
 
         <section class="bg-white p-6 rounded-2xl border border-slate-100">
             <h2 class="font-display text-lg font-bold mb-4">Ubah Kata Sandi</h2>
-            <form method="POST" action="{{ url_for('pengaturan_password') }}" class="space-y-4" novalidate>
+            <form method="POST" action="{{ url_for('akun.pengaturan_password') }}" class="space-y-4" novalidate>
                 {{ password_form.hidden_tag() }}
                 {{ field(password_form.password_sekarang, ikon='lock', autocomplete="current-password") }}
                 {{ field(password_form.password_baru, ikon='lock', autocomplete="new-password") }}
@@ -76,6 +76,6 @@
 {% if current_user.is_staf_toko() %}
     {{ isi }}
 {% else %}
-    {% call area_akun('pengaturan') %}{{ isi }}{% endcall %}
+    {% call area_akun('akun.pengaturan') %}{{ isi }}{% endcall %}
 {% endif %}
 {% endblock %}

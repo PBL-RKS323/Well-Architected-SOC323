@@ -3,14 +3,14 @@
 {% from '_produk.html' import kartu, IKON_KATEGORI %}
 {% block content %}
 {# Pencarian (HP; di desktop kolom cari ada di header) #}
-<form action="{{ url_for('jelajah') }}" method="GET" class="md:hidden flex gap-2 mb-5">
+<form action="{{ url_for('toko.jelajah') }}" method="GET" class="md:hidden flex gap-2 mb-5">
     <label class="relative flex-1">
         <span class="sr-only">Cari produk</span>
         <span class="absolute left-4 top-1/2 -translate-y-1/2 text-muted">{{ icon('search', 'w-5 h-5') }}</span>
         <input type="search" name="q" placeholder="Cari handphone, laptop, smartwatch..."
                class="w-full bg-white border border-slate-100 rounded-2xl pl-12 pr-4 py-3.5 outline-none focus:ring-4 focus:ring-brand/15 focus:border-brand">
     </label>
-    <a href="{{ url_for('jelajah') }}" aria-label="Filter produk" class="w-13 shrink-0 bg-white border border-slate-100 rounded-2xl flex items-center justify-center text-ink hover:bg-brand-soft">
+    <a href="{{ url_for('toko.jelajah') }}" aria-label="Filter produk" class="w-13 shrink-0 bg-white border border-slate-100 rounded-2xl flex items-center justify-center text-ink hover:bg-brand-soft">
         {{ icon('sliders-horizontal', 'w-5 h-5') }}
     </a>
 </form>
@@ -31,7 +31,7 @@
                 <h2 class="font-display text-2xl md:text-4xl font-extrabold leading-tight mt-2 line-clamp-2">{{ p.nama_produk }}</h2>
                 <p class="text-sm text-muted mt-1">{{ p.merek }} &middot; {{ p.kategori }}</p>
                 <div class="flex flex-wrap items-end gap-x-5 gap-y-3 mt-5">
-                    <a href="{{ url_for('produk_detail', produk_id=p.id) }}"
+                    <a href="{{ url_for('toko.produk_detail', produk_id=p.id) }}"
                        class="inline-flex items-center gap-2 bg-brand hover:bg-brand-dark text-white font-medium px-5 py-3 rounded-full">
                         Lihat Produk
                     </a>
@@ -81,7 +81,7 @@
     </h2>
     <div class="flex gap-3 overflow-x-auto scrollbar-none -mx-4 px-4 md:mx-0 md:px-0 md:grid md:grid-cols-6">
         {% for k in kategori_list %}
-        <a href="{{ url_for('jelajah', kategori=k) }}"
+        <a href="{{ url_for('toko.jelajah', kategori=k) }}"
            class="shrink-0 w-24 md:w-auto bg-white border border-slate-100 rounded-2xl py-4 flex flex-col items-center gap-2 hover:border-brand hover:text-brand transition">
             <span class="w-12 h-12 rounded-full bg-soft flex items-center justify-center">{{ icon(IKON_KATEGORI[k], 'w-6 h-6') }}</span>
             <span class="text-xs font-medium">{{ k }}</span>
@@ -97,7 +97,7 @@
         <h2 class="flex items-center gap-2 font-display text-lg md:text-xl font-bold">
             <span class="w-1 h-5 rounded-full bg-brand"></span> Ekosistem {{ merek }}
         </h2>
-        <a href="{{ url_for('jelajah', merek=merek) }}" class="py-3 text-sm font-semibold text-brand">Semua produk {{ merek }}</a>
+        <a href="{{ url_for('toko.jelajah', merek=merek) }}" class="py-3 text-sm font-semibold text-brand">Semua produk {{ merek }}</a>
     </div>
     <div class="flex gap-3 overflow-x-auto scrollbar-none snap-x -mx-4 px-4 md:mx-0 md:px-0 md:grid md:grid-cols-4 md:gap-5">
         {% for produk in produk_list %}
@@ -109,7 +109,7 @@
 
 {% if ekosistem %}
 <div class="text-center mt-10">
-    <a href="{{ url_for('jelajah') }}" class="inline-flex items-center gap-2 bg-white border border-slate-200 hover:border-brand hover:text-brand font-medium px-6 py-3 rounded-full">
+    <a href="{{ url_for('toko.jelajah') }}" class="inline-flex items-center gap-2 bg-white border border-slate-200 hover:border-brand hover:text-brand font-medium px-6 py-3 rounded-full">
         Lihat Semua Produk
     </a>
 </div>

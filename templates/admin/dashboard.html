@@ -10,11 +10,11 @@
     </div>
     <div class="flex flex-wrap gap-3">
         {% if current_user.punya_izin('lihat_laporan') %}
-        <a href="{{ url_for('admin_laporan') }}" class="inline-flex items-center gap-2 bg-white border border-slate-200 hover:border-brand hover:text-brand font-medium px-5 py-3 rounded-full">
+        <a href="{{ url_for('admin.laporan') }}" class="inline-flex items-center gap-2 bg-white border border-slate-200 hover:border-brand hover:text-brand font-medium px-5 py-3 rounded-full">
             {{ icon('chart-column', 'w-5 h-5') }} Laporan Transaksi
         </a>
         {% endif %}
-        <a href="{{ url_for('admin_produk_tambah') }}" class="inline-flex items-center gap-2 bg-brand hover:bg-brand-dark text-white font-medium px-5 py-3 rounded-full">
+        <a href="{{ url_for('admin.produk_tambah') }}" class="inline-flex items-center gap-2 bg-brand hover:bg-brand-dark text-white font-medium px-5 py-3 rounded-full">
             {{ icon('plus', 'w-5 h-5') }} Tambah Produk
         </a>
     </div>
@@ -49,10 +49,10 @@
         <p class="text-sm text-muted mb-4">Pesanan dan stok yang perlu ditindaklanjuti.</p>
         <div class="grid grid-cols-2 gap-3 sm:gap-4">
             {% set operasional = [
-                ('wallet', 'bg-brand-soft text-brand', stats.perlu_verifikasi, 'Pesanan', 'Menunggu verifikasi pembayaran', 'Tinjau Bukti', url_for('admin_pesanan', tab='verifikasi'), 'text-brand'),
-                ('truck', 'bg-brand-soft text-brand', stats.perlu_dikirim, 'Pesanan', 'Sudah dibayar, perlu dikemas & dikirim', 'Proses Pesanan', url_for('admin_pesanan', tab='diproses'), 'text-brand'),
-                ('triangle-alert', 'bg-red-50 text-coral', stats.stok_menipis, 'Produk', 'Stok menipis (5 unit atau kurang) / habis', 'Restok Sekarang', url_for('admin_produk'), 'text-coral'),
-                ('message-square', 'bg-amber-100 text-amber-700', stats.ulasan_belum_dibalas, 'Ulasan', 'Ulasan pelanggan yang belum dibalas toko', 'Balas Ulasan', url_for('admin_ulasan', filter='belum_dibalas'), 'text-brand'),
+                ('wallet', 'bg-brand-soft text-brand', stats.perlu_verifikasi, 'Pesanan', 'Menunggu verifikasi pembayaran', 'Tinjau Bukti', url_for('admin.pesanan', tab='verifikasi'), 'text-brand'),
+                ('truck', 'bg-brand-soft text-brand', stats.perlu_dikirim, 'Pesanan', 'Sudah dibayar, perlu dikemas & dikirim', 'Proses Pesanan', url_for('admin.pesanan', tab='diproses'), 'text-brand'),
+                ('triangle-alert', 'bg-red-50 text-coral', stats.stok_menipis, 'Produk', 'Stok menipis (5 unit atau kurang) / habis', 'Restok Sekarang', url_for('admin.produk'), 'text-coral'),
+                ('message-square', 'bg-amber-100 text-amber-700', stats.ulasan_belum_dibalas, 'Ulasan', 'Ulasan pelanggan yang belum dibalas toko', 'Balas Ulasan', url_for('admin.ulasan', filter='belum_dibalas'), 'text-brand'),
             ] %}
             {% for ic, warna, angka, satuan, ket, link_label, link, warna_link in operasional %}
             <div class="bg-white border border-slate-100 rounded-2xl p-4 sm:p-5 flex flex-col">
@@ -101,7 +101,7 @@
             <h2 class="font-display text-lg font-bold">Pesanan Terbaru</h2>
             <p class="text-sm text-muted">Pembelian terbaru dan status pengirimannya.</p>
         </div>
-        <a href="{{ url_for('admin_pesanan') }}" class="inline-flex items-center min-h-11 text-sm font-medium text-brand bg-brand-soft px-4 rounded-full">Lihat Semua Pesanan</a>
+        <a href="{{ url_for('admin.pesanan') }}" class="inline-flex items-center min-h-11 text-sm font-medium text-brand bg-brand-soft px-4 rounded-full">Lihat Semua Pesanan</a>
     </div>
     {{ tabel_pesanan(pesanan_terbaru) }}
 </section>

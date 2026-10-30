@@ -46,7 +46,7 @@ def _nama_dari_google(info, email):
 def _gagal(alasan, pesan="Masuk dengan Google gagal. Coba lagi atau masuk dengan email."):
     log_event("GOOGLE_LOGIN_FAILED", logging.WARNING, reason=alasan)
     flash(pesan, "danger")
-    return redirect(url_for("login"))
+    return redirect(url_for("auth.login"))
 
 
 def login():
@@ -55,7 +55,7 @@ def login():
     if g.user:
         return redirect(halaman_awal(g.user))
     session["google_next"] = safe_next_url(request.args.get("next"))
-    return oauth.google.authorize_redirect(url_for("login_google_callback", _external=True))
+    return oauth.google.authorize_redirect(url_for("auth.login_google_callback", _external=True))
 
 
 def callback():
@@ -84,7 +84,7 @@ def callback():
                 # salah ketik / milik orang lain, pemilik Gmail itu bisa ikut masuk sebagai admin.
                 log_event("GOOGLE_LOGIN_FAILED", logging.WARNING, reason="panel_account", user_id=user.id)
                 flash("Akun Admin/Staf masuk dengan email dan kata sandi.", "warning")
-                return redirect(url_for("login"))
+                return redirect(url_for("auth.login"))
             user.google_sub = sub
 
     if user is None:
@@ -101,7 +101,7 @@ def callback():
         db.session.rollback()
         log_event("LOGIN_BLOCKED", logging.WARNING, user_id=user.id, reason="account_disabled", method="google")
         flash("Akun ini dinonaktifkan. Hubungi admin toko.", "danger")
-        return redirect(url_for("login"))
+        return redirect(url_for("auth.login"))
 
     user.email_terverifikasi = True
     user.reset_failed_login()

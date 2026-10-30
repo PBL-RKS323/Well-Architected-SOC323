@@ -21,7 +21,7 @@ def mulai_sesi(user, ingat):
 
 def halaman_awal(user, next_url=None):
     """Tujuan setelah login: halaman yang diminta sebelumnya, atau panel/beranda sesuai peran."""
-    return next_url or url_for("admin_dashboard" if user.is_staf_toko() else "beranda")
+    return next_url or url_for("admin.dashboard" if user.is_staf_toko() else "toko.beranda")
 
 
 def samarkan_email(email):

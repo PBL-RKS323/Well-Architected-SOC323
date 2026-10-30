@@ -25,7 +25,7 @@ def _buat_username(email):
 
 def register():
     if g.user:
-        return redirect(url_for("beranda"))
+        return redirect(url_for("toko.beranda"))
 
     form = RegisterForm()
     if form.validate_on_submit():
@@ -46,7 +46,7 @@ def register():
         if not new_user.email_terverifikasi:
             return mulai_verifikasi(new_user, KodeOtp.VERIFIKASI_EMAIL)
         flash("Pendaftaran berhasil! Silakan login.", "success")
-        return redirect(url_for("login"))
+        return redirect(url_for("auth.login"))
     return render_template("auth/register.html", form=form)
 
 
@@ -64,7 +64,7 @@ def _perlu_otp(user):
 
 def login():
     if g.user:
-        return redirect(url_for("admin_dashboard" if g.user.is_staf_toko() else "beranda"))
+        return redirect(url_for("admin.dashboard" if g.user.is_staf_toko() else "toko.beranda"))
 
     form = LoginForm()
     if form.validate_on_submit():
@@ -121,4 +121,4 @@ def logout():
         log_event("LOGOUT", user_id=g.user.id, username=g.user.username)
     session.clear()
     flash("Anda telah berhasil keluar.", "info")
-    return redirect(url_for("login"))
+    return redirect(url_for("auth.login"))

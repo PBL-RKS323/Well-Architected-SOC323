@@ -19,7 +19,7 @@
 {# flex-wrap: semua tab terlihat di HP tanpa digeser #}
 <nav class="flex flex-wrap gap-2 mb-4 text-sm font-medium">
     {% for nama, info in tabs.items() %}
-    <a href="{{ url_for('admin_pesanan', tab=nama, q=q or None) }}"
+    <a href="{{ url_for('admin.pesanan', tab=nama, q=q or None) }}"
        class="whitespace-nowrap inline-flex items-center gap-1 px-4 min-h-11 rounded-full {{ 'bg-brand text-white' if tab == nama else 'bg-white text-muted hover:text-ink' }}">
         {{ info[0] }}
         <span class="ml-0.5 text-xs font-semibold px-1.5 py-0.5 rounded-full {{ 'bg-white/20' if tab == nama else ('bg-coral text-white' if nama == 'verifikasi' and jumlah_tab[nama] else 'bg-soft') }}">{{ jumlah_tab[nama] }}</span>
@@ -35,7 +35,7 @@
         <nav class="flex items-center gap-1" aria-label="Halaman">
             {% for n in halaman.iter_pages() %}
                 {% if n %}
-                <a href="{{ url_for('admin_pesanan', tab=tab, q=q or None, page=n) }}"
+                <a href="{{ url_for('admin.pesanan', tab=tab, q=q or None, page=n) }}"
                    class="w-11 h-11 rounded-full flex items-center justify-center font-semibold {{ 'bg-brand text-white' if n == halaman.page else 'hover:bg-soft text-ink' }}">{{ n }}</a>
                 {% else %}<span class="px-1">…</span>{% endif %}
             {% endfor %}
