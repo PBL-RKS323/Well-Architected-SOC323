@@ -11,6 +11,7 @@ Isi:
 5. [Pertanyaan yang mungkin ditanya dosen (+ jawaban)](#5-pertanyaan-yang-mungkin-ditanya-dosen--jawaban)
 6. [Urutan demo ATS (10 menit)](#6-urutan-demo-ats-10-menit)
 7. [Latihan singkat untuk memahami kode](#7-latihan-singkat-untuk-memahami-kode)
+8. [Lampiran: daftar halaman](#lampiran-daftar-halaman)
 
 ---
 
@@ -122,6 +123,8 @@ stateDiagram-v2
 ```
 
 Perpindahan status di luar diagram ini ditolak server, walaupun request-nya dimanipulasi.
+Stok dipotong saat checkout dan dikembalikan jika pesanan batal. Pesanan yang belum dibayar dalam
+24 jam (`BATAS_BAYAR_JAM` di `config.py`) otomatis dibatalkan.
 
 ## 4. File wajib dibaca per anggota
 
@@ -244,3 +247,24 @@ Cara tercepat paham adalah mengubah sesuatu yang kecil, lalu melihat hasilnya:
 5. Jalankan `pytest -q` sebelum dan sesudah perubahan.
 
 Jika ada yang tidak dipahami, tanyakan di grup dengan menyebut nama file dan nomor barisnya.
+
+## Lampiran: daftar halaman
+
+| URL | Akses | Keterangan |
+|---|---|---|
+| `/` | Semua | Beranda: produk unggulan, kategori, ekosistem brand |
+| `/jelajah` | Semua | Semua produk + cari, filter, urutkan |
+| `/produk/<id>` | Semua | Detail produk, spesifikasi, ulasan pembeli |
+| `/register`, `/login` | Tamu | Daftar akun pelanggan, masuk |
+| `/lupa-password` | Tamu | Reset kata sandi dengan kode email (jika email aktif) |
+| `/keranjang` | Pelanggan | Keranjang belanja |
+| `/checkout` | Pelanggan | Pilih pengiriman (kurir / ambil di toko), alamat, buat pesanan |
+| `/pesanan`, `/pesanan/<kode>` | Pelanggan (milik sendiri) | Riwayat & detail pesanan, unggah bukti bayar, batalkan, konfirmasi diterima |
+| `/profil`, `/pengaturan` | Login | Profil, foto, ubah nama, email & kata sandi |
+| `/alamat` | Pelanggan | Alamat tersimpan (maks. 5, satu alamat utama) |
+| `/admin` | Admin, Staf | Dasbor panel |
+| `/admin/produk` | Admin, Staf | Tambah, edit, hapus produk |
+| `/admin/pesanan` | Admin, Staf | Verifikasi bukti bayar, kirim (resi), selesai, batalkan |
+| `/admin/ulasan` | Admin, Staf | Balas & hapus ulasan |
+| `/admin/laporan` | Admin | Laporan transaksi per tanggal, unduh CSV |
+| `/admin/pengguna` | Admin | Kelola akun: tambah, ubah peran, nonaktifkan, buka kunci, reset kata sandi |
