@@ -20,13 +20,13 @@ Aplikasi live: https://toko.neteye.my.id
 | Folder | Isi |
 |---|---|
 | *(root)* | Aplikasi web Flask monolit (MVC): `app.py`, `routes/`, `controllers/`, `models/`, `templates/`, ... |
-| `frontend/` | Prototipe UI dari Figma (referensi desain, bukan aplikasi yang di-deploy) |
-| `backend/` | Disiapkan untuk REST API (Output PBL #2), jika dikerjakan |
+| `frontend/` | Prototipe UI dari Figma oleh Intan (referensi desain, bukan aplikasi yang di-deploy) |
 | `infrastructure/` | Konfigurasi Wazuh, OPNsense, dan skrip Cloudflare |
 | `docs/` | Dokumentasi keamanan, desain, dan deploy |
 
-Aplikasi web sengaja tidak dipecah ke `frontend/` dan `backend/`: pada Flask monolit, tampilan
-(`templates/`, `static/`) dan logika (`routes/`, `controllers/`, `models/`) berjalan sebagai satu aplikasi.
+Aplikasi web sengaja tidak dipecah ke folder frontend dan backend terpisah: pada Flask monolit,
+tampilan (`templates/`, `static/`) dan logika (`routes/`, `controllers/`, `models/`) berjalan sebagai
+satu aplikasi. Pembagian tanggung jawabnya ada di tabel **Tim & Pembagian Peran** di atas.
 
 ## Alur Kerja Git
 
