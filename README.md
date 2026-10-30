@@ -25,8 +25,48 @@ Aplikasi live: https://toko.neteye.my.id
 | `docs/` | Dokumentasi keamanan, desain, dan deploy |
 
 Aplikasi web sengaja tidak dipecah ke folder frontend dan backend terpisah: pada Flask monolit,
-tampilan (`templates/`, `static/`) dan logika (`routes/`, `controllers/`, `models/`) berjalan sebagai
-satu aplikasi. Pembagian tanggung jawabnya ada di tabel **Tim & Pembagian Peran** di atas.
+tampilan dan logika berjalan sebagai satu aplikasi. Pembagian tanggung jawabnya ada di tabel
+**Tim & Pembagian Peran** di atas.
+
+### Folder Frontend dan Backend
+
+**Ringkasnya:** frontend = `templates/` + `static/`; backend = semua folder Python (`routes/`,
+`controllers/`, `models/`, `forms/`, `middlewares/`, `helpers/`, `migrations/`), ditambah `app.py`
+dan `config.py`.
+
+**Frontend** (tampilan yang dilihat pengguna)
+
+| Folder | Isi |
+|---|---|
+| `templates/` | Semua halaman HTML (Jinja2): `layouts/`, `toko/`, `auth/`, `akun/`, `admin/`, komponen `_macros.html`, `_produk.html`, `_icons.html` |
+| `static/` | JavaScript (`js/app.js`) dan folder foto upload (`uploads/`, tidak masuk git) |
+| `frontend/` | Prototipe UI dari Figma (referensi desain, tidak dijalankan aplikasi) |
+
+**Backend** (logika & data yang berjalan di server)
+
+| Folder / file | Isi |
+|---|---|
+| `app.py` | Titik awal aplikasi (`create_app`), header keamanan, perintah CLI |
+| `config.py` | Pengaturan dari file `.env` |
+| `routes/` | Blueprint: daftar URL per area |
+| `controllers/` | Logika tiap fitur |
+| `models/` | Tabel database sebagai class Python |
+| `forms/` | Validasi input di server |
+| `middlewares/` | Wajib login & hak akses per peran (RBAC) |
+| `helpers/` | Upload aman, log keamanan, email, format waktu |
+| `migrations/` | Riwayat perubahan struktur tabel |
+| `seed/` | Data produk contoh beserta fotonya |
+| `requirements.txt` | Daftar library Python |
+
+**Pendukung**
+
+| Folder | Isi |
+|---|---|
+| `tests/` | Pengujian otomatis (pytest) |
+| `docs/` | Dokumentasi keamanan, deploy, dan panduan kode |
+| `deploy/` | Konfigurasi Nginx & systemd untuk server |
+| `infrastructure/` | Konfigurasi Wazuh, OPNsense, dan skrip Cloudflare |
+| `scripts/` | Skrip bantu (menyalakan PostgreSQL di WSL) |
 
 ## Alur Kerja Git
 
