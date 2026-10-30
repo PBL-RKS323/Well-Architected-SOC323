@@ -1,4 +1,43 @@
-# Elektronik Store - PBL RKS 323
+# Well-Architected-SOC323
+
+Repositori proyek PBL tim SOC323 (RKS 3B, Politeknik Negeri Batam): aplikasi web e-commerce
+**Elektronik Store** beserta prototipe UI dan konfigurasi infrastruktur SOC.
+
+Aplikasi live: https://toko.neteye.my.id
+
+## Tim & Pembagian Peran
+
+| Anggota | Peran | Bagian yang dipegang |
+|---|---|---|
+| Yudha Pratama | Ketua tim, Frontend | `infrastructure/`, review & merge Pull Request |
+| Intan Sri Diana | Desain UI/UX | `frontend/` (prototipe UI), `templates/`, `static/` |
+| Pedro Juanda Sebayang | Backend | `routes/`, `controllers/`, `models/`, `migrations/` |
+| Ripasha Alvarisi L. | Quality Assurance | `tests/`, rencana & laporan pengujian |
+| Ihsan Alfareno | Fitur tambahan & kualitas | fitur baru, audit keamanan / pentest |
+
+## Isi Repositori
+
+| Folder | Isi |
+|---|---|
+| *(root)* | Aplikasi web Flask monolit (MVC): `app.py`, `routes/`, `controllers/`, `models/`, `templates/`, ... |
+| `frontend/` | Prototipe UI dari Figma (referensi desain, bukan aplikasi yang di-deploy) |
+| `backend/` | Disiapkan untuk REST API (Output PBL #2), jika dikerjakan |
+| `infrastructure/` | Konfigurasi Wazuh, OPNsense, dan skrip Cloudflare |
+| `docs/` | Dokumentasi keamanan, desain, dan deploy |
+
+Aplikasi web sengaja tidak dipecah ke `frontend/` dan `backend/`: pada Flask monolit, tampilan
+(`templates/`, `static/`) dan logika (`routes/`, `controllers/`, `models/`) berjalan sebagai satu aplikasi.
+
+## Alur Kerja Git
+
+1. Jangan bekerja langsung di `main`. Buat branch dari `main`, misalnya `git checkout -b fitur/halaman-bantuan`.
+2. Commit dengan akun GitHub sendiri (`git config user.email` = email akun GitHub) agar kontribusi tercatat.
+3. `git push -u origin <nama-branch>`, lalu buka Pull Request ke `main`. Ketua tim mereview dan merge.
+4. Jalankan `pytest` sebelum membuka Pull Request. Jangan pernah meng-commit `.env`, database, atau `venv/`.
+
+---
+
+## Aplikasi Web: Elektronik Store
 
 Aplikasi web e-commerce monolitik untuk penjualan produk elektronik (handphone, laptop,
 smartwatch, dan aksesoris). Dibangun dengan Flask dan database SQL, mengikuti pola MVC.
