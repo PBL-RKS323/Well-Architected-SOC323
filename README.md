@@ -30,10 +30,37 @@ satu aplikasi. Pembagian tanggung jawabnya ada di tabel **Tim & Pembagian Peran*
 
 ## Alur Kerja Git
 
-1. Jangan bekerja langsung di `main`. Buat branch dari `main`, misalnya `git checkout -b fitur/halaman-bantuan`.
+- `main` = versi stabil (yang dinilai & di-deploy). `development` = tempat menggabungkan pekerjaan tim.
+
+1. Jangan bekerja langsung di `main` maupun `development`. Buat branch dari `development`:
+   `git checkout development && git pull && git checkout -b fitur/halaman-bantuan`.
 2. Commit dengan akun GitHub sendiri (`git config user.email` = email akun GitHub) agar kontribusi tercatat.
-3. `git push -u origin <nama-branch>`, lalu buka Pull Request ke `main`. Ketua tim mereview dan merge.
+3. `git push -u origin <nama-branch>`, lalu buka Pull Request ke `development`. Ketua tim mereview dan merge.
+   Penggabungan `development` ke `main` dilakukan ketua tim setelah disepakati.
 4. Jalankan `pytest` sebelum membuka Pull Request. Jangan pernah meng-commit `.env`, database, atau `venv/`.
+
+## Memahami Kode (ringkas)
+
+Aplikasi memakai pola **MVC + Blueprint**. Analogi restoran:
+
+| Folder | Di restoran | Tugas |
+|---|---|---|
+| `routes/` | Pelayan | Menerima URL, meneruskan ke controller (5 Blueprint) |
+| `controllers/` | Koki | Logika tiap fitur |
+| `forms/` | Pemeriksa pesanan | Validasi input di server |
+| `models/` | Gudang bahan | Tabel database sebagai class Python |
+| `templates/`, `static/` | Penyajian | Halaman HTML (Jinja2), JavaScript |
+| `middlewares/` | Satpam | Wajib login & hak akses per peran (RBAC) |
+| `helpers/` | Alat dapur | Upload aman, log keamanan, email |
+| `migrations/` | Catatan renovasi | Riwayat perubahan struktur tabel |
+| `tests/` | Pencicip | 165 tes otomatis (`pytest -q`) |
+
+Contoh alur tombol **Masuk**: `routes/auth.py` → `forms/auth_form.py` (cek input + CSRF) →
+`controllers/auth_controller.py` → `models/user.py` (cocokkan hash kata sandi) →
+`helpers/security_logger.py` (catat ke `logs/security.log`) → `templates/auth/login.html`.
+
+Penjelasan lengkap, file wajib dibaca per anggota, **daftar pertanyaan dosen beserta jawabannya**, dan
+urutan demo ada di **[docs/PANDUAN-KODE.md](docs/PANDUAN-KODE.md)**.
 
 ---
 
