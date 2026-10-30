@@ -1,0 +1,12 @@
+venv/
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+instance/
+
+# Rahasia & data lokal
+.env
+logs/
+static/uploads/*
+!static/uploads/.gitkeep

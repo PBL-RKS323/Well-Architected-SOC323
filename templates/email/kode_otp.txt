@@ -1,0 +1,12 @@
+Halo {{ user.display_name }},
+
+Kode untuk {{ judul | lower }} di {{ app_name }}:
+
+    {{ kode }}
+
+Kode berlaku {{ menit }} menit dan hanya bisa dipakai sekali.
+Jangan berikan kode ini kepada siapa pun, termasuk yang mengaku dari {{ app_name }}.
+
+Jika kamu tidak merasa meminta kode ini, abaikan email ini. Akunmu tetap aman selama kode tidak dibagikan.
+
+{{ app_name }}

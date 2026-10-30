@@ -1,0 +1,22 @@
+# Salin ke /etc/systemd/system/elektronik-store.service
+# Gunicorn hanya mendengar di 127.0.0.1 (tidak bisa diakses langsung dari internet, harus lewat Nginx).
+[Unit]
+Description=Elektronik Store (Flask + Gunicorn)
+After=network.target postgresql.service
+Requires=postgresql.service
+
+[Service]
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/opt/elektronik-store
+ExecStart=/opt/elektronik-store/.venv/bin/gunicorn --workers 2 --bind 127.0.0.1:8100 --access-logfile - "app:create_app()"
+Restart=on-failure
+RestartSec=3
+# Pembatasan dasar: proses tidak bisa menulis di luar folder aplikasi & /tmp
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+
+[Install]
+WantedBy=multi-user.target

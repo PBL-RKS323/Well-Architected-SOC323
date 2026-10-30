@@ -1,0 +1,294 @@
+{% extends 'layouts/toko.html' %}
+{% from '_icons.html' import icon %}
+{% from '_produk.html' import kartu, bintang %}
+{% from '_macros.html' import avatar %}
+{% block title %}{{ produk.nama_produk }} - {{ app_name }}{% endblock %}
+{% block content %}
+<nav aria-label="Breadcrumb" class="mb-4 text-sm">
+    <ol class="flex items-center gap-1 text-muted min-w-0">
+        <li class="shrink-0"><a href="{{ url_for('toko.beranda') }}" class="inline-flex items-center min-h-11 hover:text-ink">Beranda</a></li>
+        <li class="shrink-0" aria-hidden="true">{{ icon('chevron-right', 'w-4 h-4') }}</li>
+        <li class="shrink-0"><a href="{{ url_for('toko.jelajah', kategori=produk.kategori) }}" class="inline-flex items-center min-h-11 hover:text-ink">{{ produk.kategori }}</a></li>
+        <li class="shrink-0" aria-hidden="true">{{ icon('chevron-right', 'w-4 h-4') }}</li>
+        <li class="truncate font-medium text-ink" aria-current="page">{{ produk.nama_produk }}</li>
+    </ol>
+</nav>
+
+<div class="md:grid md:grid-cols-2 md:gap-10">
+    <div class="relative bg-white rounded-3xl p-4 border border-slate-100">
+        <div class="absolute top-6 left-6 z-10 flex flex-col items-start gap-1.5">
+            {% if produk.diskon_persen %}
+                <span class="bg-coral text-white text-xs font-bold px-3 py-1 rounded-full">Diskon {{ produk.diskon_persen }}%</span>
+            {% endif %}
+            {% if 0 < produk.stok <= produk.STOK_MENIPIS %}
+                <span class="bg-white text-ink border border-slate-200 text-xs font-semibold px-3 py-1 rounded-full">Sisa {{ produk.stok }} unit</span>
+            {% endif %}
+        </div>
+        <img src="{{ url_for('static', filename='uploads/' ~ produk.gambar) }}" alt="{{ produk.nama_produk }}"
+             class="w-full aspect-square object-cover rounded-2xl bg-soft">
+    </div>
+
+    <div class="mt-6 md:mt-0">
+        <span class="inline-block bg-brand-soft text-brand-dark text-xs font-semibold px-2.5 py-1 rounded-md">{{ produk.merek }} &middot; {{ produk.kategori }}</span>
+        <h1 class="font-display text-2xl md:text-3xl font-extrabold leading-tight mt-3">{{ produk.nama_produk }}</h1>
+        {% if produk.ringkasan_spesifikasi %}
+        <p class="text-muted mt-1.5">{{ produk.ringkasan_spesifikasi }}</p>
+        {% endif %}
+        {% if ringkasan_ulasan.jumlah %}
+        <a href="#ulasan" class="inline-flex items-center gap-2 mt-2 text-sm min-h-11">
+            {{ bintang(ringkasan_ulasan.rata) }}
+            <span class="font-semibold">{{ ringkasan_ulasan.rata }}</span>
+            <span class="text-muted">({{ ringkasan_ulasan.jumlah }} ulasan)</span>
+        </a>
+        {% endif %}
+
+        {# whitespace-nowrap + flex-wrap: harga tidak terpotong jadi "Rp" / angka; harga coret turun ke baris baru jika sempit #}
+        <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1 mt-4">
+            <p class="font-display text-2xl sm:text-3xl font-extrabold text-ink whitespace-nowrap">{{ produk.harga | rupiah }}</p>
+            {% if produk.diskon_persen %}
+                <p class="text-muted line-through whitespace-nowrap">{{ produk.harga_normal | rupiah }}</p>
+            {% endif %}
+        </div>
+        {% if produk.hemat %}
+        <p class="inline-flex items-center gap-1.5 mt-2 bg-emerald-50 text-emerald-700 text-sm font-semibold px-3 py-1 rounded-full">
+            {{ icon('tag', 'w-4 h-4') }} Hemat {{ produk.hemat | rupiah }}
+        </p>
+        {% endif %}
+
+        <p class="mt-3 text-sm font-medium {{ 'text-coral' if produk.stok == 0 else 'text-emerald-700' }}">
+            {{ 'Stok habis' if produk.stok == 0 else 'Stok tersedia: ' ~ produk.stok }}
+        </p>
+
+        {% if produk.stok > 0 %}
+            {% if current_user and current_user.is_staf_toko() %}
+            <p class="mt-5 text-sm text-muted bg-white border border-slate-100 rounded-2xl p-4">
+                Kamu masuk sebagai {{ current_user.label_role | lower }}. Untuk mencoba membeli, gunakan akun pelanggan.
+            </p>
+            {% elif current_user %}
+            {% set maks = [produk.stok, maks_per_produk] | min %}
+            <form action="{{ url_for('belanja.keranjang_tambah', produk_id=produk.id) }}" method="POST" class="mt-5 bg-white border border-slate-100 rounded-2xl p-4">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="next" value="{{ request.path }}">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="font-semibold">Jumlah</p>
+                        <p class="text-xs text-muted">Maksimal {{ maks }} unit per pesanan</p>
+                    </div>
+                    <div class="flex items-center gap-1 bg-soft rounded-full p-0.5" data-qty>
+                        <button type="button" data-qty-step="-1" aria-label="Kurangi jumlah" class="w-11 h-11 rounded-full bg-white flex items-center justify-center cursor-pointer">{{ icon('minus', 'w-4 h-4') }}</button>
+                        <input type="number" name="jumlah" value="1" min="1" max="{{ maks }}" aria-label="Jumlah"
+                               class="w-10 text-center bg-transparent font-semibold outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none">
+                        <button type="button" data-qty-step="1" aria-label="Tambah jumlah" class="w-11 h-11 rounded-full bg-white flex items-center justify-center cursor-pointer">{{ icon('plus', 'w-4 h-4') }}</button>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 mt-4">
+                    <button type="submit" class="inline-flex items-center justify-center gap-2 border-2 border-brand/30 hover:border-brand text-brand font-medium py-3 rounded-full cursor-pointer">
+                        {{ icon('shopping-bag', 'w-5 h-5') }} Keranjang
+                    </button>
+                    <button type="submit" name="beli" value="1" class="inline-flex items-center justify-center gap-2 bg-brand hover:bg-brand-dark text-white font-medium py-3 rounded-full cursor-pointer">
+                        Beli Sekarang
+                    </button>
+                </div>
+            </form>
+            {% else %}
+            <a href="{{ url_for('auth.login', next=request.path) }}" class="mt-5 flex items-center justify-center gap-2 bg-brand hover:bg-brand-dark text-white font-medium py-3.5 rounded-full">
+                Masuk untuk membeli
+            </a>
+            {% endif %}
+        {% endif %}
+
+        <ul class="mt-6 grid grid-cols-3 gap-2 text-center text-xs font-medium" aria-label="Jaminan toko">
+            <li class="bg-white border border-slate-100 rounded-2xl px-2 py-3 flex flex-col items-center gap-1.5">
+                <span class="text-brand">{{ icon('circle-check', 'w-5 h-5') }}</span> Produk original
+            </li>
+            <li class="bg-white border border-slate-100 rounded-2xl px-2 py-3 flex flex-col items-center gap-1.5">
+                <span class="text-brand">{{ icon('package', 'w-5 h-5') }}</span> Dikemas aman
+            </li>
+            <li class="bg-white border border-slate-100 rounded-2xl px-2 py-3 flex flex-col items-center gap-1.5">
+                <span class="text-brand">{{ icon('shield-check', 'w-5 h-5') }}</span> {{ 'Bergaransi' if produk.garansi else 'Garansi merek' }}
+            </li>
+        </ul>
+
+        <div class="mt-3 flex items-center gap-3 bg-white border border-slate-100 rounded-2xl p-4">
+            <span class="w-10 h-10 shrink-0 rounded-full bg-brand-soft text-brand flex items-center justify-center">{{ icon('truck', 'w-5 h-5') }}</span>
+            <div class="text-sm">
+                <p class="font-semibold">Ongkir flat {{ config.ONGKIR_FLAT | rupiah }} per pesanan</p>
+                <p class="text-muted">Atau ambil sendiri di toko tanpa ongkos kirim.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{# ===== INFORMASI PRODUK (tab) =====
+   Tanpa JavaScript semua panel tampil berurutan dengan judulnya; app.js mengubahnya menjadi tab. #}
+<section class="mt-10 bg-white border border-slate-100 rounded-3xl p-5 md:p-7" data-tabs>
+    {# Di HP ketiga tab dibagi rata dan label ketiga disingkat agar muat tanpa digeser #}
+    <div role="tablist" aria-label="Informasi produk" class="hidden mb-5 sm:gap-1 overflow-x-auto overflow-y-hidden [scrollbar-width:none] border-b border-slate-100" data-tablist>
+        {% for id, label, tambahan in [('deskripsi', 'Deskripsi', ''), ('spesifikasi', 'Spesifikasi', ''), ('pengiriman', 'Pengiriman', ' & Garansi')] %}
+        <button type="button" role="tab" id="tab-{{ id }}" aria-controls="panel-{{ id }}" aria-selected="{{ 'true' if loop.first else 'false' }}"
+                tabindex="{{ '0' if loop.first else '-1' }}"
+                class="flex-1 sm:flex-none shrink-0 px-2 sm:px-4 min-h-11 -mb-px border-b-2 text-sm font-semibold whitespace-nowrap cursor-pointer border-transparent text-muted hover:text-ink aria-selected:border-brand aria-selected:text-brand">
+            {{ label }}{% if tambahan %}<span class="hidden sm:inline">{{ tambahan }}</span>{% endif %}
+        </button>
+        {% endfor %}
+    </div>
+
+    <div role="tabpanel" id="panel-deskripsi" aria-labelledby="tab-deskripsi" tabindex="0">
+        <h2 class="font-display text-lg font-bold mb-2" data-tab-judul>Deskripsi</h2>
+        <p class="text-muted leading-relaxed whitespace-pre-line">{{ produk.deskripsi or 'Belum ada deskripsi untuk produk ini.' }}</p>
+    </div>
+
+    <div role="tabpanel" id="panel-spesifikasi" aria-labelledby="tab-spesifikasi" tabindex="0" class="mt-8">
+        <h2 class="font-display text-lg font-bold mb-2" data-tab-judul>Spesifikasi</h2>
+        <table class="w-full text-sm">
+            <tbody class="divide-y divide-slate-100">
+                <tr><th scope="row" class="py-2.5 pr-4 text-left font-medium text-muted w-2/5 md:w-1/4 align-top">Merek</th><td class="py-2.5">{{ produk.merek }}</td></tr>
+                <tr><th scope="row" class="py-2.5 pr-4 text-left font-medium text-muted align-top">Kategori</th><td class="py-2.5">{{ produk.kategori }}</td></tr>
+                {% for nama, nilai in produk.daftar_spesifikasi %}
+                <tr>
+                    {% if nama %}
+                    <th scope="row" class="py-2.5 pr-4 text-left font-medium text-muted align-top">{{ nama }}</th><td class="py-2.5">{{ nilai }}</td>
+                    {% else %}
+                    <td colspan="2" class="py-2.5">{{ nilai }}</td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% if not produk.daftar_spesifikasi %}
+        <p class="text-sm text-muted mt-3">Spesifikasi lengkap belum diisi. Tanyakan ke toko lewat pesanan jika butuh detail lain.</p>
+        {% endif %}
+    </div>
+
+    <div role="tabpanel" id="panel-pengiriman" aria-labelledby="tab-pengiriman" tabindex="0" class="mt-8">
+        <h2 class="font-display text-lg font-bold mb-2" data-tab-judul>Pengiriman &amp; Garansi</h2>
+        <ul class="space-y-3 text-sm">
+            <li class="flex gap-3"><span class="text-brand shrink-0">{{ icon('truck', 'w-5 h-5') }}</span>
+                <span>Ongkir flat {{ config.ONGKIR_FLAT | rupiah }} per pesanan ke seluruh Indonesia, atau ambil sendiri di toko tanpa ongkos kirim.</span></li>
+            <li class="flex gap-3"><span class="text-brand shrink-0">{{ icon('package', 'w-5 h-5') }}</span>
+                <span>Produk dikemas dengan pelindung tambahan dan dikirim setelah pembayaran diverifikasi. Nomor resi tampil di halaman pesanan.</span></li>
+            <li class="flex gap-3"><span class="text-brand shrink-0">{{ icon('shield-check', 'w-5 h-5') }}</span>
+                <span>{{ produk.garansi or 'Garansi mengikuti ketentuan resmi ' ~ produk.merek ~ '.' }} Simpan bukti pesanan dan kemasan untuk klaim garansi.</span></li>
+        </ul>
+    </div>
+</section>
+
+
+{# ===== ULASAN PEMBELI ===== #}
+<section id="ulasan" class="mt-12 scroll-mt-32">
+    <h2 class="font-display text-lg md:text-xl font-bold">Ulasan Pembeli</h2>
+    <p class="text-sm text-muted mb-4">Ulasan hanya bisa ditulis oleh pembeli yang pesanannya sudah selesai.</p>
+
+    <div class="lg:grid lg:grid-cols-[20rem_minmax(0,1fr)] lg:gap-8 lg:items-start">
+        <aside class="space-y-4">
+            {# Ringkasan rating #}
+            <div class="bg-white border border-slate-100 rounded-2xl p-5">
+                {% if ringkasan_ulasan.jumlah %}
+                <div class="flex items-center gap-4">
+                    <p class="font-display text-5xl font-extrabold">{{ ringkasan_ulasan.rata }}</p>
+                    <div>
+                        {{ bintang(ringkasan_ulasan.rata, 'w-5 h-5') }}
+                        <p class="text-sm text-muted mt-1">dari {{ ringkasan_ulasan.jumlah }} ulasan</p>
+                    </div>
+                </div>
+                <ul class="mt-4 space-y-1.5 text-sm">
+                    {% for n, jumlah in ringkasan_ulasan.sebaran.items() %}
+                    <li class="flex items-center gap-2">
+                        <span class="w-3 text-muted">{{ n }}</span>
+                        <span class="flex-1 h-2 rounded-full bg-soft overflow-hidden"><span class="block h-full bg-amber-400 rounded-full" style="width: {{ (jumlah / ringkasan_ulasan.jumlah * 100) | round | int }}%"></span></span>
+                        <span class="w-6 text-right text-muted">{{ jumlah }}</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p class="font-semibold">Belum ada ulasan</p>
+                <p class="text-sm text-muted mt-1">Jadilah yang pertama mengulas setelah membeli produk ini.</p>
+                {% endif %}
+            </div>
+
+            {# Form ulasan / keterangan sesuai status pengunjung #}
+            {% if ulasan_form %}
+            <form id="form-ulasan" method="POST" action="{{ url_for('toko.ulasan_simpan', produk_id=produk.id) }}" class="bg-white border border-slate-100 rounded-2xl p-5 scroll-mt-32" novalidate data-kirim-sekali>
+                {{ ulasan_form.hidden_tag() }}
+                <h3 class="font-display font-bold">{{ 'Ubah Ulasanmu' if ulasan_saya else 'Tulis Ulasan' }}</h3>
+                <fieldset class="mt-3">
+                    <legend class="text-sm font-semibold mb-1">Rating</legend>
+                    {# Urutan terbalik (5..1) + flex-row-reverse: bintang yang dipilih dan semua di kirinya ikut menyala #}
+                    <div class="flex flex-row-reverse justify-end gap-1 [&>input:checked~label]:text-amber-400 [&>label:hover]:text-amber-300 [&>label:hover~label]:text-amber-300 [&>input:focus-visible+label]:ring-2 [&>input:focus-visible+label]:ring-brand/50">
+                        {% for opsi in ulasan_form.rating | reverse %}
+                        {{ opsi(class="sr-only") }}
+                        <label for="{{ opsi.id }}" class="w-11 h-11 rounded-full flex items-center justify-center text-slate-200 cursor-pointer" title="{{ opsi.label.text }}">
+                            {{ icon('star', 'w-8 h-8 fill-current') }}<span class="sr-only">{{ opsi.label.text }}</span>
+                        </label>
+                        {% endfor %}
+                    </div>
+                    {% for error in ulasan_form.rating.errors %}<span class="text-coral text-xs block mt-1">{{ error }}</span>{% endfor %}
+                </fieldset>
+                <div class="mt-3">
+                    {{ ulasan_form.komentar.label(class="block text-sm font-semibold mb-1.5") }}
+                    {{ ulasan_form.komentar(rows=4, maxlength=1000, placeholder="Ceritakan pengalamanmu memakai produk ini",
+                        class="w-full bg-white border rounded-xl px-4 py-3 outline-none focus:border-brand focus:ring-4 focus:ring-brand/15 placeholder:text-muted " ~ ('border-coral' if ulasan_form.komentar.errors else 'border-slate-200')) }}
+                    {% for error in ulasan_form.komentar.errors %}<span class="text-coral text-xs block mt-1">{{ error }}</span>{% endfor %}
+                </div>
+                <button type="submit" class="mt-4 w-full bg-brand hover:bg-brand-dark text-white font-medium py-3 rounded-full cursor-pointer">{{ 'Simpan Perubahan' if ulasan_saya else 'Kirim Ulasan' }}</button>
+            </form>
+            {% elif not current_user %}
+            <a href="{{ url_for('auth.login', next=request.path) }}" class="flex items-center justify-center min-h-11 bg-white border border-slate-100 rounded-2xl p-4 text-sm font-semibold text-brand">Masuk untuk menulis ulasan</a>
+            {% elif current_user.punya_izin('belanja') %}
+            <p class="flex gap-3 bg-white border border-slate-100 rounded-2xl p-4 text-sm text-muted">
+                <span class="text-brand shrink-0">{{ icon('info', 'w-5 h-5') }}</span>
+                Kamu bisa menulis ulasan setelah membeli produk ini dan pesanannya selesai (status "Selesai").
+            </p>
+            {% endif %}
+        </aside>
+
+        {# Daftar ulasan #}
+        <div class="mt-6 lg:mt-0 bg-white border border-slate-100 rounded-2xl px-5">
+            {% for u in daftar_ulasan %}
+            <article class="py-5 {{ '' if loop.last else 'border-b border-slate-100' }}">
+                <div class="flex items-center gap-3">
+                    {{ avatar(u.user, 'w-10 h-10 text-xs') }}
+                    <div class="min-w-0 flex-1">
+                        <p class="font-semibold truncate">{{ u.user.display_name }}{% if ulasan_saya and u.id == ulasan_saya.id %} <span class="text-xs font-medium text-brand">(ulasanmu)</span>{% endif %}</p>
+                        <p class="text-xs text-muted">{{ u.created_at | tanggal(false) }}{{ ' · diubah' if u.diubah }}</p>
+                    </div>
+                    {{ bintang(u.rating) }}
+                </div>
+                {% if u.komentar %}<p class="mt-3 leading-relaxed whitespace-pre-line break-words">{{ u.komentar }}</p>{% endif %}
+                {% if u.balasan %}
+                <div class="mt-3 bg-soft rounded-xl p-4 text-sm">
+                    <p class="font-semibold flex items-center gap-1.5">{{ icon('store', 'w-4 h-4 text-brand') }} Balasan {{ app_name }}</p>
+                    <p class="mt-1 text-muted leading-relaxed whitespace-pre-line break-words">{{ u.balasan }}</p>
+                </div>
+                {% endif %}
+                {% if ulasan_saya and u.id == ulasan_saya.id %}
+                <div class="flex flex-wrap gap-2 mt-3 text-sm">
+                    <a href="#form-ulasan" class="inline-flex items-center gap-1.5 min-h-11 px-4 rounded-full border border-slate-200 hover:border-brand hover:text-brand font-medium">{{ icon('pencil', 'w-4 h-4') }} Ubah</a>
+                    <form method="POST" action="{{ url_for('toko.ulasan_hapus', produk_id=produk.id) }}" data-confirm="Hapus ulasanmu untuk produk ini?">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="inline-flex items-center gap-1.5 min-h-11 px-4 rounded-full text-coral hover:bg-red-50 font-medium cursor-pointer">{{ icon('trash-2', 'w-4 h-4') }} Hapus</button>
+                    </form>
+                </div>
+                {% elif current_user and current_user.punya_izin('kelola_produk') %}
+                <a href="{{ url_for('admin.ulasan') }}" class="inline-flex items-center gap-1.5 min-h-11 mt-2 text-sm font-semibold text-brand">{{ icon('reply', 'w-4 h-4') }} {{ 'Ubah balasan' if u.balasan else 'Balas' }} di panel</a>
+                {% endif %}
+            </article>
+            {% else %}
+            <p class="py-10 text-center text-muted">Belum ada ulasan untuk produk ini.</p>
+            {% endfor %}
+            {% if not semua_ulasan and ringkasan_ulasan.jumlah > daftar_ulasan | length %}
+            <a href="{{ url_for('toko.produk_detail', produk_id=produk.id, ulasan='semua', _anchor='ulasan') }}" class="flex items-center justify-center min-h-11 border-t border-slate-100 py-3 text-sm font-semibold text-brand">Lihat semua {{ ringkasan_ulasan.jumlah }} ulasan</a>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+{% if terkait %}
+<section class="mt-12">
+    <h2 class="font-display text-lg md:text-xl font-bold mb-3">Produk lain dari {{ produk.merek }}</h2>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-5">
+        {% for p in terkait %}{{ kartu(p) }}{% endfor %}
+    </div>
+</section>
+{% endif %}
+{% endblock %}

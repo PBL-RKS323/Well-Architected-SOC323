@@ -1,0 +1,28 @@
+{% extends 'layouts/toko.html' %}
+{% from '_macros.html' import judul_halaman %}
+{% block title %}Kredit Foto - {{ app_name }}{% endblock %}
+{% block content %}
+<div class="max-w-3xl mx-auto">
+    {{ judul_halaman('Kredit Foto', url_for('toko.beranda'), 'Kembali ke beranda') }}
+
+    <p class="text-sm text-muted mb-4">
+        Foto produk contoh diambil dari Wikimedia Commons, lalu dipotong dan diperkecil. Hasil ubahan dari foto
+        berlisensi CC BY-SA dibagikan dengan lisensi yang sama.
+    </p>
+
+    <ul class="bg-white rounded-2xl border border-slate-100 divide-y divide-slate-100">
+        {% for p in katalog %}
+        <li class="p-4">
+            <p class="font-semibold">{{ p.nama_produk }}</p>
+            <p class="text-sm text-muted">
+                <a href="{{ p.kredit.halaman }}" target="_blank" rel="noopener noreferrer" class="text-brand underline">{{ p.kredit.judul }}</a>
+                oleh {{ p.kredit.pembuat }},
+                {% if p.kredit.url_lisensi %}
+                <a href="{{ p.kredit.url_lisensi }}" target="_blank" rel="noopener noreferrer" class="text-brand underline">{{ p.kredit.lisensi }}</a>
+                {% else %}{{ p.kredit.lisensi }}{% endif %}
+            </p>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

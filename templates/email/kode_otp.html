@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="id">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>{{ judul }}</title></head>
+{# Email memakai CSS inline sederhana karena banyak aplikasi email mengabaikan <style> dan CSS eksternal #}
+<body style="margin:0;padding:24px 12px;background:#f4f5f7;font-family:Arial,Helvetica,sans-serif;color:#1f2937;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:480px;margin:0 auto;background:#ffffff;border-radius:16px;">
+    <tr><td style="padding:28px 28px 8px;">
+      <p style="margin:0;font-size:18px;font-weight:bold;">{{ app_name }}</p>
+    </td></tr>
+    <tr><td style="padding:8px 28px;">
+      <p style="margin:0 0 12px;font-size:15px;">Halo {{ user.display_name }},</p>
+      <p style="margin:0 0 16px;font-size:15px;">Kode untuk {{ judul | lower }}:</p>
+      <p style="margin:0 0 16px;font-size:32px;font-weight:bold;letter-spacing:8px;color:#1A68D1;">{{ kode }}</p>
+      <p style="margin:0 0 12px;font-size:14px;color:#636B78;">Kode berlaku {{ menit }} menit dan hanya bisa dipakai sekali. Jangan berikan kode ini kepada siapa pun, termasuk yang mengaku dari {{ app_name }}.</p>
+      <p style="margin:0 0 24px;font-size:14px;color:#636B78;">Jika kamu tidak merasa meminta kode ini, abaikan email ini.</p>
+    </td></tr>
+  </table>
+</body>
+</html>

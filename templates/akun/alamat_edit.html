@@ -1,0 +1,24 @@
+{% extends 'layouts/toko.html' %}
+{% from '_macros.html' import field, checkbox, judul_halaman, tombol_utama %}
+{% from '_akun.html' import area_akun %}
+{% block title %}Ubah Alamat - {{ app_name }}{% endblock %}
+{% block content %}
+{% call area_akun('akun.alamat') %}
+{{ judul_halaman('Ubah Alamat ' ~ alamat.label, url_for('akun.alamat'), 'Kembali ke Alamat Saya') }}
+<form method="POST" novalidate class="max-w-2xl bg-white rounded-2xl border border-slate-100 p-5 space-y-4">
+    {{ form.hidden_tag() }}
+    {{ field(form.label, placeholder='Rumah, Kos, Kantor') }}
+    <div class="grid sm:grid-cols-2 gap-4">
+        {{ field(form.nama_penerima, 'user', autocomplete='name') }}
+        {{ field(form.telepon, 'phone', autocomplete='tel', inputmode='tel') }}
+    </div>
+    {{ field(form.alamat, rows=3, autocomplete='street-address') }}
+    <div class="grid grid-cols-3 gap-4">
+        <div class="col-span-2">{{ field(form.kota, autocomplete='address-level2') }}</div>
+        {{ field(form.kode_pos, inputmode='numeric', maxlength=5, autocomplete='postal-code') }}
+    </div>
+    {% if not alamat.utama %}{{ checkbox(form.utama) }}{% endif %}
+    {{ tombol_utama(form.submit) }}
+</form>
+{% endcall %}
+{% endblock %}

@@ -1,0 +1,117 @@
+{% extends 'layouts/toko.html' %}
+{% from '_icons.html' import icon %}
+{% from '_produk.html' import kartu, IKON_KATEGORI %}
+{% block content %}
+{# Pencarian (HP; di desktop kolom cari ada di header) #}
+<form action="{{ url_for('toko.jelajah') }}" method="GET" class="md:hidden flex gap-2 mb-5">
+    <label class="relative flex-1">
+        <span class="sr-only">Cari produk</span>
+        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-muted">{{ icon('search', 'w-5 h-5') }}</span>
+        <input type="search" name="q" placeholder="Cari handphone, laptop, smartwatch..."
+               class="w-full bg-white border border-slate-100 rounded-2xl pl-12 pr-4 py-3.5 outline-none focus:ring-4 focus:ring-brand/15 focus:border-brand">
+    </label>
+    <a href="{{ url_for('toko.jelajah') }}" aria-label="Filter produk" class="w-13 shrink-0 bg-white border border-slate-100 rounded-2xl flex items-center justify-center text-ink hover:bg-brand-soft">
+        {{ icon('sliders-horizontal', 'w-5 h-5') }}
+    </a>
+</form>
+
+{# Carousel produk unggulan = diskon terbesar. Label hanya menyebut fakta (persen diskon), bukan periode promo.
+   Tidak berganti otomatis; digeser jari di HP, tombol panah di desktop, titik penanda posisi. #}
+<h1 class="sr-only">{{ app_name }}</h1>
+{% if unggulan %}
+<section class="relative" aria-roledescription="carousel" aria-label="Produk unggulan" data-carousel>
+    <div class="flex overflow-x-auto snap-x snap-mandatory scrollbar-none rounded-3xl" data-carousel-track>
+        {% for p in unggulan %}
+        <div class="w-full shrink-0 snap-start bg-peach p-5 md:py-10 md:px-20 flex items-center gap-4"
+             role="group" aria-roledescription="slide" aria-label="{{ loop.index }} dari {{ unggulan | length }}">
+            <div class="flex-1 min-w-0">
+                {% if p.diskon_persen %}
+                <p class="text-sm font-bold text-coral">Diskon {{ p.diskon_persen }}%</p>
+                {% endif %}
+                <h2 class="font-display text-2xl md:text-4xl font-extrabold leading-tight mt-2 line-clamp-2">{{ p.nama_produk }}</h2>
+                <p class="text-sm text-muted mt-1">{{ p.merek }} &middot; {{ p.kategori }}</p>
+                <div class="flex flex-wrap items-end gap-x-5 gap-y-3 mt-5">
+                    <a href="{{ url_for('toko.produk_detail', produk_id=p.id) }}"
+                       class="inline-flex items-center gap-2 bg-brand hover:bg-brand-dark text-white font-medium px-5 py-3 rounded-full">
+                        Lihat Produk
+                    </a>
+                    <div>
+                        {% if p.diskon_persen %}<p class="text-xs text-muted line-through">{{ p.harga_normal | rupiah }}</p>{% endif %}
+                        <p class="font-display text-xl md:text-2xl font-extrabold">{{ p.harga | rupiah }}</p>
+                    </div>
+                </div>
+            </div>
+            <img src="{{ url_for('static', filename='uploads/' ~ p.gambar) }}" alt="{{ p.nama_produk }}"
+                 class="w-28 h-28 sm:w-40 sm:h-40 md:w-72 md:h-72 shrink-0 object-cover rounded-2xl" {{ 'loading=lazy' if not loop.first }}>
+        </div>
+        {% endfor %}
+    </div>
+    {% if unggulan | length > 1 %}
+    <button type="button" data-carousel-prev aria-label="Produk unggulan sebelumnya"
+            class="hidden md:flex absolute left-4 top-1/2 -translate-y-1/2 -mt-6 w-11 h-11 rounded-full bg-white border border-slate-200 items-center justify-center hover:bg-soft cursor-pointer">{{ icon('chevron-left', 'w-5 h-5') }}</button>
+    <button type="button" data-carousel-next aria-label="Produk unggulan berikutnya"
+            class="hidden md:flex absolute right-4 top-1/2 -translate-y-1/2 -mt-6 w-11 h-11 rounded-full bg-white border border-slate-200 items-center justify-center hover:bg-soft cursor-pointer">{{ icon('chevron-right', 'w-5 h-5') }}</button>
+    <div class="flex justify-center items-center">
+        {% for p in unggulan %}
+        <button type="button" data-carousel-dot="{{ loop.index0 }}" aria-label="Tampilkan produk unggulan {{ loop.index }}"
+                class="w-11 h-11 flex items-center justify-center cursor-pointer">
+            <span class="block h-2 w-2 rounded-full bg-slate-300 transition-all data-[aktif]:w-6 data-[aktif]:bg-brand" {{ 'data-aktif' if loop.first }}></span>
+        </button>
+        {% endfor %}
+        {# Putar otomatis tiap 3 detik; tombol ini menjeda/melanjutkan (konten bergerak wajib bisa dihentikan) #}
+        <button type="button" data-carousel-jeda aria-label="Jeda putar otomatis"
+                class="w-11 h-11 flex items-center justify-center rounded-full text-muted hover:text-ink cursor-pointer">
+            <span data-ikon-jeda>{{ icon('pause', 'w-4 h-4') }}</span>
+            <span data-ikon-putar class="hidden">{{ icon('play', 'w-4 h-4') }}</span>
+        </button>
+    </div>
+    {% endif %}
+</section>
+{% else %}
+<section class="rounded-3xl bg-peach p-6 md:p-10">
+    <h1 class="font-display text-2xl md:text-4xl font-extrabold">Handphone, laptop, dan gadget pilihan</h1>
+    <p class="text-muted mt-2">Belum ada produk yang dijual. Pantau terus toko kami.</p>
+</section>
+{% endif %}
+
+{# Kategori #}
+<section class="mt-8">
+    <h2 class="flex items-center gap-2 font-display text-lg md:text-xl font-bold mb-3">
+        <span class="w-1 h-5 rounded-full bg-brand"></span> Kategori Belanja
+    </h2>
+    <div class="flex gap-3 overflow-x-auto scrollbar-none -mx-4 px-4 md:mx-0 md:px-0 md:grid md:grid-cols-6">
+        {% for k in kategori_list %}
+        <a href="{{ url_for('toko.jelajah', kategori=k) }}"
+           class="shrink-0 w-24 md:w-auto bg-white border border-slate-100 rounded-2xl py-4 flex flex-col items-center gap-2 hover:border-brand hover:text-brand transition">
+            <span class="w-12 h-12 rounded-full bg-soft flex items-center justify-center">{{ icon(IKON_KATEGORI[k], 'w-6 h-6') }}</span>
+            <span class="text-xs font-medium">{{ k }}</span>
+        </a>
+        {% endfor %}
+    </div>
+</section>
+
+{# Produk per ekosistem brand #}
+{% for merek, produk_list in ekosistem %}
+<section class="mt-10">
+    <div class="flex items-center justify-between mb-3">
+        <h2 class="flex items-center gap-2 font-display text-lg md:text-xl font-bold">
+            <span class="w-1 h-5 rounded-full bg-brand"></span> Ekosistem {{ merek }}
+        </h2>
+        <a href="{{ url_for('toko.jelajah', merek=merek) }}" class="py-3 text-sm font-semibold text-brand">Semua produk {{ merek }}</a>
+    </div>
+    <div class="flex gap-3 overflow-x-auto scrollbar-none snap-x -mx-4 px-4 md:mx-0 md:px-0 md:grid md:grid-cols-4 md:gap-5">
+        {% for produk in produk_list %}
+            {{ kartu(produk, 'shrink-0 w-44 snap-start md:w-auto') }}
+        {% endfor %}
+    </div>
+</section>
+{% endfor %}
+
+{% if ekosistem %}
+<div class="text-center mt-10">
+    <a href="{{ url_for('toko.jelajah') }}" class="inline-flex items-center gap-2 bg-white border border-slate-200 hover:border-brand hover:text-brand font-medium px-6 py-3 rounded-full">
+        Lihat Semua Produk
+    </a>
+</div>
+{% endif %}
+{% endblock %}

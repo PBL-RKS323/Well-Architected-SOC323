@@ -1,0 +1,85 @@
+{% from '_icons.html' import icon %}
+
+{# Input form bergaya desain: label, ikon opsional di kiri, pesan error di bawah #}
+{% macro field(f, ikon=None) %}
+<div>
+    {{ f.label(class="block text-sm font-semibold mb-1.5 text-ink") }}
+    {% set cls = "w-full bg-white border rounded-xl py-3 outline-none transition focus:border-brand focus:ring-4 focus:ring-brand/15 placeholder:text-muted "
+                 ~ ("border-coral " if f.errors else "border-slate-200 ")
+                 ~ ("pl-11 " if ikon else "pl-4 ")
+                 ~ ("pr-11" if f.type == "PasswordField" else "pr-4") %}
+    <div class="relative">
+        {% if ikon %}
+        <span class="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-muted">{{ icon(ikon, 'w-5 h-5') }}</span>
+        {% endif %}
+        {{ f(class=cls, **kwargs) }}
+        {% if f.type == "PasswordField" %}
+        <button type="button" data-toggle-password aria-label="Tampilkan kata sandi"
+                class="absolute inset-y-0 right-0 px-3.5 flex items-center text-muted hover:text-ink cursor-pointer">
+            <span data-icon="show">{{ icon('eye', 'w-5 h-5') }}</span>
+            <span data-icon="hide" class="hidden">{{ icon('eye-off', 'w-5 h-5') }}</span>
+        </button>
+        {% endif %}
+    </div>
+    {% for error in f.errors %}
+        <span class="text-coral text-xs block mt-1.5">{{ error }}</span>
+    {% endfor %}
+</div>
+{% endmacro %}
+
+{% macro checkbox(f) %}
+<div>
+    <label class="flex items-start gap-2.5 text-sm text-muted cursor-pointer">
+        {{ f(class="mt-0.5 w-4 h-4 rounded border-slate-300 accent-brand") }}
+        <span>{{ f.label.text }}</span>
+    </label>
+    {% for error in f.errors %}
+        <span class="text-coral text-xs block mt-1.5">{{ error }}</span>
+    {% endfor %}
+</div>
+{% endmacro %}
+
+{% macro tombol_utama(f, cls="") %}
+{{ f(class="w-full bg-brand hover:bg-brand-dark text-white font-medium py-3.5 rounded-full cursor-pointer transition " ~ cls) }}
+{% endmacro %}
+
+{# Judul halaman dengan tombol kembali di kiri (pola dari desain: Checkout, Pesanan Saya, dll.) #}
+{% macro judul_halaman(judul, kembali, label_kembali) %}
+<div class="relative flex items-center justify-center min-h-11 mb-6">
+    <a href="{{ kembali }}" aria-label="{{ label_kembali }}"
+       class="absolute left-0 w-11 h-11 rounded-full bg-white border border-slate-100 flex items-center justify-center hover:bg-soft">{{ icon('arrow-left', 'w-5 h-5') }}</a>
+    <h1 class="font-display text-xl md:text-2xl font-extrabold px-12 text-center">{{ judul }}</h1>
+</div>
+{% endmacro %}
+
+{# Foto profil bulat, atau inisial nama jika belum ada foto. cls = ukuran + ukuran teks inisial.
+   alt kosong karena nama pengguna selalu tampil di sebelahnya. #}
+{% macro avatar(user, cls="w-11 h-11 text-sm") %}
+{%- if user.avatar -%}
+<img src="{{ url_for('static', filename='uploads/avatar/' ~ user.avatar) }}" alt="" class="{{ cls }} shrink-0 rounded-full object-cover bg-soft">
+{%- else -%}
+<span class="{{ cls }} shrink-0 rounded-full bg-brand-soft text-brand font-bold flex items-center justify-center" aria-hidden="true">{{ user.initials }}</span>
+{%- endif -%}
+{% endmacro %}
+
+{# Tombol "Masuk dengan Google" + pemisah "atau". Logo G sesuai pedoman merek Google Sign-In. #}
+{% macro tombol_google(teks, next=None) %}
+<a href="{{ url_for('auth.login_google', next=next) }}"
+   class="w-full flex items-center justify-center gap-3 min-h-12 bg-white border border-slate-300 hover:bg-soft rounded-full font-medium text-ink">
+    <svg class="w-5 h-5" viewBox="0 0 48 48" aria-hidden="true">
+        <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+        <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+        <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+        <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+    </svg>
+    {{ teks }}
+</a>
+<div class="flex items-center gap-3 text-xs text-muted my-5" aria-hidden="true">
+    <span class="flex-1 h-px bg-slate-200"></span> atau <span class="flex-1 h-px bg-slate-200"></span>
+</div>
+{% endmacro %}
+
+{# Kolom kode OTP 6 digit: keyboard angka di HP, isi otomatis dari SMS/email jika didukung #}
+{% macro kolom_kode(f) %}
+{{ field(f, 'shield-check', inputmode='numeric', autocomplete='one-time-code', maxlength=7, placeholder='123456') }}
+{% endmacro %}
