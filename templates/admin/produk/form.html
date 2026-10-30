@@ -18,6 +18,11 @@
             {{ field(form.stok, placeholder="0") }}
         </div>
         {{ field(form.deskripsi, rows=5) }}
+        <div>
+            {{ field(form.spesifikasi, rows=7, placeholder="Prosesor: Intel Core i5-1235U\nRAM: 16GB DDR4\nPenyimpanan: SSD 512GB\nLayar: 14 inci FHD IPS\nBaterai: 52,5 Wh") }}
+            <p class="text-xs text-muted mt-1.5">Satu spesifikasi per baris dengan format <strong>Nama: Nilai</strong>. Tiga baris pertama tampil sebagai ringkasan di bawah nama produk.</p>
+        </div>
+        {{ field(form.garansi, placeholder="Contoh: Garansi resmi Lenovo Indonesia 1 tahun") }}
     </section>
 
     <section class="bg-white border border-slate-100 rounded-2xl p-6 space-y-4 h-fit">

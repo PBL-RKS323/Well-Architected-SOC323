@@ -42,6 +42,9 @@
     <a href="{{ url_for('toko.produk_detail', produk_id=produk.id) }}" class="mt-0.5">
         <h3 class="text-sm font-semibold leading-snug line-clamp-2 min-h-10 hover:text-brand">{{ produk.nama_produk }}</h3>
     </a>
+    {% if produk.ringkasan_spesifikasi %}
+    <p class="text-[11px] text-muted line-clamp-1 mt-0.5" title="{{ produk.ringkasan_spesifikasi }}">{{ produk.ringkasan_spesifikasi }}</p>
+    {% endif %}
     <div class="mt-auto pt-2">
         <p class="font-bold">{{ produk.harga | rupiah }}</p>
         {% if produk.diskon_persen %}

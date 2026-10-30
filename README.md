@@ -24,7 +24,8 @@ Kebutuhan fungsional minimal dari *OUTPUT PBL 1* (RKS 304) sudah terpenuhi semua
 | 13 | Customer lihat riwayat pesanan | `/pesanan` | Selesai |
 
 Tambahan: RBAC 3 peran (Admin, Staf Toko, Pelanggan), alamat tersimpan, balasan toko untuk ulasan,
-log keamanan untuk Wazuh. Rencana berikutnya: Midtrans Sandbox (QRIS/e-wallet), login Google.
+login Google + kode OTP email, spesifikasi & garansi produk, log keamanan untuk Wazuh.
+Rencana berikutnya: Midtrans Sandbox (VA bank, QRIS/e-wallet).
 
 Riwayat perubahan ada di [CHANGELOG.md](CHANGELOG.md), kontrol keamanan dan format log ada di
 [docs/KEAMANAN.md](docs/KEAMANAN.md), arah desain dan alasannya ada di [docs/DESIGN.md](docs/DESIGN.md).
@@ -41,8 +42,9 @@ Riwayat perubahan ada di [CHANGELOG.md](CHANGELOG.md), kontrol keamanan dan form
 ## Struktur Proyek
 
 ```
-app.py                  # app factory, routing, error handler, perintah CLI
+app.py                  # app factory, error handler, perintah CLI
 config.py               # konfigurasi dari environment (.env)
+routes/                 # Blueprint (daftar URL): toko, auth, belanja, akun, admin
 models/                 # Model: User, Produk, KeranjangItem, Pesanan
 forms/                  # validasi input (WTForms)
 controllers/            # Controller: auth, akun, toko, keranjang, pesanan, admin, produk
@@ -83,6 +85,11 @@ docs/                   # dokumentasi keamanan
    CREATE DATABASE db_ecommerce CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
    ```
 
+   **Hanya ingin mencoba cepat tanpa memasang database?** Pakai SQLite (file database dibuat
+   otomatis di folder `instance/`). Isi di `.env`: `DATABASE_URL=sqlite:///toko_lokal.db`.
+   Untuk produksi tetap gunakan PostgreSQL. File database dan folder `venv/` tidak pernah
+   di-commit ke GitHub; setiap anggota membuatnya sendiri dengan langkah di halaman ini.
+
 3. Salin `.env.example` menjadi `.env`, lalu isi `SECRET_KEY` dan `DATABASE_URL`.
    Membuat `SECRET_KEY` acak:
 
@@ -99,6 +106,12 @@ docs/                   # dokumentasi keamanan
 
    `flask seed-admin` akan menanyakan username, email, dan kata sandi admin
    (tidak ada kata sandi bawaan di dalam kode).
+
+   Opsional, isi 17 produk contoh lengkap dengan foto dan spesifikasi:
+
+   ```bash
+   flask seed-katalog
+   ```
 
 5. Jalankan aplikasi:
 

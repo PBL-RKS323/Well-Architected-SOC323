@@ -174,3 +174,35 @@ document.querySelectorAll("[data-carousel]").forEach(function (carousel) {
         });
     }, { passive: true });
 });
+
+// Tab informasi produk (Deskripsi / Spesifikasi / Pengiriman). Tanpa JavaScript semua panel tampil
+// berurutan; di sini daftar tab dimunculkan dan hanya panel aktif yang terlihat. Pola keyboard ARIA:
+// panah kiri/kanan pindah tab, Home/End ke tab pertama/terakhir.
+document.querySelectorAll("[data-tabs]").forEach(function (wadah) {
+    const daftar = wadah.querySelector("[data-tablist]");
+    const tabs = Array.from(daftar.querySelectorAll('[role="tab"]'));
+    const panels = tabs.map(function (tab) { return document.getElementById(tab.getAttribute("aria-controls")); });
+    const pilih = function (i, fokus) {
+        tabs.forEach(function (tab, j) {
+            tab.setAttribute("aria-selected", String(i === j));
+            tab.tabIndex = i === j ? 0 : -1;
+            panels[j].hidden = i !== j;
+        });
+        if (fokus) { tabs[i].focus(); }
+    };
+    daftar.classList.replace("hidden", "flex");
+    panels.forEach(function (panel) {
+        panel.classList.remove("mt-8");
+        panel.querySelector("[data-tab-judul]").classList.add("sr-only");
+    });
+    tabs.forEach(function (tab, i) {
+        tab.addEventListener("click", function () { pilih(i, false); });
+        tab.addEventListener("keydown", function (e) {
+            const tujuan = { ArrowRight: i + 1, ArrowLeft: i - 1, Home: 0, End: tabs.length - 1 }[e.key];
+            if (tujuan === undefined) { return; }
+            e.preventDefault();
+            pilih((tujuan + tabs.length) % tabs.length, true);
+        });
+    });
+    pilih(0, false);
+});

@@ -18,6 +18,9 @@ class Produk(db.Model):
     harga_normal = db.Column(db.Numeric(12, 2), nullable=True)  # harga sebelum diskon (opsional)
     stok = db.Column(db.Integer, nullable=False, default=0)
     deskripsi = db.Column(db.Text, nullable=True)
+    # Satu spesifikasi per baris dengan format "Nama: Nilai", mis. "Prosesor: Apple M4"
+    spesifikasi = db.Column(db.Text, nullable=True)
+    garansi = db.Column(db.String(100), nullable=True)  # mis. "Garansi resmi 1 tahun"
     gambar = db.Column(db.String(255), nullable=False)
     created_at = db.Column(db.DateTime, nullable=False, default=utcnow)
     updated_at = db.Column(db.DateTime, nullable=False, default=utcnow, onupdate=utcnow)
@@ -28,3 +31,26 @@ class Produk(db.Model):
         if self.harga_normal and self.harga_normal > self.harga:
             return round((1 - self.harga / self.harga_normal) * 100)
         return 0
+
+    @property
+    def hemat(self):
+        """Selisih harga normal dan harga jual (0 jika tidak diskon)."""
+        return self.harga_normal - self.harga if self.diskon_persen else 0
+
+    @property
+    def daftar_spesifikasi(self):
+        """Baris "Nama: Nilai" menjadi pasangan (nama, nilai) untuk tabel. Baris tanpa titik dua
+        tetap ditampilkan dengan nama kosong."""
+        hasil = []
+        for baris in (self.spesifikasi or "").splitlines():
+            baris = baris.strip()
+            if not baris:
+                continue
+            nama, pemisah, nilai = baris.partition(":")
+            hasil.append((nama.strip(), nilai.strip()) if pemisah and nilai.strip() else ("", baris))
+        return hasil
+
+    @property
+    def ringkasan_spesifikasi(self):
+        """3 nilai spesifikasi pertama untuk baris singkat di bawah nama, mis. "Apple M4 · 16GB · 512GB"."""
+        return " · ".join(nilai for _, nilai in self.daftar_spesifikasi[:3])

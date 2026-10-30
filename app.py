@@ -158,10 +158,11 @@ def register_commands(app):
     def seed_katalog(perbarui_foto):
         """Mengisi katalog contoh dari seed/katalog.json. Perintah: flask seed-katalog"""
         try:
-            dibuat, diperbarui = isi_katalog(app, perbarui_foto=perbarui_foto)
+            dibuat, diperbarui, dilengkapi = isi_katalog(app, perbarui_foto=perbarui_foto)
         except ValueError as e:
             raise click.ClickException(str(e))
-        click.echo(f"{dibuat} produk contoh ditambahkan, {diperbarui} foto diperbarui.")
+        click.echo(f"{dibuat} produk contoh ditambahkan, {diperbarui} foto diperbarui, "
+                   f"{dilengkapi} produk dilengkapi spesifikasinya.")
 
     @app.cli.command("buat-pengguna")
     @click.option("--nama", required=True, help="Nama lengkap")

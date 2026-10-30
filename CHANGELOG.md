@@ -3,6 +3,30 @@
 Setiap perubahan dicatat di sini: apa yang berubah, alasannya, dan cara mengujinya.
 Format tanggal: YYYY-MM-DD (WIB).
 
+## [0.10.0] - 2026-10-30 - Blueprint & Detail Produk Lengkap
+
+### Diubah
+- **Route dipindah ke Blueprint** (syarat ATS: struktur kode dengan blueprint). Folder baru `routes/` berisi
+  5 Blueprint: `toko`, `auth`, `belanja`, `akun`, `admin` (prefix `/admin`). `app.py` tidak lagi berisi
+  daftar route. Path URL tidak berubah; nama endpoint memakai awalan Blueprint, mis. `url_for("auth.login")`.
+
+### Ditambahkan
+- **Detail produk lebih lengkap** (fitur dari prototipe UI Intan, tampilan tetap gaya toko ini):
+  - kolom `spesifikasi` (satu baris per item, format `Nama: Nilai`) dan `garansi` di form produk admin;
+  - ringkasan 3 spesifikasi pertama di bawah nama produk dan di kartu katalog;
+  - breadcrumb Beranda › Kategori › Produk, label "Hemat Rp ...", badge jaminan toko;
+  - tab Deskripsi / Spesifikasi / Pengiriman & Garansi (keyboard: panah kiri/kanan, Home/End).
+    Tanpa JavaScript semua panel tetap tampil berurutan.
+- Spesifikasi & garansi untuk 17 produk contoh di `seed/katalog.json`. `flask seed-katalog` melengkapi
+  produk contoh lama yang spesifikasinya masih kosong, tanpa menimpa isian admin.
+- Migrasi `a7d3e91c5f20` (kolom `produk.spesifikasi`, `produk.garansi`).
+- Tes baru: `tests/test_blueprint.py` (5) dan `tests/test_detail_produk.py` (8), termasuk uji XSS pada
+  isi spesifikasi.
+
+**Cara uji:** `flask db upgrade` lalu `flask seed-katalog`; buka detail produk mana pun → breadcrumb,
+ringkasan spesifikasi, dan tab tampil; tab Spesifikasi berisi tabel. Di admin, tambah produk dengan
+spesifikasi berisi `<script>` → tampil sebagai teks biasa.
+
 ## [0.9.1] - 2026-10-30 - Perbaikan Email & Merek Laptop
 
 ### Diperbaiki

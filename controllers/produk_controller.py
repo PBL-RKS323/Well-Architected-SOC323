@@ -21,6 +21,10 @@ def _isi_produk(produk, form):
     produk.harga_normal = form.harga_normal.data or None
     produk.stok = form.stok.data
     produk.deskripsi = (form.deskripsi.data or "").strip()
+    # Baris kosong & spasi berlebih dibuang agar tabel spesifikasi rapi
+    baris = [b.strip() for b in (form.spesifikasi.data or "").splitlines() if b.strip()]
+    produk.spesifikasi = "\n".join(baris) or None
+    produk.garansi = (form.garansi.data or "").strip() or None
 
 
 def _tolak_upload(filename):

@@ -7,6 +7,7 @@ from wtforms.validators import DataRequired, InputRequired, Length, NumberRange,
 from models.produk import Produk
 
 ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg"}
+MAKS_BARIS_SPESIFIKASI = 30
 
 
 class FormProduk(FlaskForm):
@@ -33,12 +34,26 @@ class FormProduk(FlaskForm):
     deskripsi = TextAreaField("Deskripsi", validators=[
         Length(max=1000, message="Deskripsi tidak boleh melebihi 1000 karakter."),
     ])
+    spesifikasi = TextAreaField("Spesifikasi (opsional)", validators=[
+        Length(max=2000, message="Spesifikasi tidak boleh melebihi 2000 karakter."),
+    ])
+    garansi = StringField("Garansi (opsional)", validators=[
+        Optional(),
+        Length(max=100, message="Keterangan garansi maksimal 100 karakter."),
+    ])
     gambar = FileField("Foto Produk (JPG/PNG, maks. 2 MB)")
     submit = SubmitField("Simpan")
 
     def validate_harga_normal(self, field):
         if field.data is not None and self.harga.data is not None and field.data <= self.harga.data:
             raise ValidationError("Harga normal harus lebih tinggi dari harga jual (atau kosongkan jika tidak diskon).")
+
+    def validate_spesifikasi(self, field):
+        baris = [b for b in (field.data or "").splitlines() if b.strip()]
+        if len(baris) > MAKS_BARIS_SPESIFIKASI:
+            raise ValidationError(f"Spesifikasi maksimal {MAKS_BARIS_SPESIFIKASI} baris.")
+        if any(len(b.strip()) > 150 for b in baris):
+            raise ValidationError("Setiap baris spesifikasi maksimal 150 karakter.")
 
     # Validasi lapis pertama: ekstensi nama file. Lapis kedua (isi biner) ada di helpers/image_security.py
     def validate_gambar(self, field):

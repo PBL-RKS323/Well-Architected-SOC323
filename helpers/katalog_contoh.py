@@ -33,10 +33,12 @@ def isi_katalog(app, perbarui_foto=False):
 
     perbarui_foto=True: foto produk contoh yang sudah ada diganti dengan versi terbaru di seed/foto
     (data lain seperti harga & stok yang mungkin sudah diubah admin tidak disentuh).
-    Mengembalikan (jumlah produk baru, jumlah foto diperbarui).
+    Produk contoh lama yang spesifikasi/garansinya masih kosong ikut dilengkapi; isian admin tidak ditimpa.
+    Mengembalikan (jumlah produk baru, jumlah foto diperbarui, jumlah produk yang dilengkapi).
     """
-    dibuat = diperbarui = 0
+    dibuat = diperbarui = dilengkapi = 0
     for p in baca_katalog(app):
+        spesifikasi = "\n".join(p.get("spesifikasi", [])) or None
         produk = Produk.query.filter_by(nama_produk=p["nama_produk"]).first()
         if produk is not None:
             if perbarui_foto:
@@ -44,12 +46,17 @@ def isi_katalog(app, perbarui_foto=False):
                 produk.gambar = _simpan_foto(app, p["foto"])
                 delete_image(lama, app.config["UPLOAD_FOLDER"])
                 diperbarui += 1
+            if (not produk.spesifikasi and spesifikasi) or (not produk.garansi and p.get("garansi")):
+                produk.spesifikasi = produk.spesifikasi or spesifikasi
+                produk.garansi = produk.garansi or p.get("garansi")
+                dilengkapi += 1
             continue
         db.session.add(Produk(
             nama_produk=p["nama_produk"], merek=p["merek"], kategori=p["kategori"],
             harga=p["harga"], harga_normal=p["harga_normal"], stok=p["stok"],
-            deskripsi=p["deskripsi"], gambar=_simpan_foto(app, p["foto"]),
+            deskripsi=p["deskripsi"], spesifikasi=spesifikasi, garansi=p.get("garansi"),
+            gambar=_simpan_foto(app, p["foto"]),
         ))
         dibuat += 1
     db.session.commit()
-    return dibuat, diperbarui
+    return dibuat, diperbarui, dilengkapi
