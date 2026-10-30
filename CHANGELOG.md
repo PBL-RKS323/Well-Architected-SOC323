@@ -3,6 +3,21 @@
 Setiap perubahan dicatat di sini: apa yang berubah, alasannya, dan cara mengujinya.
 Format tanggal: YYYY-MM-DD (WIB).
 
+## [0.9.1] - 2026-10-30 - Perbaikan Email & Merek Laptop
+
+### Diperbaiki
+- Email dengan spasi di awal/akhir (sering terbawa saat salin-tempel) ditolak "Format email tidak valid".
+  Sekarang semua form email (daftar, login, lupa kata sandi, ubah email, tambah/edit pengguna) membuang spasi
+  dan mengecilkan huruf sebelum divalidasi.
+- Koneksi database dicek sebelum dipakai (`pool_pre_ping`), agar tidak error 500 setelah PostgreSQL restart.
+
+### Diubah
+- Pilihan merek ditambah Lenovo, Asus, Dell, HP, dan Acer agar laptop bisa dijual. Teks toko tidak lagi
+  menyebut hanya Apple, Samsung, dan Xiaomi.
+
+**Cara uji:** ubah email ke `" nama@gmail.com "` (dengan spasi) → tersimpan sebagai `nama@gmail.com`;
+tambah produk dengan merek Lenovo kategori Laptop → tampil di beranda dan filter Jelajah.
+
 ## [0.9.0] - 2026-10-20 - Login Google & Kode OTP Email
 
 ### Ditambahkan

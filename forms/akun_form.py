@@ -4,7 +4,7 @@ from flask_wtf.file import FileField, FileRequired, FileAllowed
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired, Email, Length, EqualTo, Regexp, ValidationError
 
-from forms.auth_form import PASSWORD_POLICY, PASSWORD_POLICY_MESSAGE, NAMA_POLICY
+from forms.auth_form import PASSWORD_POLICY, PASSWORD_POLICY_MESSAGE, NAMA_POLICY, rapikan_email
 from models.user import User
 
 
@@ -18,7 +18,7 @@ class UbahNamaForm(FlaskForm):
 
 
 class UbahEmailForm(FlaskForm):
-    email_baru = StringField("Email Baru", validators=[
+    email_baru = StringField("Email Baru", filters=[rapikan_email], validators=[
         DataRequired(message="Email baru wajib diisi."),
         Email(message="Format email tidak valid."),
         Length(max=100),

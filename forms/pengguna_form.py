@@ -2,7 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SelectField, SubmitField
 from wtforms.validators import DataRequired, Email, Length, Regexp, AnyOf, Optional, ValidationError
 
-from forms.auth_form import PASSWORD_POLICY, PASSWORD_POLICY_MESSAGE, NAMA_POLICY
+from forms.auth_form import PASSWORD_POLICY, PASSWORD_POLICY_MESSAGE, NAMA_POLICY, rapikan_email
 from models.user import User
 
 PILIHAN_PERAN = list(User.LABEL_ROLE.items())
@@ -15,7 +15,7 @@ class TambahPenggunaForm(FlaskForm):
         Length(min=3, max=100, message="Nama lengkap harus 3-100 karakter."),
         Regexp(NAMA_POLICY, message="Nama hanya boleh berisi huruf, spasi, titik, tanda hubung, dan apostrof."),
     ])
-    email = StringField("Email", validators=[
+    email = StringField("Email", filters=[rapikan_email], validators=[
         DataRequired(message="Email wajib diisi."), Email(message="Format email tidak valid."), Length(max=100),
     ])
     peran = SelectField("Peran", choices=PILIHAN_PERAN, default=User.ROLE_STAF)
@@ -38,7 +38,7 @@ class EditPenggunaForm(FlaskForm):
         Length(min=3, max=100, message="Nama lengkap harus 3-100 karakter."),
         Regexp(NAMA_POLICY, message="Nama hanya boleh berisi huruf, spasi, titik, tanda hubung, dan apostrof."),
     ])
-    email = StringField("Email", validators=[
+    email = StringField("Email", filters=[rapikan_email], validators=[
         DataRequired(message="Email wajib diisi."), Email(message="Format email tidak valid."), Length(max=100),
     ])
     submit = SubmitField("Simpan Data")

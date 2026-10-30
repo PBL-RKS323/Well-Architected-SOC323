@@ -11,13 +11,19 @@ PASSWORD_POLICY_MESSAGE = ("Kata sandi minimal 8 karakter dan harus mengandung h
 NAMA_POLICY = r"^[A-Za-zÀ-ÖØ-öø-ÿ' .-]+$"
 
 
+def rapikan_email(teks):
+    """Spasi di awal/akhir dibuang & huruf dikecilkan, agar " Intan@Gmail.com " tetap diterima
+    (validator Email WTForms menolak jika ada spasi)."""
+    return teks.strip().lower() if teks else teks
+
+
 class RegisterForm(FlaskForm):
     nama_lengkap = StringField("Nama Lengkap", validators=[
         DataRequired(message="Nama lengkap wajib diisi."),
         Length(min=3, max=100, message="Nama lengkap harus 3-100 karakter."),
         Regexp(NAMA_POLICY, message="Nama hanya boleh berisi huruf, spasi, titik, tanda hubung, dan apostrof."),
     ])
-    email = StringField("Email", validators=[
+    email = StringField("Email", filters=[rapikan_email], validators=[
         DataRequired(message="Email wajib diisi."),
         Email(message="Format email tidak valid."),
         Length(max=100),
@@ -42,7 +48,7 @@ class RegisterForm(FlaskForm):
 
 
 class LoginForm(FlaskForm):
-    email = StringField("Email", validators=[
+    email = StringField("Email", filters=[rapikan_email], validators=[
         DataRequired(message="Email wajib diisi."),
         Email(message="Format email tidak valid."),
         Length(max=100),
@@ -64,7 +70,7 @@ KODE_OTP_VALIDATORS = [
 
 
 class LupaPasswordForm(FlaskForm):
-    email = StringField("Email", validators=[
+    email = StringField("Email", filters=[rapikan_email], validators=[
         DataRequired(message="Email wajib diisi."),
         Email(message="Format email tidak valid."),
         Length(max=100),
