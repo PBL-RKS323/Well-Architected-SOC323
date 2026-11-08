@@ -1,0 +1,135 @@
+PEMBAGIAN KELOMPOK - PBL SOC323 (RKS 3B, Politeknik Negeri Batam)
+Aplikasi : Elektronik Store (Flask, MVC + Blueprint, PostgreSQL/SQLite)
+Repo     : https://github.com/PBL-RKS323/Well-Architected-SOC323 (branch kerja: development)
+Live     : https://toko.neteye.my.id (server OCI). Demo ATS cukup di localhost.
+
+=====================================================================================
+1. PERAN ANGGOTA TIM
+=====================================================================================
+Nama                    | Peran tim                        | Folder / file yang dipegang
+------------------------+----------------------------------+--------------------------------------------
+Yudha Pratama           | Ketua tim, Frontend, Infrastruktur| routes/__init__.py, templates/layouts/,
+                        |                                  | deploy/, infrastructure/, review & merge PR
+Intan Sri Diana         | Desain UI/UX                     | Figma, frontend/ (prototipe), templates/toko/,
+                        |                                  | templates/_macros.html, templates/_produk.html
+Pedro Juanda Sebayang   | Backend                          | app.py, config.py, models/, controllers/,
+                        |                                  | migrations/, middlewares/
+Ihsan Alfareno          | Fitur & keamanan (pentest)       | helpers/image_security.py, helpers/security_logger.py,
+                        |                                  | docs/KEAMANAN.md, uji keamanan
+Ripasha Alvarisi L.     | Quality Assurance (QA)           | tests/, forms/ (validasi), uji manual semua peran
+
+=====================================================================================
+2. PERAN DI DALAM APLIKASI (BUKAN PERAN TIM)
+=====================================================================================
+Aplikasi punya 3 peran (models/user.py, tabel IZIN):
+  - Admin     = pemilik / pengelola toko. Semua izin: produk, pesanan, laporan, kelola pengguna.
+  - Staf Toko = karyawan toko. Kelola produk & pesanan saja (tidak bisa laporan & kelola pengguna).
+  - Pelanggan = pembeli. Daftar sendiri lewat /register, belanja, checkout, upload bukti transfer.
+Spesifikasi PBL hanya mewajibkan Admin & Customer; Staf adalah nilai tambah (RBAC lebih rinci).
+
+Siapa memerankan apa saat demo:
+  - Pedro   -> login sebagai Admin  (CRUD produk, dasbor admin)
+  - Ihsan   -> login sebagai Staf   (tunjukkan menu Laporan/Pengguna tidak ada, akses /admin/pengguna ditolak
+               dan tercatat ACCESS_DENIED di logs/security.log)
+  - Intan   -> login sebagai Pelanggan (register, katalog, detail produk, keranjang)
+  - Ripasha -> QA memegang akun uji untuk KETIGA peran (pelanggan, staf, admin), karena tugas QA justru
+               memastikan setiap peran hanya bisa membuka halamannya sendiri.
+  - Yudha   -> membuka & menutup presentasi, GitHub, struktur folder, Blueprint.
+
+=====================================================================================
+3. PEMETAAN RUBRIK ATS -> BUKTI DI APLIKASI -> SIAPA YANG MENJELASKAN
+=====================================================================================
+RUBRIK 1 - FITUR
+  Login                 | /login                    | auth_controller.login()     | Ihsan
+                        |   (5x salah -> akun dikunci 5 menit, hash kata sandi)
+  Register              | /register                 | auth_controller.register()  | Intan
+  CRUD produk           | /admin/produk             | produk_controller.py        | Pedro
+                        |   (tambah, edit, hapus, cari; upload gambar aman)
+  Katalog / beranda     | / dan /jelajah            | toko_controller.py          | Intan
+                        |   (cari, filter merek/kategori/harga, urutkan)
+  Dashboard admin       | /admin                    | admin_controller.dashboard()| Pedro
+                        |   (pelanggan yang membuka /admin ditolak: "Akses ditolak!")
+
+RUBRIK 2 - STRUKTUR KODE
+  Blueprint             | routes/ (5 Blueprint: toko, auth, belanja, akun, admin)         | Yudha
+  OOP                   | models/*.py (class User, Produk, Pesanan + method),             | Pedro
+                        | forms/*.py (class FlaskForm + validate_<field>)
+  SQLAlchemy (ORM)      | models/, query di controllers/ (aman dari SQL Injection)        | Pedro
+  Migration             | migrations/versions/ (8 file), perintah: flask db upgrade       | Pedro
+  Logging               | helpers/security_logger.py -> logs/security.log                 | Ihsan
+  Template engine       | templates/ (Jinja2: extends, block, macro, filter rupiah)       | Intan
+  Validasi client side  | static/js/app.js fungsi validasiForm + atribut dari forms/      | Ripasha
+  Validasi server side  | forms/*.py (WTForms) + helpers/image_security.py               | Ripasha
+  Hashing               | models/user.py set_password/check_password (scrypt + salt)      | Ihsan
+  Lain-lain             | CSRF, RBAC middleware, header keamanan (CSP), pytest 166 tes    | Ihsan/Ripasha
+
+RUBRIK 3 - KETERLIBATAN ANGGOTA
+  Bukti = commit dari akun GitHub masing-masing + Pull Request ke development + tiap orang bisa
+  menjelaskan bagiannya sendiri. Lihat bagian 5 (tugas H-2).
+
+=====================================================================================
+4. URUTAN DEMO (+/- 10 MENIT)
+=====================================================================================
+ 1. Yudha   (1 mnt) : tunjukkan repo GitHub, branch, daftar commit tiap anggota, struktur folder.
+ 2. Intan   (2 mnt) : beranda -> jelajah (filter) -> detail produk -> register akun pelanggan baru.
+ 3. Ripasha (2 mnt) : validasi client side: kosongkan form register -> klik Buat Akun -> pesan muncul,
+                      tab Network DevTools kosong (tidak ada POST). Lalu matikan JavaScript, kirim lagi ->
+                      pesan tetap muncul dari server. Jalankan: pytest -q
+ 4. Ihsan   (2 mnt) : login salah 5x -> akun terkunci -> buka logs/security.log. Login staf -> buka
+                      /admin/pengguna -> ditolak. Tunjukkan hash di database (bukan kata sandi asli).
+ 5. Pedro   (3 mnt) : login admin -> dasbor -> tambah/edit/hapus produk -> buka models/produk.py,
+                      controllers/produk_controller.py, migrations/versions/.
+
+=====================================================================================
+5. TUGAS SEBELUM DEMO (WAJIB DIKERJAKAN SENDIRI DARI AKUN GITHUB MASING-MASING)
+=====================================================================================
+Saat ini commit di branch development: Pedro 34, Yudha 4, Intan 1, Ihsan 0, Ripasha 0.
+Dosen menilai keterlibatan dari GitHub, jadi setiap orang membuat minimal 1 Pull Request nyata:
+
+  [ ] Yudha   : buka PR development -> main dan merge (branch main sekarang hanya berisi README awal,
+                padahal main yang tampil pertama di GitHub). Review & merge PR anggota lain.
+  [ ] Pedro   : PR branch fix/validasi-klien (validasi client side) ke development.
+  [ ] Ripasha : tambah tes di tests/ yang memastikan form register punya atribut validasi klien
+                (type="email", data-pola, data-sama-dengan) + docs/LAPORAN-QA.md (checklist uji manual
+                per peran: hasil OK / bug).
+  [ ] Ihsan   : docs/LAPORAN-PENTEST.md: uji SQL injection di /jelajah?q=, XSS di ulasan, upload file
+                palsu (.php diganti .jpg), akses /admin sebagai pelanggan, brute force login. Tulis hasilnya.
+  [ ] Intan   : docs/desain/ berisi link Figma + ekspor PNG tiap frame (Login, Register, Home, Produk,
+                Cart, Checkout, Dasbor Admin). Desain akhirnya sudah diterapkan di templates/, jadi
+                gambar desain cukup di docs/desain/, bukan di frontend/ atau static/.
+  [ ] Semua   : perbaiki data live: produk "Thinkpad T14" tercatat merek Samsung dan harga Rp 2.000
+                (data uji). Ubah lewat /admin/produk atau hapus.
+  [ ] Semua   : setiap orang menjalankan aplikasi di laptop sendiri minimal 1x (bagian 6).
+
+=====================================================================================
+6. CARA MENJALANKAN DI LOCALHOST (WINDOWS)
+=====================================================================================
+  git clone https://github.com/PBL-RKS323/Well-Architected-SOC323.git
+  cd Well-Architected-SOC323
+  git checkout development
+  python -m venv venv
+  venv\Scripts\activate
+  pip install -r requirements.txt
+  copy .env.example .env
+     -> buka .env, isi SECRET_KEY (hasil: python -c "import secrets; print(secrets.token_hex(32))")
+     -> ganti baris DATABASE_URL menjadi: DATABASE_URL=sqlite:///toko_lokal.db
+  flask db upgrade          (membuat semua tabel dari folder migrations/)
+  flask seed-admin          (membuat akun admin, kata sandi wajib: huruf besar+kecil+angka+simbol)
+  flask seed-katalog        (mengisi 17 produk contoh + fotonya)
+  flask run --debug         -> buka http://127.0.0.1:5000
+
+Kenapa di localhost awalnya tidak ada produk/gambar?
+  Produk & foto di web live tersimpan di database PostgreSQL dan folder static/uploads di server OCI.
+  Keduanya sengaja TIDAK masuk GitHub (.gitignore). Yang ada di GitHub hanya kode + 17 foto contoh di
+  seed/foto/. Jadi setiap laptop harus menjalankan "flask seed-katalog" sendiri.
+
+Database lokal:
+  - SQLite (paling mudah): tidak perlu instal apa pun, file dibuat di instance/toko_lokal.db.
+  - PostgreSQL/MySQL: opsional, lihat docs/INSTALASI.md.
+  - Database tidak ditulis di requirements.txt. requirements.txt hanya untuk library Python
+    (driver psycopg2-binary & PyMySQL sudah ada di sana). Struktur tabel ada di migrations/.
+
+Pembayaran:
+  Spesifikasi PBL: "Upload transfer" + "Approval bukti bayar" -> sudah ada (transfer manual: pelanggan
+  upload bukti di /pesanan/<kode>, admin setujui di /admin/pesanan). Midtrans Sandbox hanya opsional
+  (nilai tambah), dan pembayaran tidak termasuk 5 fitur yang dinilai di ATS.
