@@ -44,6 +44,22 @@ dan `config.py`.
 
 ## Cara Menjalankan
 
+### Cara cepat di Windows (satu paket, termasuk PostgreSQL)
+
+Syarat: Python 3.11-3.13 (saat instal centang *Add python.exe to PATH*).
+
+1. Unduh repo (`git clone` atau **Code > Download ZIP** lalu ekstrak).
+2. Klik dua kali **`setup.bat`** (sekali saja): memasang library, mengunduh **PostgreSQL portabel** ke
+   folder `.lokal/` (sekitar 330 MB, tanpa installer dan tanpa hak admin), membuat database & user,
+   menjalankan migrasi, mengisi 17 produk contoh, lalu menanyakan data akun admin.
+3. Klik dua kali **`jalankan.bat`** setiap mau memakai aplikasi: PostgreSQL dan aplikasi menyala,
+   browser terbuka ke http://127.0.0.1:5000. Tutup dengan Ctrl+C.
+
+Logikanya ada di `scripts/lokal.py`. PostgreSQL hanya menerima koneksi dari laptop itu sendiri
+(127.0.0.1, port 5433). Kata sandi superuser `postgres` (untuk pgAdmin) ada di `.lokal/kata_sandi_postgres.txt`.
+
+### Cara manual
+
 ```bash
 python -m venv venv
 venv\Scripts\activate

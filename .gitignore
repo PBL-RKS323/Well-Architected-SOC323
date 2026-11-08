@@ -10,3 +10,6 @@ instance/
 logs/
 static/uploads/*
 !static/uploads/.gitkeep
+
+# PostgreSQL portabel & datanya (dibuat setup.bat)
+.lokal/

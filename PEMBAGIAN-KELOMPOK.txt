@@ -104,6 +104,16 @@ Dosen menilai keterlibatan dari GitHub, jadi setiap orang membuat minimal 1 Pull
 =====================================================================================
 6. CARA MENJALANKAN DI LOCALHOST (WINDOWS)
 =====================================================================================
+CARA CEPAT (SATU PAKET, DIPAKAI UNTUK LAPTOP DEMO):
+  Syarat: Python 3.11-3.13 terpasang (centang "Add python.exe to PATH" saat instal).
+  1. Unduh repo (git clone, atau Code > Download ZIP lalu ekstrak).
+  2. Klik dua kali setup.bat -> pilih [1] PostgreSQL portabel -> isi data akun admin.
+     (PostgreSQL diunduh otomatis +/- 330 MB ke folder .lokal/, tanpa installer. Cukup sekali.)
+  3. Klik dua kali jalankan.bat -> browser terbuka ke http://127.0.0.1:5000
+     Jangan tutup jendela hitamnya selama demo. Selesai: tekan Ctrl+C.
+  Saran: jalankan setup.bat di laptop demo SEHARI SEBELUM demo (butuh internet untuk unduhan).
+
+CARA MANUAL (KALAU INGIN PAHAM TIAP LANGKAH):
   git clone https://github.com/PBL-RKS323/Well-Architected-SOC323.git
   cd Well-Architected-SOC323
   git checkout development
@@ -124,8 +134,10 @@ Kenapa di localhost awalnya tidak ada produk/gambar?
   seed/foto/. Jadi setiap laptop harus menjalankan "flask seed-katalog" sendiri.
 
 Database lokal:
-  - SQLite (paling mudah): tidak perlu instal apa pun, file dibuat di instance/toko_lokal.db.
-  - PostgreSQL/MySQL: opsional, lihat docs/INSTALASI.md.
+  - SAAT DEMO WAJIB PostgreSQL/MySQL (spesifikasi: "Wajib SQL (MySQL, MariaDB, atau PostgreSQL)").
+    Pakai setup.bat pilihan [1] (PostgreSQL portabel). Jawaban jika ditanya: "PostgreSQL 17,
+    driver psycopg2-binary, tabel dibuat dari migrations/ dengan flask db upgrade".
+  - SQLite hanya untuk latihan di laptop sendiri (setup.bat pilihan [3]).
   - Database tidak ditulis di requirements.txt. requirements.txt hanya untuk library Python
     (driver psycopg2-binary & PyMySQL sudah ada di sana). Struktur tabel ada di migrations/.
 
