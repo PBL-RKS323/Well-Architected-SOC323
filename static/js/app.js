@@ -1,5 +1,124 @@
 // Script ditaruh di file terpisah (bukan inline) agar sesuai Content-Security-Policy.
 
+// ---------------------------------------------------------------------------------------------
+// VALIDASI SISI KLIEN (lapis 1)
+// Form memakai atribut novalidate agar gelembung bawaan browser (bahasa Inggris, tampilan beda tiap
+// browser) tidak muncul. Penggantinya fungsi di bawah: dijalankan sebelum form dikirim, membaca aturan
+// dari atribut HTML yang dibuat WTForms (required, minlength, maxlength, min, max, type="email") dan
+// atribut tambahan dari forms/*.py (data-pola, data-sama-dengan, data-maks-byte). Pesan tampil di bawah
+// kolom dengan gaya yang sama dengan pesan dari server.
+// Validasi server (WTForms di folder forms/) tetap berjalan sebagai lapis 2, karena validasi browser
+// bisa dilewati (JavaScript dimatikan, request dikirim langsung lewat curl / Burp Suite).
+// ---------------------------------------------------------------------------------------------
+function pesanValidasi(input) {
+    input.setCustomValidity("");
+    const nilai = (input.value || "").trim();
+
+    // Aturan tambahan yang tidak punya padanan atribut HTML standar
+    if (nilai && input.dataset.pola) {
+        const dicek = input.dataset.polaTanpaSpasi !== undefined ? nilai.replace(/[\s-]/g, "") : nilai;
+        if (!new RegExp(input.dataset.pola).test(dicek)) {
+            input.setCustomValidity(input.dataset.polaPesan || "Format tidak valid.");
+        }
+    }
+    if (input.dataset.samaDengan) {
+        const asal = input.form.elements.namedItem(input.dataset.samaDengan);
+        if (asal && input.value && input.value !== asal.value) {
+            input.setCustomValidity(input.dataset.samaPesan || "Isian tidak cocok.");
+        }
+    }
+    if (input.type === "file" && input.dataset.maksByte && input.files.length) {
+        if (input.files[0].size > parseInt(input.dataset.maksByte, 10)) {
+            input.setCustomValidity("Ukuran file terlalu besar (maksimal 2 MB).");
+        }
+    }
+
+    const v = input.validity;
+    if (v.valid) {
+        return "";
+    }
+    if (v.valueMissing) {
+        if (input.type === "checkbox") { return "Bagian ini wajib dicentang."; }
+        if (input.type === "radio") { return "Pilih salah satu."; }
+        if (input.type === "file") { return "Pilih file terlebih dahulu."; }
+        return "Kolom ini wajib diisi.";
+    }
+    if (v.customError) { return input.validationMessage; }
+    if (v.typeMismatch) { return "Format email tidak valid."; }
+    if (v.tooShort) { return "Minimal " + input.minLength + " karakter (sekarang " + input.value.length + ")."; }
+    if (v.tooLong) { return "Maksimal " + input.maxLength + " karakter."; }
+    if (v.badInput) { return "Harus berupa angka."; }
+    if (v.rangeUnderflow) { return "Nilai minimal " + input.min + "."; }
+    if (v.rangeOverflow) { return "Nilai maksimal " + input.max + "."; }
+    return "Isian tidak valid.";
+}
+
+function tampilkanPesanKlien(input, pesan) {
+    // Radio: satu pesan per grup, ditaruh di akhir kelompok pilihan
+    const jangkar = input.type === "radio"
+        ? (input.closest("label") || input).parentElement
+        : (input.closest(".relative") || input.closest("label") || input);
+    const lama = jangkar.parentElement.querySelector('[data-galat-klien="' + input.name + '"]');
+    if (lama) { lama.remove(); }
+    input.toggleAttribute("aria-invalid", Boolean(pesan));
+    input.classList.toggle("border-coral", Boolean(pesan));
+    if (!pesan) { return; }
+    const span = document.createElement("span");
+    span.className = "text-coral text-xs block mt-1.5";
+    span.dataset.galatKlien = input.name;
+    span.textContent = pesan;
+    if (input.type === "radio") { jangkar.appendChild(span); } else { jangkar.after(span); }
+}
+
+function kolomYangDicek(form) {
+    return Array.from(form.elements).filter(function (el) {
+        return el.name && !el.disabled && el.willValidate && el.type !== "hidden"
+            // Kolom di bagian yang disembunyikan (mis. alamat saat memilih "ambil di toko") tidak dicek
+            && !el.closest(".hidden, [hidden]");
+    });
+}
+
+function validasiForm(form) {
+    let pertama = null;
+    const sudah = new Set();
+    kolomYangDicek(form).forEach(function (el) {
+        if (el.type === "radio" && sudah.has(el.name)) { return; }
+        sudah.add(el.name);
+        const pesan = pesanValidasi(el);
+        tampilkanPesanKlien(el, pesan);
+        if (pesan && !pertama) { pertama = el; }
+    });
+    return pertama;
+}
+
+// Fase capture: berjalan sebelum listener submit lain (konfirmasi, kunci tombol kirim)
+document.addEventListener("submit", function (event) {
+    const form = event.target;
+    if (event.submitter && event.submitter.formNoValidate) { return; }
+    const salah = validasiForm(form);
+    if (salah) {
+        event.preventDefault();
+        event.stopPropagation();
+        salah.focus();
+    }
+}, true);
+
+// Setelah pesan muncul, pesan diperbarui langsung saat pengguna memperbaiki isiannya
+["input", "change"].forEach(function (jenis) {
+    document.addEventListener(jenis, function (event) {
+        const el = event.target;
+        if (!el.form || !el.name) { return; }
+        const ada = el.form.querySelector('[data-galat-klien="' + el.name + '"]');
+        if (ada) { tampilkanPesanKlien(el, pesanValidasi(el)); }
+        // Kolom konfirmasi ikut dicek ulang saat kata sandi aslinya diubah
+        el.form.querySelectorAll('[data-sama-dengan="' + el.name + '"]').forEach(function (k) {
+            if (el.form.querySelector('[data-galat-klien="' + k.name + '"]')) {
+                tampilkanPesanKlien(k, pesanValidasi(k));
+            }
+        });
+    });
+});
+
 // Konfirmasi sebelum submit form yang memiliki atribut data-confirm (mis. hapus produk).
 document.addEventListener("submit", function (event) {
     const form = event.target;

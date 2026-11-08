@@ -5,11 +5,15 @@ from flask_wtf.file import FileField, FileRequired, FileAllowed
 from wtforms import StringField, TextAreaField, RadioField, SubmitField, BooleanField
 from wtforms.validators import DataRequired, InputRequired, Length, Regexp, Optional, AnyOf, ValidationError
 
-from forms.auth_form import NAMA_POLICY
+from forms.auth_form import NAMA_POLICY, KLIEN_NAMA, KLIEN_MAKS_2MB
 from models.pesanan import Pesanan
 
 TELEPON_POLICY = r"^(\+62|62|0)8[0-9]{7,12}$"
 RESI_POLICY = r"^[A-Za-z0-9-]{5,50}$"
+# Validasi sisi klien: spasi & tanda hubung diabaikan, sama seperti filter _hapus_spasi di server
+KLIEN_TELEPON = {"data-pola": TELEPON_POLICY, "data-pola-tanpa-spasi": "", "inputmode": "tel",
+                 "data-pola-pesan": "Nomor HP tidak valid. Contoh: 081234567890."}
+KLIEN_KODE_POS = {"data-pola": r"^\d{5}$", "data-pola-pesan": "Kode pos harus 5 digit angka.", "inputmode": "numeric"}
 
 
 def _rapikan(teks):
@@ -24,12 +28,12 @@ class CheckoutForm(FlaskForm):
     metode_pengiriman = RadioField("Metode Pengiriman", default=Pesanan.KURIR,
                                    choices=list(Pesanan.LABEL_PENGIRIMAN.items()),
                                    validators=[InputRequired(message="Pilih metode pengiriman.")])
-    nama_penerima = StringField("Nama Penerima", filters=[_rapikan], validators=[
+    nama_penerima = StringField("Nama Penerima", render_kw=KLIEN_NAMA, filters=[_rapikan], validators=[
         DataRequired(message="Nama penerima wajib diisi."),
         Length(min=3, max=100, message="Nama penerima harus 3-100 karakter."),
         Regexp(NAMA_POLICY, message="Nama hanya boleh berisi huruf, spasi, titik, tanda hubung, dan apostrof."),
     ])
-    telepon = StringField("Nomor HP", filters=[_hapus_spasi], validators=[
+    telepon = StringField("Nomor HP", render_kw=KLIEN_TELEPON, filters=[_hapus_spasi], validators=[
         DataRequired(message="Nomor HP wajib diisi."),
         Regexp(TELEPON_POLICY, message="Nomor HP tidak valid. Contoh: 081234567890."),
     ])
@@ -38,7 +42,7 @@ class CheckoutForm(FlaskForm):
         Length(max=255, message="Alamat maksimal 255 karakter.")])
     kota = StringField("Kota / Kabupaten", filters=[_rapikan], validators=[
         Length(max=60, message="Nama kota maksimal 60 karakter.")])
-    kode_pos = StringField("Kode Pos", filters=[_rapikan])
+    kode_pos = StringField("Kode Pos", render_kw=KLIEN_KODE_POS, filters=[_rapikan])
     simpan_alamat = BooleanField("Simpan alamat ini ke Alamat Saya")
     catatan = StringField("Catatan untuk Penjual (opsional)", filters=[_rapikan], validators=[
         Optional(), Length(max=200, message="Catatan maksimal 200 karakter.")])
@@ -66,7 +70,7 @@ class CheckoutForm(FlaskForm):
 
 
 class BuktiBayarForm(FlaskForm):
-    bukti = FileField("Foto / Screenshot Bukti Transfer", validators=[
+    bukti = FileField("Foto / Screenshot Bukti Transfer", render_kw=KLIEN_MAKS_2MB, validators=[
         FileRequired(message="Pilih file bukti transfer terlebih dahulu."),
         FileAllowed(["jpg", "jpeg", "png"], message="Bukti transfer harus berupa gambar JPG atau PNG."),
     ])

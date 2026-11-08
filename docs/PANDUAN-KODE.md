@@ -198,10 +198,19 @@ Jinja otomatis meng-*escape* isi variabel, sehingga input berbahaya seperti `<sc
 (mencegah **XSS**; ada tesnya di `tests/test_detail_produk.py`).
 
 **Validasi client side dan server side, bedanya?**
-Client side: atribut HTML `required`, `minlength`, `maxlength` yang dibuat otomatis oleh WTForms, jadi
-browser langsung memberi peringatan. Server side: validator di `forms/` (mis. `Email`, `Length`,
-`Regexp` kebijakan kata sandi, `validate_spesifikasi`). **Server side wajib** karena validasi browser
-bisa dilewati (mis. kirim request langsung dengan curl atau Burp Suite).
+Client side (lapis 1, di browser): WTForms otomatis menulis atribut `required`, `minlength`,
+`maxlength`, `min`, `max` di HTML; `forms/*.py` menambah `type="email"`, `data-pola` (regex nama, kata
+sandi, nomor HP, kode pos), `data-sama-dengan` (konfirmasi kata sandi), dan `data-maks-byte` (file 2 MB)
+lewat `render_kw`. Form memakai `novalidate` agar gelembung bawaan browser tidak muncul; penggantinya
+fungsi `validasiForm` di `static/js/app.js` yang menahan form sebelum terkirim dan menampilkan pesan
+berbahasa Indonesia di bawah kolom. Cara membuktikan saat demo: kosongkan form daftar, klik **Buat Akun**,
+lalu tunjukkan tab Network di DevTools: tidak ada request POST.
+
+Server side (lapis 2): validator di `forms/` (mis. `Email`, `Length`, `Regexp` kebijakan kata sandi,
+`EqualTo`, `validate_spesifikasi`) ditambah cek isi biner gambar di `helpers/image_security.py`.
+**Server side wajib** karena validasi browser bisa dilewati (JavaScript dimatikan, atau request dikirim
+langsung dengan curl / Burp Suite). Cara membuktikan: matikan JavaScript di DevTools, kirim form kosong,
+pesan error tetap muncul (dari server).
 
 **Hashing kata sandi?**
 `werkzeug.security.generate_password_hash` dengan algoritma **scrypt** dan *salt* acak, sehingga dua
@@ -231,8 +240,9 @@ database setiap request, bukan dari sesi, jadi perubahan peran langsung berlaku.
 3. **Admin (3 menit):** login admin → dasbor → tambah/edit/hapus produk (CRUD) → login sebagai Staf dan
    tunjukkan menu Laporan & Pengguna tidak ada (RBAC).
 4. **Kode (3 menit):** buka `routes/` (Blueprint), `models/user.py` (OOP + hashing),
-   `migrations/versions/`, `logs/security.log` (logging), `forms/` (validasi server) dan atribut
-   `required` di HTML (validasi client), lalu jalankan `pytest -q`.
+   `migrations/versions/`, `logs/security.log` (logging), `forms/` (validasi server) dan
+   `validasiForm` di `static/js/app.js` (validasi client, buktikan lewat tab Network), lalu jalankan
+   `pytest -q`.
 
 Bagi giliran bicara: setiap anggota menjelaskan bagian yang dipegangnya (lihat bagian 4).
 

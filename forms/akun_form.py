@@ -4,12 +4,13 @@ from flask_wtf.file import FileField, FileRequired, FileAllowed
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired, Email, Length, EqualTo, Regexp, ValidationError
 
-from forms.auth_form import PASSWORD_POLICY, PASSWORD_POLICY_MESSAGE, NAMA_POLICY, rapikan_email
+from forms.auth_form import (PASSWORD_POLICY, PASSWORD_POLICY_MESSAGE, NAMA_POLICY, rapikan_email, KLIEN_EMAIL,
+                             KLIEN_NAMA, KLIEN_PASSWORD_BARU, KLIEN_MAKS_2MB, klien_sama_dengan)
 from models.user import User
 
 
 class UbahNamaForm(FlaskForm):
-    nama_lengkap = StringField("Nama Lengkap", validators=[
+    nama_lengkap = StringField("Nama Lengkap", render_kw=KLIEN_NAMA, validators=[
         DataRequired(message="Nama lengkap wajib diisi."),
         Length(min=3, max=100, message="Nama lengkap harus 3-100 karakter."),
         Regexp(NAMA_POLICY, message="Nama hanya boleh berisi huruf, spasi, titik, tanda hubung, dan apostrof."),
@@ -18,7 +19,7 @@ class UbahNamaForm(FlaskForm):
 
 
 class UbahEmailForm(FlaskForm):
-    email_baru = StringField("Email Baru", filters=[rapikan_email], validators=[
+    email_baru = StringField("Email Baru", render_kw=KLIEN_EMAIL, filters=[rapikan_email], validators=[
         DataRequired(message="Email baru wajib diisi."),
         Email(message="Format email tidak valid."),
         Length(max=100),
@@ -40,12 +41,12 @@ class UbahPasswordForm(FlaskForm):
     password_sekarang = PasswordField("Kata Sandi Saat Ini", validators=[
         DataRequired(message="Kata sandi saat ini wajib diisi."),
     ])
-    password_baru = PasswordField("Kata Sandi Baru", validators=[
+    password_baru = PasswordField("Kata Sandi Baru", render_kw=KLIEN_PASSWORD_BARU, validators=[
         DataRequired(message="Kata sandi baru wajib diisi."),
         Length(min=8, max=128, message="Kata sandi minimal 8 karakter."),
         Regexp(PASSWORD_POLICY, message=PASSWORD_POLICY_MESSAGE),
     ])
-    konfirmasi_password = PasswordField("Konfirmasi Kata Sandi Baru", validators=[
+    konfirmasi_password = PasswordField("Konfirmasi Kata Sandi Baru", render_kw=klien_sama_dengan("password_baru"), validators=[
         DataRequired(message="Konfirmasi kata sandi wajib diisi."),
         EqualTo("password_baru", message="Konfirmasi kata sandi tidak cocok."),
     ])
@@ -53,7 +54,7 @@ class UbahPasswordForm(FlaskForm):
 
 
 class AvatarForm(FlaskForm):
-    avatar = FileField("Pilih Foto Baru", validators=[
+    avatar = FileField("Pilih Foto Baru", render_kw=KLIEN_MAKS_2MB, validators=[
         FileRequired(message="Pilih foto terlebih dahulu."),
         FileAllowed(["jpg", "jpeg", "png"], message="Foto profil harus berupa gambar JPG atau PNG."),
     ])

@@ -4,6 +4,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, DecimalField, IntegerField, TextAreaField, FileField, SelectField, SubmitField
 from wtforms.validators import DataRequired, InputRequired, Length, NumberRange, Optional, ValidationError
 
+from forms.auth_form import KLIEN_MAKS_2MB
 from models.produk import Produk
 
 ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg"}
@@ -41,7 +42,7 @@ class FormProduk(FlaskForm):
         Optional(),
         Length(max=100, message="Keterangan garansi maksimal 100 karakter."),
     ])
-    gambar = FileField("Foto Produk (JPG/PNG, maks. 2 MB)")
+    gambar = FileField("Foto Produk (JPG/PNG, maks. 2 MB)", render_kw=KLIEN_MAKS_2MB)
     submit = SubmitField("Simpan")
 
     def validate_harga_normal(self, field):
