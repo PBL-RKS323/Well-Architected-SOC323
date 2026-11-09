@@ -14,6 +14,7 @@ class Produk(db.Model):
     nama_produk = db.Column(db.String(100), nullable=False)
     merek = db.Column(db.String(50), nullable=False)
     kategori = db.Column(db.String(30), nullable=False)
+    kategori_id = db.Column(db.Integer, db.ForeignKey("kategori.id", ondelete="SET NULL"), nullable=True, index=True)
     harga = db.Column(db.Numeric(12, 2), nullable=False)
     harga_normal = db.Column(db.Numeric(12, 2), nullable=True)  # harga sebelum diskon (opsional)
     stok = db.Column(db.Integer, nullable=False, default=0)

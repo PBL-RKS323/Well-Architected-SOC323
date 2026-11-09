@@ -29,6 +29,10 @@ from models.alamat import Alamat  # noqa: E402,F401
 from models.ulasan import Ulasan  # noqa: E402,F401
 from models.kode_otp import KodeOtp  # noqa: E402,F401
 from models.user import User  # noqa: E402
+from models.kategori import Kategori  # noqa: E402,F401
+from models.favorit import Favorit  # noqa: E402,F401
+from models.kupon import Kupon  # noqa: E402,F401
+from models.pembayaran import Pembayaran  # noqa: E402,F401
 from routes import register_blueprints  # noqa: E402
 
 migrate = Migrate()

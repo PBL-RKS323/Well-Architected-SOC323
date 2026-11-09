@@ -69,6 +69,8 @@ class Pesanan(db.Model):
     catatan = db.Column(db.String(200), nullable=True)
 
     # Harga dihitung di server saat checkout, bukan dari input pengguna
+    diskon = db.Column(db.Numeric(12, 2), nullable=False, default=0)
+    kupon_id = db.Column(db.Integer, db.ForeignKey('kupon.id', ondelete='SET NULL'), nullable=True, index=True)
     subtotal = db.Column(db.Numeric(12, 2), nullable=False)
     ongkir = db.Column(db.Numeric(12, 2), nullable=False, default=0)
     total = db.Column(db.Numeric(12, 2), nullable=False)
