@@ -1,7 +1,7 @@
-"""Belanja pelanggan: keranjang, checkout, dan pesanan (wajib login, hanya pesanan milik sendiri)."""
+"""Belanja pelanggan: keranjang, checkout, pesanan, dan wishlist favorit."""
 from flask import Blueprint
 
-from controllers import keranjang_controller, pesanan_controller
+from controllers import keranjang_controller, pesanan_controller, favorit_controller
 
 belanja_bp = Blueprint("belanja", __name__)
 
@@ -30,6 +30,17 @@ def keranjang_hapus(item_id):
 @belanja_bp.route("/keranjang/kosongkan", methods=["POST"])
 def keranjang_kosongkan():
     return keranjang_controller.kosongkan()
+
+
+# --- FAVORIT / WISHLIST ---
+@belanja_bp.route("/favorit")
+def favorit():
+    return favorit_controller.index()
+
+
+@belanja_bp.route("/favorit/toggle/<int:produk_id>", methods=["POST"])
+def favorit_toggle(produk_id):
+    return favorit_controller.toggle(produk_id)
 
 
 # --- CHECKOUT & PESANAN ---

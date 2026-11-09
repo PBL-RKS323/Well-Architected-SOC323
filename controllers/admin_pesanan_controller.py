@@ -9,6 +9,8 @@ from middlewares.auth_middleware import izin_required
 from models import db
 from models.pesanan import Pesanan
 from models.user import User
+from models.pembayaran import Pembayaran
+from models import utcnow
 
 PER_HALAMAN = 15
 TAB = {
@@ -108,9 +110,20 @@ def ubah_status(pesanan_id):
         flash(f"Aksi tidak bisa dilakukan untuk pesanan berstatus {pesanan.label_status}.", "danger")
         return kembali
 
-    if aksi == "tolak":
+    if aksi == "terima":
+        for b in pesanan.daftar_transaksi:
+            b.status = Pembayaran.STATUS_DIVERIFIKASI
+            b.diverifikasi_oleh = g.user.id
+            b.waktu_verifikasi = utcnow()
+            b.catatan_verifikasi = "Pembayaran disetujui admin"
+    elif aksi == "tolak":
         pesanan.alasan_tolak = form.alasan.data
-        pesanan.batas_bayar = Pesanan.hitung_batas_bayar()  # beri waktu untuk mengunggah ulang
+        pesanan.batas_bayar = Pesanan.hitung_batas_bayar()
+        for b in pesanan.daftar_transaksi:
+            b.status = Pembayaran.STATUS_DITOLAK
+            b.diverifikasi_oleh = g.user.id
+            b.waktu_verifikasi = utcnow()
+            b.catatan_verifikasi = form.alasan.data
     elif aksi == "batal":
         pesanan.alasan_tolak = form.alasan.data
     elif aksi == "kirim":

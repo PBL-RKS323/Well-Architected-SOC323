@@ -68,6 +68,24 @@
             </a>
 
             {% if not is_admin %}
+            {% if current_user and current_user.punya_izin('belanja') %}
+            <!-- WISHLIST BUTTON -->
+            <a href="{{ url_for('belanja.favorit') }}" class="flex items-center gap-2 p-2 rounded-xl hover:bg-slate-50 transition group" aria-label="Produk favorit">
+                <div class="relative p-2 rounded-full bg-slate-100 group-hover:bg-brand-soft text-ink group-hover:text-brand transition">
+                    {{ icon('heart', 'w-5 h-5') }}
+                    {% if favorit_count %}
+                    <span class="absolute -top-1 -right-1 min-w-5 h-5 px-1 rounded-full bg-brand text-white text-[11px] font-bold flex items-center justify-center shadow">
+                        {{ favorit_count }}
+                    </span>
+                    {% endif %}
+                </div>
+                <div class="hidden xl:block text-left">
+                    <span class="block text-[11px] text-muted font-medium uppercase tracking-wider">Favorit</span>
+                    <span class="block text-xs font-bold text-ink">{{ favorit_count }} Item</span>
+                </div>
+            </a>
+            {% endif %}
+
             <!-- CART BUTTON WITH SUMMARY -->
             <a href="{{ url_for('belanja.keranjang') }}" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-50 transition group" aria-label="Keranjang belanja">
                 <div class="relative p-2 rounded-full bg-slate-100 group-hover:bg-brand-soft text-ink group-hover:text-brand transition">

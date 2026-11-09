@@ -1,3 +1,4 @@
+from decimal import Decimal
 from models import db, utcnow
 
 
@@ -23,26 +24,27 @@ class Kupon(db.Model):
     created_at = db.Column(db.DateTime, nullable=False, default=utcnow)
 
     def hitung_diskon(self, subtotal):
-        """Menghitung nominal potongan dari subtotal belanja."""
+        """Menghitung nominal potongan dari subtotal belanja (mengembalikan Decimal)."""
+        sub = Decimal(str(subtotal))
         if not self.aktif:
-            return 0
+            return Decimal("0")
         if self.kuota and self.terpakai >= self.kuota:
-            return 0
-        if subtotal < self.min_belanja:
-            return 0
+            return Decimal("0")
+        if sub < Decimal(str(self.min_belanja or 0)):
+            return Decimal("0")
         
         now = utcnow()
         if self.berlaku_mulai and now < self.berlaku_mulai:
-            return 0
+            return Decimal("0")
         if self.berlaku_sampai and now > self.berlaku_sampai:
-            return 0
+            return Decimal("0")
 
         if self.tipe == self.TIPE_PERSEN:
-            potongan = (float(self.nilai) / 100.0) * float(subtotal)
-            if self.maks_potongan and potongan > float(self.maks_potongan):
-                potongan = float(self.maks_potongan)
-            return round(potongan, 2)
-        return min(float(self.nilai), float(subtotal))
+            potongan = (Decimal(str(self.nilai)) / Decimal("100")) * sub
+            if self.maks_potongan and potongan > Decimal(str(self.maks_potongan)):
+                potongan = Decimal(str(self.maks_potongan))
+            return potongan.quantize(Decimal("0.01"))
+        return min(Decimal(str(self.nilai)), sub)
 
     @classmethod
     def inisialisasi_bawaan(cls):
@@ -52,9 +54,9 @@ class Kupon(db.Model):
                 kode="FIRSTPAY",
                 deskripsi="Diskon 20% untuk transaksi perdana pelanggan baru",
                 tipe=cls.TIPE_PERSEN,
-                nilai=20.0,
-                min_belanja=500000,
-                maks_potongan=1000000,
+                nilai=Decimal("20.00"),
+                min_belanja=Decimal("500000"),
+                maks_potongan=Decimal("1000000"),
                 kuota=500,
                 aktif=True
             )

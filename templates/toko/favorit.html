@@ -1,0 +1,39 @@
+{% extends 'layouts/toko.html' %}
+{% from '_icons.html' import icon %}
+{% from '_produk.html' import kartu %}
+{% block title %}Produk Favorit - {{ app_name }}{% endblock %}
+{% block content %}
+<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-6">
+    <div>
+        <h1 class="font-display text-2xl md:text-3xl font-extrabold text-ink flex items-center gap-2">
+            Produk Favorit
+            <span class="text-xs font-bold bg-brand-soft text-brand px-2.5 py-1 rounded-full">{{ produk_list | length }} item</span>
+        </h1>
+        <p class="text-sm text-muted mt-1">Daftar produk incaran yang kamu simpan untuk dibeli nanti.</p>
+    </div>
+    <a href="{{ url_for('toko.jelajah') }}" class="inline-flex items-center gap-1.5 text-xs font-bold text-brand hover:text-brand-dark">
+        {{ icon('layout-grid', 'w-4 h-4') }} Jelajah Produk Lainnya
+    </a>
+</div>
+
+{% if not produk_list %}
+    <section class="text-center bg-white rounded-3xl border border-slate-100 px-6 py-16 shadow-xs">
+        <span class="inline-flex w-24 h-24 rounded-full bg-brand-soft items-center justify-center text-brand mb-4">
+            {{ icon('heart', 'w-10 h-10') }}
+        </span>
+        <h2 class="font-display text-xl sm:text-2xl font-bold text-ink">Belum Ada Produk Favorit</h2>
+        <p class="text-muted text-sm mt-2 max-w-md mx-auto">
+            Klik tombol hati pada kartu produk atau halaman detail barang untuk menyimpannya ke daftar ini.
+        </p>
+        <a href="{{ url_for('toko.jelajah') }}" class="inline-flex items-center gap-2 mt-6 bg-brand hover:bg-brand-dark text-white text-sm font-bold px-7 py-3.5 rounded-full transition shadow-sm">
+            Mulai Belanja
+        </a>
+    </section>
+{% else %}
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4 md:gap-5">
+        {% for produk in produk_list %}
+            {{ kartu(produk) }}
+        {% endfor %}
+    </div>
+{% endif %}
+{% endblock %}

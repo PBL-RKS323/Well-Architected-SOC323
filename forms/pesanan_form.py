@@ -42,6 +42,8 @@ class CheckoutForm(FlaskForm):
     simpan_alamat = BooleanField("Simpan alamat ini ke Alamat Saya")
     catatan = StringField("Catatan untuk Penjual (opsional)", filters=[_rapikan], validators=[
         Optional(), Length(max=200, message="Catatan maksimal 200 karakter.")])
+    kode_kupon = StringField("Kode Voucher (opsional)", filters=[_rapikan], validators=[
+        Optional(), Length(max=30, message="Kode voucher maksimal 30 karakter.")])
     metode_pembayaran = RadioField("Metode Pembayaran", default=Pesanan.TRANSFER,
                                    choices=list(Pesanan.LABEL_PEMBAYARAN.items()),
                                    validators=[InputRequired(message="Pilih metode pembayaran.")])

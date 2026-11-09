@@ -89,8 +89,10 @@ def create_app(config_class=Config):
     @app.context_processor
     def inject_globals():
         user = g.get("user")
+        fav_count = user.daftar_favorit.count() if user and user.punya_izin("belanja") else 0
+        kat_list = [k.nama for k in Kategori.query.filter_by(aktif=True).order_by(Kategori.urutan).all()] or Produk.KATEGORI
         data = {"app_name": app.config["APP_NAME"], "current_user": user,
-                "cart_count": keranjang_controller.jumlah_item(user), "kategori_nav": Produk.KATEGORI,
+                "cart_count": keranjang_controller.jumlah_item(user), "favorit_count": fav_count, "kategori_nav": kat_list,
                 "email_aktif": email_aktif(), "google_aktif": google_controller.google_aktif()}
         if user is not None and user.punya_izin("kelola_pesanan"):
             data["perlu_verifikasi"] = admin_pesanan_controller.jumlah_perlu_verifikasi()

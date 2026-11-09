@@ -131,6 +131,23 @@
     <aside class="mt-7 lg:mt-0 lg:sticky lg:top-20">
         <div class="bg-white rounded-2xl border border-slate-100 p-5">
             <h2 class="font-display text-lg font-bold mb-4">Ringkasan Belanja</h2>
+            <!-- VOUCHER PROMO INPUT -->
+            <div class="mb-4 pb-4 border-b border-slate-100">
+                <label for="kode_kupon" class="block text-xs font-bold text-muted uppercase tracking-wider mb-1.5">
+                    Kode Promo / Voucher
+                </label>
+                <div class="flex gap-2">
+                    <input type="text" id="kode_kupon" name="kode_kupon" value="{{ form.kode_kupon.data or '' }}"
+                           placeholder="Contoh: FIRSTPAY"
+                           class="flex-1 text-xs uppercase font-semibold px-3 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-brand/20 focus:border-brand outline-none">
+                </div>
+                <div class="flex items-center justify-between mt-1.5 text-[11px]">
+                    <span class="text-muted">Punya voucher? Coba:</span>
+                    <button type="button" onclick="document.getElementById('kode_kupon').value='FIRSTPAY'" class="font-bold text-brand hover:underline cursor-pointer">
+                        Gunakan FIRSTPAY (-20%)
+                    </button>
+                </div>
+            </div>
             <dl class="space-y-2.5 text-sm">
                 <div class="flex justify-between"><dt class="text-muted">Subtotal</dt><dd class="font-medium">{{ subtotal | rupiah }}</dd></div>
                 {% if hemat %}

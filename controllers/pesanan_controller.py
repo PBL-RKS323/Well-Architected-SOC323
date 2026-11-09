@@ -1,3 +1,4 @@
+from decimal import Decimal
 import logging
 import os
 
@@ -15,6 +16,8 @@ from models.keranjang import KeranjangItem
 from models.pesanan import Pesanan, PesananItem, PesananRiwayat
 from models.produk import Produk
 from models.ulasan import Ulasan
+from models.kupon import Kupon
+from models.pembayaran import Pembayaran
 
 PER_HALAMAN = 10
 TAB = {
@@ -100,15 +103,35 @@ def checkout():
 
         kurir = form.metode_pengiriman.data == Pesanan.KURIR
         ongkir = _ongkir(form.metode_pengiriman.data)
+        diskon_kupon = Decimal('0')
+        kupon_obj = None
+        kode_input = (form.kode_kupon.data or "").strip().upper() if hasattr(form, 'kode_kupon') else ""
+        if kode_input:
+            kupon_obj = Kupon.query.filter_by(kode=kode_input, aktif=True).first()
+            if kupon_obj:
+                potongan = kupon_obj.hitung_diskon(subtotal)
+                if potongan > Decimal('0'):
+                    diskon_kupon = potongan
+                    kupon_obj.terpakai += 1
+                else:
+                    flash(f"Kupon {kode_input} tidak memenuhi syarat minimal belanja.", "warning")
+            else:
+                flash(f"Kode voucher '{kode_input}' tidak valid.", "warning")
+
+        total_akhir = max(Decimal('0'), Decimal(str(subtotal)) + Decimal(str(ongkir)) - diskon_kupon)
         pesanan = Pesanan(
             kode=Pesanan.buat_kode(), user_id=g.user.id, status=Pesanan.MENUNGGU_PEMBAYARAN,
             metode_pengiriman=form.metode_pengiriman.data, metode_pembayaran=form.metode_pembayaran.data,
             nama_penerima=form.nama_penerima.data, telepon=form.telepon.data,
             alamat=form.alamat.data if kurir else None, kota=form.kota.data if kurir else None,
             kode_pos=form.kode_pos.data if kurir else None, catatan=form.catatan.data or None,
-            subtotal=subtotal, ongkir=ongkir, total=subtotal + ongkir, batas_bayar=Pesanan.hitung_batas_bayar(),
+            subtotal=subtotal, ongkir=ongkir, diskon=diskon_kupon, kupon_id=kupon_obj.id if kupon_obj else None,
+            total=total_akhir, batas_bayar=Pesanan.hitung_batas_bayar(),
         )
         db.session.add(pesanan)
+        db.session.flush()
+        transaksi = Pembayaran(pesanan_id=pesanan.id, metode_pembayaran=pesanan.metode_pembayaran, jumlah=pesanan.total, status=Pembayaran.STATUS_PENDING, waktu_bayar=utcnow())
+        db.session.add(transaksi)
 
         # Kosongkan keranjang lebih dulu. Jika jumlah baris yang terhapus kurang, berarti keranjang ini
         # sudah diproses request lain (mis. tombol diklik dua kali), jadi pesanan kedua dibatalkan.

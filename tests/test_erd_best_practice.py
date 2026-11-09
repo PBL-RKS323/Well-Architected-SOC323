@@ -169,5 +169,66 @@ class TestERDBestPractice(unittest.TestCase):
         self.assertEqual(bayar.status, Pembayaran.STATUS_DIVERIFIKASI)
 
 
+    def test_05_favorit_routes_integration(self):
+        """Memvalidasi integrasi route /favorit dan /favorit/toggle."""
+        prod = Produk(nama_produk="iPad Pro M4", merek="Apple", kategori="Tablet", harga=Decimal("18000000"), stok=5, gambar="ipad.jpg")
+        db.session.add(prod)
+        db.session.commit()
+
+        client = self.app.test_client()
+        with client.session_transaction() as sess:
+            sess["user_id"] = self.cust.id
+            sess["sesi_token"] = self.cust.sesi_token
+
+        # Toggle favorit ON via POST
+        resp = client.post(f"/favorit/toggle/{prod.id}", follow_redirects=True)
+        self.assertEqual(resp.status_code, 200)
+        self.assertTrue(Favorit.is_favorit(self.cust.id, prod.id))
+
+        # Akses halaman daftar favorit
+        resp_list = client.get("/favorit")
+        self.assertEqual(resp_list.status_code, 200)
+        self.assertIn("iPad Pro M4", resp_list.get_data(as_text=True))
+
+    def test_06_checkout_with_kupon_integration(self):
+        """Memvalidasi alur checkout menggunakan kode kupon diskon."""
+        from models.keranjang import KeranjangItem
+        prod = Produk(nama_produk="MacBook Air M3", merek="Apple", kategori="Laptop", harga=Decimal("15000000"), stok=5, gambar="macbook.jpg")
+        kupon = Kupon(kode="HEMAT10", tipe=Kupon.TIPE_PERSEN, nilai=Decimal("10.0"), min_belanja=Decimal("5000000"), aktif=True)
+        db.session.add_all([prod, kupon])
+        db.session.commit()
+
+        # Tambahkan ke keranjang
+        item = KeranjangItem(user_id=self.cust.id, produk_id=prod.id, jumlah=1)
+        db.session.add(item)
+        db.session.commit()
+
+        client = self.app.test_client()
+        with client.session_transaction() as sess:
+            sess["user_id"] = self.cust.id
+            sess["sesi_token"] = self.cust.sesi_token
+
+        # POST checkout dengan kupon HEMAT10
+        data = {
+            "metode_pengiriman": "ambil",
+            "metode_pembayaran": "transfer",
+            "nama_penerima": "Budi Belanja",
+            "telepon": "081234567890",
+            "kode_kupon": "HEMAT10",
+        }
+        resp = client.post("/checkout", data=data, follow_redirects=True)
+        self.assertEqual(resp.status_code, 200)
+
+        # Cek pesanan yang terbentuk
+        pesanan = Pesanan.query.filter_by(user_id=self.cust.id).first()
+        self.assertIsNotNone(pesanan)
+        self.assertEqual(pesanan.kupon_id, kupon.id)
+        self.assertEqual(pesanan.diskon, Decimal("1500000.00"))  # 10% dari 15jt = 1.5jt
+        self.assertEqual(pesanan.total, Decimal("13500000.00"))
+        self.assertEqual(len(pesanan.daftar_transaksi), 1)
+        self.assertEqual(pesanan.daftar_transaksi[0].status, Pembayaran.STATUS_PENDING)
+
+
 if __name__ == "__main__":
     unittest.main()
+

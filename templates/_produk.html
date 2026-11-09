@@ -34,6 +34,17 @@
                 -{{ produk.diskon_persen }}%
             </span>
         {% endif %}
+        {# Tombol Favorit di pojok kanan atas foto #}
+        {% if g.user and g.user.punya_izin('belanja') %}
+        <form action="{{ url_for('belanja.favorit_toggle', produk_id=produk.id) }}" method="POST" class="absolute top-2 right-2 z-10">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="next" value="{{ request.full_path.rstrip('?') }}">
+            <button type="submit" aria-label="Favoritkan {{ produk.nama_produk }}"
+                    class="w-7 h-7 rounded-full bg-white/90 hover:bg-white text-slate-400 hover:text-coral flex items-center justify-center shadow-xs transition hover:scale-110 cursor-pointer">
+                {{ icon('heart', 'w-3.5 h-3.5') }}
+            </button>
+        </form>
+        {% endif %}
     </div>
 
     <!-- Kategori tag -->

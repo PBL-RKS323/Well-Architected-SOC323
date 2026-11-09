@@ -37,6 +37,10 @@ def isi_katalog(app, perbarui_foto=False):
     Mengembalikan (jumlah produk baru, jumlah foto diperbarui, jumlah produk yang dilengkapi).
     """
     dibuat = diperbarui = dilengkapi = 0
+    from models.kategori import Kategori
+    from models.kupon import Kupon
+    Kategori.inisialisasi_bawaan()
+    Kupon.inisialisasi_bawaan()
     for p in baca_katalog(app):
         spesifikasi = "\n".join(p.get("spesifikasi", [])) or None
         produk = Produk.query.filter_by(nama_produk=p["nama_produk"]).first()
