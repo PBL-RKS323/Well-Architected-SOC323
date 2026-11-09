@@ -101,33 +101,33 @@ PRODUCTS = [
     },
     {
         "id": "prod-6",
-        "name": "iPhone 14 128GB — Blue",
-        "slug": "iphone-14-128gb",
-        "brand": "Apple",
+        "name": "Samsung Galaxy S24 Ultra 12/256GB",
+        "slug": "samsung-galaxy-s24-ultra",
+        "brand": "Samsung",
         "category": "Smartphone",
-        "image": "a0332.png",
-        "price": 8999000,
-        "original_price": 10999000,
+        "image": "s24-ultra.png",
+        "price": 18999000,
+        "original_price": 21999000,
         "stock": 15,
-        "specs": "Chip A15 Bionic · Layar 6,1 inci · Penyimpanan 128GB",
-        "description": "Semua hal yang kamu sukai dari iPhone. Tangkap momen dengan sistem kamera ganda, nikmati layar Super Retina XDR, dan andalkan performa chip A15 Bionic. Warna Blue, kapasitas 128GB.",
-        "flash_sale": False,
-        "flash_sale_ends_at": None,
+        "specs": "Snapdragon 8 Gen 3 · Kamera 200MP · S Pen",
+        "description": "Era baru kecerdasan mobile. Galaxy S24 Ultra menghadirkan bodi titanium, kamera resolusi tinggi dengan ProVisual engine, dan layar Dynamic AMOLED 2X yang sangat cerah.",
+        "flash_sale": True,
+        "flash_sale_ends_at": "2026-10-31T23:59:59",
         "featured": True,
         "sort_order": 5
     },
     {
         "id": "prod-7",
-        "name": "realme Narzo 50 6/128GB",
-        "slug": "realme-narzo-50",
-        "brand": "realme",
-        "category": "Smartphone",
-        "image": "de46d.png",
-        "price": 1899000,
-        "original_price": 2499000,
-        "stock": 21,
-        "specs": "Helio G96 · Layar 120Hz · Pengisian cepat 33W",
-        "description": "Performa lebih, harga tetap pas. realme Narzo 50 dirancang untuk gaming dan aktivitas sehari-hari, dengan layar 120Hz yang mulus serta baterai besar untuk keseruan lebih lama.",
+        "name": "Sony WH-1000XM5 Wireless Headphones",
+        "slug": "sony-wh-1000xm5",
+        "brand": "Sony",
+        "category": "Audio",
+        "image": "sony-xm5.png",
+        "price": 4999000,
+        "original_price": 5999000,
+        "stock": 20,
+        "specs": "Active Noise Cancelling · 30 Jam Baterai · LDAC",
+        "description": "Ketenangan murni dalam setiap nada. Headphone noise-cancelling terdepan di industri dengan dua prosesor dan delapan mikrofon untuk kualitas suara tanpa kompromi.",
         "flash_sale": False,
         "flash_sale_ends_at": None,
         "featured": True,
@@ -135,158 +135,105 @@ PRODUCTS = [
     },
     {
         "id": "prod-8",
-        "name": "Xiaomi Redmi Note 12 8/128GB",
-        "slug": "xiaomi-redmi-note-12",
-        "brand": "Xiaomi",
-        "category": "Smartphone",
-        "image": "b862f.png",
-        "price": 2399000,
-        "original_price": 2899000,
-        "stock": 17,
-        "specs": "AMOLED 120Hz · RAM 8GB · Kamera utama 50MP",
-        "description": "Warna hidup di setiap layar. Redmi Note 12 menawarkan pengalaman visual AMOLED, performa responsif, dan kamera yang siap mengabadikan hari-harimu. Dilengkapi baterai 5.000 mAh dan pengisian cepat.",
+        "name": "Apple Watch Series 10 GPS 46mm",
+        "slug": "apple-watch-series-10",
+        "brand": "Apple",
+        "category": "Smartwatch",
+        "image": "apple-watch-10.png",
+        "price": 7499000,
+        "original_price": 7999000,
+        "stock": 10,
+        "specs": "Layar OLED Wide-Angle · Sensor EKG · Tahan Air 50m",
+        "description": "Desain tertipis dengan layar terluas yang pernah ada di Apple Watch. Dilengkapi fitur kesehatan mutakhir seperti deteksi sleep apnea dan sensor suhu air.",
         "flash_sale": False,
         "flash_sale_ends_at": None,
         "featured": True,
         "sort_order": 7
-    },
-    {
-        "id": "prod-9",
-        "name": "Sony PlayStation 5 Disc Edition",
-        "slug": "sony-playstation-5",
-        "brand": "Sony",
-        "category": "Gaming",
-        "image": "e6f97.png",
-        "price": 7499000,
-        "original_price": 8299000,
-        "stock": 9,
-        "specs": "SSD 825GB · Kontroler DualSense · Disc Edition",
-        "description": "Masuki dunia permainan generasi baru. PlayStation 5 menghadirkan pengalaman gaming imersif, waktu muat cepat, dan sensasi kontroler DualSense. Paket mencakup konsol serta satu kontroler.",
-        "flash_sale": False,
-        "flash_sale_ends_at": None,
-        "featured": True,
-        "sort_order": 8
-    },
-    {
-        "id": "prod-10",
-        "name": "Xbox Wireless Controller — Black",
-        "slug": "xbox-wireless-controller",
-        "brand": "Microsoft",
-        "category": "Aksesori",
-        "image": "dd62b.png",
-        "price": 799000,
-        "original_price": 999000,
-        "stock": 25,
-        "specs": "Wireless · Kompatibel Xbox & PC · Ergonomis",
-        "description": "Kontrol presisi untuk permainan favoritmu. Kontroler wireless berdesain ergonomis dengan grip nyaman, D-pad responsif, dan konektivitas praktis untuk konsol maupun PC.",
-        "flash_sale": False,
-        "flash_sale_ends_at": None,
-        "featured": True,
-        "sort_order": 9
-    },
-    {
-        "id": "prod-11",
-        "name": "DJI Phantom 4 Camera Drone",
-        "slug": "dji-phantom-4",
-        "brand": "DJI",
-        "category": "Kamera",
-        "image": "9596c.png",
-        "price": 18999000,
-        "original_price": 20999000,
-        "stock": 4,
-        "specs": "Video 4K · Gimbal stabil · Kontrol jarak jauh",
-        "description": "Sudut pandang baru untuk kreativitasmu. DJI Phantom menghadirkan perekaman udara stabil dan kontrol intuitif. Gunakan sesuai peraturan penerbangan drone yang berlaku di wilayahmu.",
-        "flash_sale": False,
-        "flash_sale_ends_at": None,
-        "featured": True,
-        "sort_order": 10
-    },
-    {
-        "id": "prod-12",
-        "name": "Smart Indoor Camera 1080p",
-        "slug": "smart-indoor-camera",
-        "brand": "Gadgetin",
-        "category": "Kamera",
-        "image": "9d954.png",
-        "price": 349000,
-        "original_price": 499000,
-        "stock": 38,
-        "specs": "Full HD 1080p · Wi-Fi · Pemantauan melalui aplikasi",
-        "description": "Tetap terhubung dengan rumahmu. Kamera indoor pintar dengan video Full HD, pandangan malam, dan audio dua arah. Membutuhkan jaringan Wi-Fi dan aplikasi yang kompatibel.",
-        "flash_sale": False,
-        "flash_sale_ends_at": None,
-        "featured": True,
-        "sort_order": 11
     }
 ]
 
-CATEGORIES = ["Smartphone", "Laptop", "Smartwatch", "Audio", "Gaming", "Kamera", "Aksesori"]
+# Helper to find product by slug or id
+def get_product(slug_or_id):
+    for p in PRODUCTS:
+        if p["slug"] == slug_or_id or p["id"] == slug_or_id:
+            return p
+    return None
 
-# 1. Beranda / Home
+# Context processor: inject common variables
+@app.context_processor
+def inject_globals():
+    return {
+        "categories": ["Semua", "Smartphone", "Laptop", "Smartwatch", "Audio"],
+        "brands": ["Semua", "Apple", "Samsung", "Xiaomi", "POCO", "Sony", "Beats", "Amazfit"]
+    }
+
+# 1. Beranda (Landing Page)
 @app.route("/")
 def index():
-    deals = [p for p in PRODUCTS if p.get("flash_sale")][:4]
-    featured = [p for p in PRODUCTS if p.get("featured")][:8]
+    flash_sale_products = [p for p in PRODUCTS if p["flash_sale"]]
+    featured_products = [p for p in PRODUCTS if p["featured"]]
+    categories = [
+        {"name": "Smartphone", "icon": "smartphone", "count": 18},
+        {"name": "Laptop", "icon": "laptop", "count": 12},
+        {"name": "Audio", "icon": "headphones", "count": 15},
+        {"name": "Smartwatch", "icon": "watch", "count": 9},
+        {"name": "Aksesoris", "icon": "cable", "count": 24}
+    ]
     return render_template(
         "index.html",
-        deals=deals,
-        featured=featured,
+        flash_sale_products=flash_sale_products,
+        featured_products=featured_products,
+        categories=categories,
         active_page="beranda"
     )
 
-# 2. Katalog Produk
-@app.route("/katalog")
+# 2. Katalog / Jelajah Produk
+@app.route("/produk")
 @app.route("/products")
 def products():
-    category = request.args.get("kategori", "").strip()
-    brand = request.args.get("brand", "").strip()
-    query = request.args.get("q", "").strip().lower()
-    promo = request.args.get("promo", "") == "1"
-
-    filtered = PRODUCTS
-    if category:
+    category = request.args.get("kategori", "Semua")
+    brand = request.args.get("merek", "Semua")
+    q = request.args.get("q", "").strip().lower()
+    sort = request.args.get("sort", "default")
+    
+    filtered = PRODUCTS.copy()
+    
+    if category and category != "Semua":
         filtered = [p for p in filtered if p["category"].lower() == category.lower()]
-    if brand:
+    if brand and brand != "Semua":
         filtered = [p for p in filtered if p["brand"].lower() == brand.lower()]
-    if promo:
-        filtered = [p for p in filtered if p.get("flash_sale")]
-    if query:
-        filtered = [
-            p for p in filtered
-            if query in p["name"].lower()
-            or query in p["brand"].lower()
-            or query in p["category"].lower()
-        ]
-
-    brands = sorted(list(set(p["brand"] for p in PRODUCTS)))
-
+    if q:
+        filtered = [p for p in filtered if q in p["name"].lower() or q in p["description"].lower()]
+        
+    if sort == "price_asc":
+        filtered.sort(key=lambda x: x["price"])
+    elif sort == "price_desc":
+        filtered.sort(key=lambda x: x["price"], reverse=True)
+    elif sort == "newest":
+        filtered.sort(key=lambda x: x["sort_order"], reverse=True)
+        
     return render_template(
         "products.html",
         products=filtered,
-        brands=brands,
-        total_count=len(PRODUCTS),
-        active_category=category,
-        active_brand=brand,
-        is_promo=promo,
-        query=query,
-        active_page="katalog"
+        selected_category=category,
+        selected_brand=brand,
+        search_query=q,
+        current_sort=sort,
+        active_page="produk"
     )
 
 # 3. Detail Produk
-@app.route("/produk/<slug>")
-def product_detail(slug):
-    product = next((p for p in PRODUCTS if p["slug"] == slug), None)
+@app.route("/produk/<slug_or_id>")
+def product_detail(slug_or_id):
+    product = get_product(slug_or_id)
     if not product:
         abort(404)
-
-    related = [p for p in PRODUCTS if p["id"] != product["id"]]
-    related.sort(key=lambda p: p["category"] == product["category"], reverse=True)
-
+    related = [p for p in PRODUCTS if p["category"] == product["category"] and p["id"] != product["id"]][:4]
     return render_template(
         "product_detail.html",
         product=product,
-        related=related,
-        active_page="katalog"
+        related_products=related,
+        active_page="produk"
     )
 
 # 4. Keranjang Belanja
@@ -347,5 +294,6 @@ def server_error(e):
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port, debug=True)
-
+    host = os.environ.get("HOST", "127.0.0.1")
+    debug_mode = os.environ.get("FLASK_DEBUG", "0") == "1"
+    app.run(host=host, port=port, debug=debug_mode)

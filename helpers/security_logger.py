@@ -102,8 +102,8 @@ def ambil_aktivitas_keamanan(user_id, email=None, username=None, limit=5):
                         })
                         if len(hasil) >= limit:
                             break
-        except Exception:
-            pass
+        except (OSError, UnicodeDecodeError, ValueError) as err:
+            _logger.debug("Gagal membaca berkas log keamanan: %s", err)
 
     if not hasil:
         waktu_sekarang = datetime.now(WIB).strftime("%Y-%m-%d %H:%M:%S WIB")
