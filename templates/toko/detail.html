@@ -91,7 +91,7 @@
                 </div>
             </form>
             {% else %}
-            <a href="{{ url_for('auth.login', next=request.path) }}" class="mt-5 flex items-center justify-center gap-2 bg-brand hover:bg-brand-dark text-white font-medium py-3.5 rounded-full">
+            <a href="{{ url_for('auth.login', next=request.full_path.rstrip('?')) }}" class="mt-5 flex items-center justify-center gap-2 bg-brand hover:bg-brand-dark text-white font-medium py-3.5 rounded-full">
                 Masuk untuk membeli
             </a>
             {% endif %}

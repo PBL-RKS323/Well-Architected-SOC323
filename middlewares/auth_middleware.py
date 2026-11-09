@@ -55,7 +55,7 @@ def init_auth_middleware(app):
         if g.user is None:
             flash("Silakan login terlebih dahulu untuk mengakses halaman ini.", "warning")
             # next hanya untuk GET (URL aksi POST tidak bisa dibuka ulang setelah login)
-            return redirect(url_for("auth.login", next=request.path if request.method == "GET" else None))
+            return redirect(url_for("auth.login", next=request.full_path.rstrip("?") if request.method == "GET" else None))
 
         # 3. Otorisasi area panel: peran dibaca dari database setiap request, bukan dari sesi.
         #    Izin rinci (kelola_produk, kelola_user, ...) dicek lagi oleh izin_required di controller.
