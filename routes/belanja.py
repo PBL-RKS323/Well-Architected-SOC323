@@ -49,6 +49,12 @@ def checkout():
     return pesanan_controller.checkout()
 
 
+@belanja_bp.route("/checkout/cek-kupon", methods=["POST"])
+def checkout_cek_kupon():
+    return pesanan_controller.cek_kupon()
+
+
+
 @belanja_bp.route("/pesanan")
 def pesanan():
     return pesanan_controller.index()

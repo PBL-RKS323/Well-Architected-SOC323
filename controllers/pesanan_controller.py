@@ -311,3 +311,41 @@ def beli_lagi(kode):
     else:
         flash("Produk dari pesanan ini sudah tidak tersedia.", "warning")
     return redirect(url_for("belanja.keranjang"))
+
+
+@pelanggan_required
+def cek_kupon():
+    """Endpoint AJAX untuk memeriksa validitas kode kupon dan mengestimasi nilai potongan belanja."""
+    data = request.get_json(silent=True) or {}
+    kode = (data.get("kode") or request.form.get("kode") or "").strip().upper()
+    subtotal_str = (data.get("subtotal") or request.form.get("subtotal") or "0")
+    try:
+        subtotal = Decimal(str(subtotal_str))
+    except (ValueError, ArithmeticError):
+        subtotal = Decimal("0")
+
+    if not kode:
+        return jsonify({"valid": False, "pesan": "Kode voucher tidak boleh kosong."}), 400
+
+    kupon = Kupon.query.filter_by(kode=kode, aktif=True).first()
+    if not kupon:
+        return jsonify({"valid": False, "pesan": f"Kode kupon '{kode}' tidak ditemukan atau sudah tidak aktif."}), 404
+
+    if subtotal < Decimal(str(kupon.min_belanja or 0)):
+        return jsonify({
+            "valid": False,
+            "pesan": f"Minimal belanja untuk kupon ini adalah Rp {int(kupon.min_belanja):,}."
+        }), 400
+
+    if kupon.kuota and kupon.terpakai >= kupon.kuota:
+        return jsonify({"valid": False, "pesan": "Kuota kupon telah habis."}), 400
+
+    potongan = kupon.hitung_diskon(subtotal)
+    return jsonify({
+        "valid": True,
+        "kode": kupon.kode,
+        "potongan": float(potongan),
+        "potongan_formatted": f"Rp {int(potongan):,}".replace(",", "."),
+        "pesan": f"Kupon {kupon.kode} berhasil diterapkan! Diskon: Rp {int(potongan):,}".replace(",", ".")
+    })
+
