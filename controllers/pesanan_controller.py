@@ -2,7 +2,7 @@ from decimal import Decimal
 import logging
 import os
 
-from flask import render_template, redirect, url_for, flash, request, g, current_app, abort, send_from_directory
+from flask import render_template, redirect, url_for, flash, request, g, current_app, abort, send_from_directory, jsonify
 from sqlalchemy import exists
 
 from controllers.toko_controller import _escape_like
