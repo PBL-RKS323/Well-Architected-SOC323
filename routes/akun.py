@@ -1,4 +1,4 @@
-"""Akun pengguna yang sudah login: profil, pengaturan (nama, email, kata sandi, foto), dan alamat tersimpan."""
+"""Akun pengguna yang sudah login: profil, pengaturan (nama, biodata, email, kata sandi, foto), dan alamat tersimpan."""
 from flask import Blueprint
 
 from controllers import akun_controller, alamat_controller
@@ -18,6 +18,7 @@ def pengaturan():
 
 
 @akun_bp.route("/pengaturan/nama", methods=["POST"])
+@akun_bp.route("/pengaturan/biodata", methods=["POST"])
 def pengaturan_nama():
     return akun_controller.ubah_nama()
 

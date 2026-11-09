@@ -4,12 +4,13 @@ import os
 from flask import render_template, redirect, url_for, flash, session, g, current_app, request
 
 from controllers.auth_controller import mulai_sesi
-from forms.akun_form import UbahNamaForm, UbahEmailForm, UbahPasswordForm, AvatarForm
+from forms.akun_form import UbahBiodataForm, UbahNamaForm, UbahEmailForm, UbahPasswordForm, AvatarForm
 from helpers.email import email_aktif
 from helpers.image_security import simpan_avatar, delete_image
 from helpers.security_logger import log_event, ambil_aktivitas_keamanan
 from models import db
 from models.alamat import Alamat
+from models.favorit import Favorit
 from models.pesanan import Pesanan
 
 
@@ -17,10 +18,21 @@ def folder_avatar():
     return os.path.join(current_app.config["UPLOAD_FOLDER"], "avatar")
 
 
+def _buat_biodata_form(formdata=None):
+    return UbahBiodataForm(
+        prefix="nama",
+        formdata=formdata,
+        nama_lengkap=g.user.nama_lengkap,
+        telepon=g.user.telepon or "",
+        jenis_kelamin=g.user.jenis_kelamin or "",
+        tanggal_lahir=g.user.tanggal_lahir,
+    )
+
+
 def _render(nama_form=None, email_form=None, password_form=None, avatar_form=None):
     return render_template(
         "akun/pengaturan.html",
-        nama_form=nama_form or UbahNamaForm(prefix="nama", formdata=None, nama_lengkap=g.user.nama_lengkap),
+        nama_form=nama_form or _buat_biodata_form(),
         email_form=email_form or UbahEmailForm(prefix="email", formdata=None),
         password_form=password_form or UbahPasswordForm(prefix="pw", formdata=None),
         avatar_form=avatar_form or AvatarForm(prefix="foto", formdata=None),
@@ -64,19 +76,25 @@ def profil():
     pesanan_terbaru, ringkasan = [], {}
     semua_pesanan = []
     alamat_list = []
+    daftar_favorit = []
 
     if g.user.punya_izin("belanja"):
         milik = Pesanan.query.filter_by(user_id=g.user.id)
         semua_pesanan = milik.order_by(Pesanan.created_at.desc()).limit(10).all()
         pesanan_terbaru = semua_pesanan[:3]
+        total_favorit = g.user.daftar_favorit.count() if hasattr(g.user, "daftar_favorit") else 0
         ringkasan = {
             "aktif": milik.filter(Pesanan.status.in_(Pesanan.STATUS_AKTIF)).count(),
             "selesai": milik.filter_by(status=Pesanan.SELESAI).count(),
             "total": milik.count(),
+            "favorit": total_favorit,
         }
         alamat_list = Alamat.milik(g.user.id).all()
+        if hasattr(g.user, "daftar_favorit"):
+            fav_items = g.user.daftar_favorit.order_by(Favorit.created_at.desc()).limit(8).all()
+            daftar_favorit = [item.produk for item in fav_items if item.produk is not None]
 
-    nama_form = UbahNamaForm(prefix="nama", formdata=None, nama_lengkap=g.user.nama_lengkap)
+    nama_form = _buat_biodata_form()
     email_form = UbahEmailForm(prefix="email", formdata=None)
     password_form = UbahPasswordForm(prefix="pw", formdata=None)
     avatar_form = AvatarForm(prefix="foto", formdata=None)
@@ -98,6 +116,7 @@ def profil():
         semua_pesanan=semua_pesanan,
         ringkasan=ringkasan,
         alamat_list=alamat_list,
+        daftar_favorit=daftar_favorit,
         nama_form=nama_form,
         email_form=email_form,
         password_form=password_form,
@@ -113,11 +132,15 @@ def pengaturan():
 
 
 def ubah_nama():
-    form = UbahNamaForm(prefix="nama")
+    form = UbahBiodataForm(prefix="nama")
     if form.validate_on_submit():
         g.user.nama_lengkap = " ".join(form.nama_lengkap.data.split())
+        g.user.telepon = form.telepon.data.strip() if form.telepon.data else None
+        g.user.jenis_kelamin = form.jenis_kelamin.data if form.jenis_kelamin.data else None
+        g.user.tanggal_lahir = form.tanggal_lahir.data if form.tanggal_lahir.data else None
         db.session.commit()
-        flash("Nama berhasil diperbarui.", "success")
+        log_event("BIODATA_CHANGED", user_id=g.user.id, username=g.user.username)
+        flash("Biodata profil berhasil diperbarui.", "success")
         if request.referrer and "profil" in request.referrer:
             return redirect(url_for("akun.profil", tab="profil"))
         return redirect(url_for("akun.pengaturan"))
@@ -129,7 +152,7 @@ def ubah_email():
     if form.validate_on_submit():
         if not g.user.check_password(form.password_sekarang.data):
             log_event("CREDENTIAL_CHANGE_FAILED", logging.WARNING, user_id=g.user.id,
-                      target="email", reason="wrong_current_password")
+                       target="email", reason="wrong_current_password")
             form.password_sekarang.errors.append("Kata sandi saat ini salah.")
             return _render(email_form=form)
 
@@ -148,7 +171,7 @@ def ubah_password():
     if form.validate_on_submit():
         if not g.user.check_password(form.password_sekarang.data):
             log_event("CREDENTIAL_CHANGE_FAILED", logging.WARNING, user_id=g.user.id,
-                      target="password", reason="wrong_current_password")
+                       target="password", reason="wrong_current_password")
             form.password_sekarang.errors.append("Kata sandi saat ini salah.")
             return _render(password_form=form)
         if g.user.check_password(form.password_baru.data):

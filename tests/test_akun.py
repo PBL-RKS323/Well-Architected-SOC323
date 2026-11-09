@@ -118,3 +118,39 @@ def test_ubah_password_ditolak_jika_password_lama_salah(client, app):
         "pw-password_baru": "BaruLagi99#", "pw-konfirmasi_password": "BaruLagi99#",
     })
     assert "Kata sandi saat ini salah" in resp.get_data(as_text=True)
+
+
+def test_ubah_biodata_berhasil(client, app):
+    login(client, "budi@tokoelektronik.id", CUSTOMER_PASSWORD)
+    resp = client.post("/pengaturan/nama", data={
+        "nama-nama_lengkap": "Budi Setiawan Santoso",
+        "nama-telepon": "081234567890",
+        "nama-jenis_kelamin": "Laki-laki",
+        "nama-tanggal_lahir": "1995-08-17",
+    })
+    assert resp.status_code == 302
+    with app.app_context():
+        user = User.query.filter_by(email="budi@tokoelektronik.id").first()
+        assert user.nama_lengkap == "Budi Setiawan Santoso"
+        assert user.telepon == "081234567890"
+        assert user.jenis_kelamin == "Laki-laki"
+        assert str(user.tanggal_lahir) == "1995-08-17"
+    assert "BIODATA_CHANGED" in read_log(app)
+
+
+def test_ubah_biodata_validasi_telepon_ditolak_jika_format_salah(client):
+    login(client, "budi@tokoelektronik.id", CUSTOMER_PASSWORD)
+    resp = client.post("/pengaturan/nama", data={
+        "nama-nama_lengkap": "Budi Setiawan",
+        "nama-telepon": "nomor-telepon-salah",
+    })
+    assert "Nomor telepon hanya boleh berisi angka" in resp.get_data(as_text=True)
+
+
+def test_halaman_profil_lengkap_dan_tab_favorit(client):
+    login(client, "budi@tokoelektronik.id", CUSTOMER_PASSWORD)
+    html = client.get("/profil?tab=favorit").get_data(as_text=True)
+    assert "Biodata Diri" in html
+    assert "Wishlist Favorit" in html
+    assert "Keamanan Akun & SOC" in html
+    assert "@budi" in html

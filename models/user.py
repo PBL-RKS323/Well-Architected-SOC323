@@ -51,6 +51,10 @@ class User(db.Model):
     email_terverifikasi = db.Column(db.Boolean, nullable=False, default=True, server_default=db.true())
     # ID akun Google ("sub" dari OpenID Connect), terisi setelah pertama kali masuk dengan Google
     google_sub = db.Column(db.String(255), unique=True, nullable=True)
+    # Biodata tambahan standar e-commerce (Shopee/Tokopedia)
+    telepon = db.Column(db.String(20), nullable=True)
+    jenis_kelamin = db.Column(db.String(20), nullable=True)
+    tanggal_lahir = db.Column(db.Date, nullable=True)
     created_at = db.Column(db.DateTime, nullable=False, default=utcnow)
 
     def set_password(self, password):

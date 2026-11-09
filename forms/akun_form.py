@@ -1,20 +1,37 @@
 from flask import g
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileRequired, FileAllowed
-from wtforms import StringField, PasswordField, SubmitField
-from wtforms.validators import DataRequired, Email, Length, EqualTo, Regexp, ValidationError
+from wtforms import StringField, PasswordField, SubmitField, SelectField, DateField
+from wtforms.validators import DataRequired, Email, Length, EqualTo, Regexp, ValidationError, Optional
 
 from forms.auth_form import PASSWORD_POLICY, PASSWORD_POLICY_MESSAGE, NAMA_POLICY, rapikan_email
 from models.user import User
 
 
-class UbahNamaForm(FlaskForm):
+class UbahBiodataForm(FlaskForm):
     nama_lengkap = StringField("Nama Lengkap", validators=[
         DataRequired(message="Nama lengkap wajib diisi."),
         Length(min=3, max=100, message="Nama lengkap harus 3-100 karakter."),
         Regexp(NAMA_POLICY, message="Nama hanya boleh berisi huruf, spasi, titik, tanda hubung, dan apostrof."),
     ])
-    submit = SubmitField("Simpan Nama")
+    telepon = StringField("Nomor HP / WhatsApp", validators=[
+        Optional(),
+        Length(min=9, max=20, message="Nomor telepon harus antara 9-20 digit."),
+        Regexp(r"^[0-9\+\-\s]+$", message="Nomor telepon hanya boleh berisi angka, tanda plus (+), dan tanda hubung (-)."),
+    ])
+    jenis_kelamin = SelectField("Jenis Kelamin", choices=[
+        ("", "-- Pilih Jenis Kelamin --"),
+        ("Laki-laki", "Laki-laki"),
+        ("Perempuan", "Perempuan"),
+        ("Lainnya", "Lainnya"),
+    ], validators=[Optional()])
+    tanggal_lahir = DateField("Tanggal Lahir", format="%Y-%m-%d", validators=[Optional()])
+    submit = SubmitField("Simpan Biodata")
+
+
+# Alias backward-compatible untuk controller dan tes lama
+class UbahNamaForm(UbahBiodataForm):
+    pass
 
 
 class UbahEmailForm(FlaskForm):
