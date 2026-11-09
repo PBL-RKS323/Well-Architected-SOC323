@@ -3,25 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}{{ app_name }}{% endblock %}</title>
+    <title>{% block title %}{{ app_name }} - Your One-Stop Electronic Market{% endblock %}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap">
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    {# Palet & tipografi dari moodboard Figma. Biru, abu, dan merah digelapkan sedikit agar teks
-       lolos kontras WCAG AA (min. 4,5:1) di atas putih, soft, dan brand-soft. Lihat docs/DESIGN.md. #}
     <style type="text/tailwindcss">
         @theme {
             --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
             --font-display: "Plus Jakarta Sans", "Inter", ui-sans-serif, sans-serif;
-            --color-brand: #1A68D1;
-            --color-brand-dark: #1553A8;
-            --color-brand-soft: #EAF2FD;
-            --color-ink: #1F2937;
-            --color-muted: #636B78;
-            --color-soft: #F4F6F8;
-            --color-peach: #FDF0EA;
-            --color-coral: #C8291D;
+            --color-brand: #F05537;
+            --color-brand-dark: #D94426;
+            --color-brand-soft: #FFF2EE;
+            --color-ink: #1A1D20;
+            --color-muted: #71777D;
+            --color-soft: #F8F9FA;
+            --color-peach: #FFF2EE;
+            --color-coral: #F05537;
         }
         .scrollbar-none { scrollbar-width: none; }
         .scrollbar-none::-webkit-scrollbar { display: none; }

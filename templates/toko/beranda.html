@@ -1,117 +1,358 @@
 {% extends 'layouts/toko.html' %}
 {% from '_icons.html' import icon %}
 {% from '_produk.html' import kartu, IKON_KATEGORI %}
-{% block content %}
-{# Pencarian (HP; di desktop kolom cari ada di header) #}
-<form action="{{ url_for('toko.jelajah') }}" method="GET" class="md:hidden flex gap-2 mb-5">
-    <label class="relative flex-1">
-        <span class="sr-only">Cari produk</span>
-        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-muted">{{ icon('search', 'w-5 h-5') }}</span>
-        <input type="search" name="q" placeholder="Cari handphone, laptop, smartwatch..."
-               class="w-full bg-white border border-slate-100 rounded-2xl pl-12 pr-4 py-3.5 outline-none focus:ring-4 focus:ring-brand/15 focus:border-brand">
-    </label>
-    <a href="{{ url_for('toko.jelajah') }}" aria-label="Filter produk" class="w-13 shrink-0 bg-white border border-slate-100 rounded-2xl flex items-center justify-center text-ink hover:bg-brand-soft">
-        {{ icon('sliders-horizontal', 'w-5 h-5') }}
-    </a>
-</form>
 
-{# Carousel produk unggulan = diskon terbesar. Label hanya menyebut fakta (persen diskon), bukan periode promo.
-   Tidak berganti otomatis; digeser jari di HP, tombol panah di desktop, titik penanda posisi. #}
-<h1 class="sr-only">{{ app_name }}</h1>
-{% if unggulan %}
-<section class="relative" aria-roledescription="carousel" aria-label="Produk unggulan" data-carousel>
-    <div class="flex overflow-x-auto snap-x snap-mandatory scrollbar-none rounded-3xl" data-carousel-track>
-        {% for p in unggulan %}
-        <div class="w-full shrink-0 snap-start bg-peach p-5 md:py-10 md:px-20 flex items-center gap-4"
-             role="group" aria-roledescription="slide" aria-label="{{ loop.index }} dari {{ unggulan | length }}">
-            <div class="flex-1 min-w-0">
-                {% if p.diskon_persen %}
-                <p class="text-sm font-bold text-coral">Diskon {{ p.diskon_persen }}%</p>
-                {% endif %}
-                <h2 class="font-display text-2xl md:text-4xl font-extrabold leading-tight mt-2 line-clamp-2">{{ p.nama_produk }}</h2>
-                <p class="text-sm text-muted mt-1">{{ p.merek }} &middot; {{ p.kategori }}</p>
-                <div class="flex flex-wrap items-end gap-x-5 gap-y-3 mt-5">
-                    <a href="{{ url_for('toko.produk_detail', produk_id=p.id) }}"
-                       class="inline-flex items-center gap-2 bg-brand hover:bg-brand-dark text-white font-medium px-5 py-3 rounded-full">
-                        Lihat Produk
-                    </a>
-                    <div>
-                        {% if p.diskon_persen %}<p class="text-xs text-muted line-through">{{ p.harga_normal | rupiah }}</p>{% endif %}
-                        <p class="font-display text-xl md:text-2xl font-extrabold">{{ p.harga | rupiah }}</p>
+{% block content %}
+<div class="space-y-12 md:space-y-16">
+
+    <!-- HERO CAROUSEL SECTION: YOUR ONE-STOP ELECTRONIC MARKET -->
+    {% if unggulan %}
+    <section class="bg-white rounded-3xl border border-slate-100 p-6 md:p-10 lg:p-14 relative overflow-hidden shadow-xs" data-carousel aria-label="Produk unggulan" aria-roledescription="carousel">
+        <div class="flex overflow-x-auto snap-x snap-mandatory scrollbar-none rounded-3xl" data-carousel-track>
+            {% for p in unggulan %}
+            <div class="w-full shrink-0 snap-start grid md:grid-cols-2 gap-8 items-center"
+                 role="group" aria-roledescription="slide" aria-label="{{ loop.index }} dari {{ unggulan | length }}">
+                <div class="space-y-4 text-center md:text-left z-10">
+                    <div class="flex flex-wrap items-center justify-center md:justify-start gap-2">
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-brand-soft text-brand">
+                            {{ icon('zap', 'w-3.5 h-3.5') }} SALE &amp; DISKON SETIAP HARI
+                        </span>
+                        {% if p.diskon_persen %}
+                        <span class="text-xs font-bold text-coral bg-red-50 px-3 py-1 rounded-full">Diskon {{ p.diskon_persen }}%</span>
+                        {% endif %}
+                    </div>
+                    <h1 class="font-display text-3xl sm:text-4xl lg:text-5xl font-black text-ink leading-tight tracking-tight">
+                        {{ p.nama_produk }}
+                    </h1>
+                    <p class="text-sm md:text-base text-muted max-w-lg leading-relaxed">
+                        {{ p.ringkasan_spesifikasi or 'Pusat belanja gadget, laptop, dan produk elektronik original bergaransi resmi.' }}
+                    </p>
+                    <div class="flex items-center justify-center md:justify-start gap-4 pt-1">
+                        {% if p.diskon_persen %}
+                        <p class="text-sm text-muted line-through">{{ p.harga_normal | rupiah }}</p>
+                        {% endif %}
+                        <p class="font-display font-extrabold text-2xl md:text-3xl text-ink">{{ p.harga | rupiah }}</p>
+                    </div>
+                    <div class="pt-2 flex flex-wrap justify-center md:justify-start gap-4">
+                        <a href="{{ url_for('toko.produk_detail', produk_id=p.id) }}" class="inline-flex items-center gap-2 bg-brand hover:bg-brand-dark text-white font-bold text-sm px-8 py-3.5 rounded-full shadow-md shadow-brand/20 transition transform hover:-translate-y-0.5">
+                            Lihat Produk {{ icon('arrow-right', 'w-4 h-4') }}
+                        </a>
+                        <a href="{{ url_for('toko.jelajah') }}" class="inline-flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-ink font-bold text-sm px-6 py-3.5 rounded-full transition">
+                            Semua Produk
+                        </a>
+                    </div>
+                </div>
+
+                <!-- HERO IMAGE SHOWCASE -->
+                <div class="relative flex items-center justify-center">
+                    <div class="w-full max-w-md aspect-4/3 rounded-2xl bg-gradient-to-tr from-slate-100 to-slate-50 border border-slate-100 p-6 flex items-center justify-center shadow-inner relative">
+                        <img src="{{ url_for('static', filename='uploads/' ~ p.gambar) }}" alt="{{ p.nama_produk }}"
+                             class="max-h-64 object-contain drop-shadow-2xl transform hover:scale-105 transition duration-300" {{ 'loading=lazy' if not loop.first }}>
                     </div>
                 </div>
             </div>
-            <img src="{{ url_for('static', filename='uploads/' ~ p.gambar) }}" alt="{{ p.nama_produk }}"
-                 class="w-28 h-28 sm:w-40 sm:h-40 md:w-72 md:h-72 shrink-0 object-cover rounded-2xl" {{ 'loading=lazy' if not loop.first }}>
+            {% endfor %}
         </div>
-        {% endfor %}
-    </div>
-    {% if unggulan | length > 1 %}
-    <button type="button" data-carousel-prev aria-label="Produk unggulan sebelumnya"
-            class="hidden md:flex absolute left-4 top-1/2 -translate-y-1/2 -mt-6 w-11 h-11 rounded-full bg-white border border-slate-200 items-center justify-center hover:bg-soft cursor-pointer">{{ icon('chevron-left', 'w-5 h-5') }}</button>
-    <button type="button" data-carousel-next aria-label="Produk unggulan berikutnya"
-            class="hidden md:flex absolute right-4 top-1/2 -translate-y-1/2 -mt-6 w-11 h-11 rounded-full bg-white border border-slate-200 items-center justify-center hover:bg-soft cursor-pointer">{{ icon('chevron-right', 'w-5 h-5') }}</button>
-    <div class="flex justify-center items-center">
-        {% for p in unggulan %}
-        <button type="button" data-carousel-dot="{{ loop.index0 }}" aria-label="Tampilkan produk unggulan {{ loop.index }}"
-                class="w-11 h-11 flex items-center justify-center cursor-pointer">
-            <span class="block h-2 w-2 rounded-full bg-slate-300 transition-all data-[aktif]:w-6 data-[aktif]:bg-brand" {{ 'data-aktif' if loop.first }}></span>
-        </button>
-        {% endfor %}
-        {# Putar otomatis tiap 3 detik; tombol ini menjeda/melanjutkan (konten bergerak wajib bisa dihentikan) #}
-        <button type="button" data-carousel-jeda aria-label="Jeda putar otomatis"
-                class="w-11 h-11 flex items-center justify-center rounded-full text-muted hover:text-ink cursor-pointer">
-            <span data-ikon-jeda>{{ icon('pause', 'w-4 h-4') }}</span>
-            <span data-ikon-putar class="hidden">{{ icon('play', 'w-4 h-4') }}</span>
-        </button>
-    </div>
+
+        {% if unggulan | length > 1 %}
+        <div class="flex justify-center items-center gap-2 pt-6">
+            {% for p in unggulan %}
+            <button type="button" data-carousel-dot="{{ loop.index0 }}" aria-label="Tampilkan slide {{ loop.index }}"
+                    class="w-8 h-8 flex items-center justify-center cursor-pointer">
+                <span class="block h-2 w-2 rounded-full bg-slate-300 transition-all data-[aktif]:w-6 data-[aktif]:bg-brand" {{ 'data-aktif' if loop.first }}></span>
+            </button>
+            {% endfor %}
+            <button type="button" data-carousel-jeda aria-label="Jeda putar otomatis"
+                    class="w-8 h-8 flex items-center justify-center rounded-full text-muted hover:text-ink cursor-pointer">
+                <span data-ikon-jeda>{{ icon('pause', 'w-3.5 h-3.5') }}</span>
+                <span data-ikon-putar class="hidden">{{ icon('play', 'w-3.5 h-3.5') }}</span>
+            </button>
+        </div>
+        {% endif %}
+    </section>
+    {% else %}
+    <section class="rounded-3xl bg-white p-8 md:p-12 text-center border border-slate-100">
+        <h1 class="font-display text-3xl font-extrabold text-ink">e-shop. Electronic Market</h1>
+        <p class="text-muted mt-2">Pusat belanja gadget dan aksesoris elektronik terpercaya.</p>
+    </section>
     {% endif %}
-</section>
-{% else %}
-<section class="rounded-3xl bg-peach p-6 md:p-10">
-    <h1 class="font-display text-2xl md:text-4xl font-extrabold">Handphone, laptop, dan gadget pilihan</h1>
-    <p class="text-muted mt-2">Belum ada produk yang dijual. Pantau terus toko kami.</p>
-</section>
-{% endif %}
 
-{# Kategori #}
-<section class="mt-8">
-    <h2 class="flex items-center gap-2 font-display text-lg md:text-xl font-bold mb-3">
-        <span class="w-1 h-5 rounded-full bg-brand"></span> Kategori Belanja
-    </h2>
-    <div class="flex gap-3 overflow-x-auto scrollbar-none -mx-4 px-4 md:mx-0 md:px-0 md:grid md:grid-cols-6">
-        {% for k in kategori_list %}
-        <a href="{{ url_for('toko.jelajah', kategori=k) }}"
-           class="shrink-0 w-24 md:w-auto bg-white border border-slate-100 rounded-2xl py-4 flex flex-col items-center gap-2 hover:border-brand hover:text-brand transition">
-            <span class="w-12 h-12 rounded-full bg-soft flex items-center justify-center">{{ icon(IKON_KATEGORI[k], 'w-6 h-6') }}</span>
-            <span class="text-xs font-medium">{{ k }}</span>
-        </a>
-        {% endfor %}
-    </div>
-</section>
+    <!-- BRAND PARTNERS BAR -->
+    <section class="border-y border-slate-100 py-6 bg-white rounded-2xl px-4">
+        <p class="text-[11px] font-bold uppercase tracking-widest text-center text-slate-400 mb-4">Official Brand Partners</p>
+        <div class="flex flex-wrap items-center justify-center gap-8 md:gap-14 opacity-60 grayscale hover:grayscale-0 transition duration-300">
+            <span class="font-display font-black text-lg md:text-xl tracking-tighter">SAMSUNG</span>
+            <span class="font-display font-extrabold text-lg md:text-xl tracking-tight">OpenAI</span>
+            <span class="font-display font-black text-lg md:text-xl tracking-tight">amazon</span>
+            <span class="font-display font-black text-lg md:text-xl tracking-tight">Tencent 腾讯</span>
+            <span class="font-display font-bold text-lg md:text-xl tracking-tight">Spotify</span>
+            <span class="font-display font-black text-lg md:text-xl tracking-tight">Apple</span>
+        </div>
+    </section>
 
-{# Produk per ekosistem brand #}
-{% for merek, produk_list in ekosistem %}
-<section class="mt-10">
-    <div class="flex items-center justify-between mb-3">
+    <!-- 4 VALUE PROPOSITIONS -->
+    <section class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="bg-white p-5 rounded-2xl border border-slate-100 flex items-center gap-3.5 shadow-xs">
+            <span class="w-11 h-11 rounded-xl bg-brand-soft text-brand flex items-center justify-center shrink-0">
+                {{ icon('headphones', 'w-5 h-5') }}
+            </span>
+            <div>
+                <h2 class="font-bold text-xs sm:text-sm text-ink">Responsive</h2>
+                <p class="text-[11px] text-muted">Customer service 24/7</p>
+            </div>
+        </div>
+        <div class="bg-white p-5 rounded-2xl border border-slate-100 flex items-center gap-3.5 shadow-xs">
+            <span class="w-11 h-11 rounded-xl bg-brand-soft text-brand flex items-center justify-center shrink-0">
+                {{ icon('shield-check', 'w-5 h-5') }}
+            </span>
+            <div>
+                <h2 class="font-bold text-xs sm:text-sm text-ink">Secure</h2>
+                <p class="text-[11px] text-muted">Terverifikasi SOC 323</p>
+            </div>
+        </div>
+        <div class="bg-white p-5 rounded-2xl border border-slate-100 flex items-center gap-3.5 shadow-xs">
+            <span class="w-11 h-11 rounded-xl bg-brand-soft text-brand flex items-center justify-center shrink-0">
+                {{ icon('truck', 'w-5 h-5') }}
+            </span>
+            <div>
+                <h2 class="font-bold text-xs sm:text-sm text-ink">Shipping</h2>
+                <p class="text-[11px] text-muted">Pengiriman cepat &amp; aman</p>
+            </div>
+        </div>
+        <div class="bg-white p-5 rounded-2xl border border-slate-100 flex items-center gap-3.5 shadow-xs">
+            <span class="w-11 h-11 rounded-xl bg-brand-soft text-brand flex items-center justify-center shrink-0">
+                {{ icon('rotate-ccw', 'w-5 h-5') }}
+            </span>
+            <div>
+                <h2 class="font-bold text-xs sm:text-sm text-ink">Transparent</h2>
+                <p class="text-[11px] text-muted">Garansi resmi &amp; retur</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- PROMOTION BANNER GRID (3 CARDS) -->
+    <section class="grid md:grid-cols-3 gap-6">
+        <div class="bg-gradient-to-br from-amber-50 to-orange-50 rounded-3xl p-6 border border-amber-100 flex flex-col justify-between relative overflow-hidden group">
+            <div class="space-y-2 mb-6">
+                <span class="text-[10px] font-extrabold uppercase tracking-widest text-amber-700 bg-amber-100 px-2.5 py-0.5 rounded-full inline-block">Promo Ongkir</span>
+                <h3 class="font-display font-extrabold text-xl text-ink">Free Shipping Everywhere!</h3>
+                <p class="text-xs text-muted leading-relaxed">Gratis ongkir untuk seluruh pesanan tanpa batas minimal di area Batam &amp; sekitarnya.</p>
+            </div>
+            <a href="{{ url_for('toko.jelajah') }}" class="inline-flex items-center gap-1.5 text-xs font-bold text-brand hover:text-brand-dark transition self-start">
+                Shop Now {{ icon('chevron-right', 'w-3.5 h-3.5') }}
+            </a>
+        </div>
+
+        <div class="bg-gradient-to-br from-red-50 to-rose-50 rounded-3xl p-6 border border-red-100 flex flex-col justify-between relative overflow-hidden group">
+            <div class="space-y-2 mb-6">
+                <span class="text-[10px] font-extrabold uppercase tracking-widest text-red-700 bg-red-100 px-2.5 py-0.5 rounded-full inline-block">Cuci Gudang</span>
+                <h3 class="font-display font-extrabold text-xl text-ink">Clearance Sale Up to 50%</h3>
+                <p class="text-xs text-muted leading-relaxed">Diskon heboh smartphone &amp; laptop pilihan dengan kuota terbatas setiap hari.</p>
+            </div>
+            <a href="{{ url_for('toko.jelajah') }}" class="inline-flex items-center gap-1.5 text-xs font-bold text-brand hover:text-brand-dark transition self-start">
+                Shop Now {{ icon('chevron-right', 'w-3.5 h-3.5') }}
+            </a>
+        </div>
+
+        <div class="bg-gradient-to-br from-blue-50 to-sky-50 rounded-3xl p-6 border border-blue-100 flex flex-col justify-between relative overflow-hidden group">
+            <div class="space-y-2 mb-6">
+                <span class="text-[10px] font-extrabold uppercase tracking-widest text-blue-700 bg-blue-100 px-2.5 py-0.5 rounded-full inline-block">Member Baru</span>
+                <h3 class="font-display font-extrabold text-xl text-ink">Diskon 20% Pembelian Pertama</h3>
+                <p class="text-xs text-muted leading-relaxed">Daftar akun sekarang dan dapatkan potongan harga langsung di transaksi pertama Anda.</p>
+            </div>
+            <a href="{{ url_for('auth.register') }}" class="inline-flex items-center gap-1.5 text-xs font-bold text-brand hover:text-brand-dark transition self-start">
+                Daftar Akun {{ icon('chevron-right', 'w-3.5 h-3.5') }}
+            </a>
+        </div>
+    </section>
+
+    <!-- FEATURED PRODUCTS -->
+    <section id="featured" class="space-y-6">
+        <div class="flex items-center justify-between">
+            <div>
+                <h2 class="font-display font-extrabold text-2xl text-ink">Featured Products</h2>
+                <p class="text-xs text-muted mt-1">Pilihan gadget dan perangkat elektronik terbaik dengan diskon terbesar</p>
+            </div>
+            <a href="{{ url_for('toko.jelajah') }}" class="text-xs font-bold text-brand hover:underline flex items-center gap-1">
+                View All {{ icon('arrow-right', 'w-3.5 h-3.5') }}
+            </a>
+        </div>
+
+        {% if unggulan %}
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+            {% for p in unggulan %}
+                {{ kartu(p) }}
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="bg-white rounded-3xl p-10 text-center border border-slate-100">
+            <p class="text-muted text-sm">Belum ada produk unggulan saat ini.</p>
+        </div>
+        {% endif %}
+    </section>
+
+    <!-- KATEGORI BELANJA -->
+    <section class="space-y-4">
         <h2 class="flex items-center gap-2 font-display text-lg md:text-xl font-bold">
-            <span class="w-1 h-5 rounded-full bg-brand"></span> Ekosistem {{ merek }}
+            <span class="w-1.5 h-5 rounded-full bg-brand"></span> Kategori Belanja
         </h2>
-        <a href="{{ url_for('toko.jelajah', merek=merek) }}" class="py-3 text-sm font-semibold text-brand">Semua produk {{ merek }}</a>
-    </div>
-    <div class="flex gap-3 overflow-x-auto scrollbar-none snap-x -mx-4 px-4 md:mx-0 md:px-0 md:grid md:grid-cols-4 md:gap-5">
-        {% for produk in produk_list %}
-            {{ kartu(produk, 'shrink-0 w-44 snap-start md:w-auto') }}
-        {% endfor %}
-    </div>
-</section>
-{% endfor %}
+        <div class="grid grid-cols-3 sm:grid-cols-6 gap-3">
+            {% for k in kategori_list %}
+            <a href="{{ url_for('toko.jelajah', kategori=k) }}"
+               class="bg-white border border-slate-100 rounded-2xl py-4 px-2 flex flex-col items-center gap-2 hover:border-brand hover:text-brand transition shadow-xs text-center">
+                <span class="w-12 h-12 rounded-full bg-slate-50 flex items-center justify-center">{{ icon(IKON_KATEGORI.get(k, 'package'), 'w-6 h-6 text-brand') }}</span>
+                <span class="text-xs font-semibold truncate w-full">{{ k }}</span>
+            </a>
+            {% endfor %}
+        </div>
+    </section>
 
-{% if ekosistem %}
-<div class="text-center mt-10">
-    <a href="{{ url_for('toko.jelajah') }}" class="inline-flex items-center gap-2 bg-white border border-slate-200 hover:border-brand hover:text-brand font-medium px-6 py-3 rounded-full">
-        Lihat Semua Produk
-    </a>
+    <!-- BIG PROMO BANNER: SAVE BIG ON SELECTED ITEMS -->
+    <section class="bg-slate-900 text-white rounded-3xl p-8 md:p-14 relative overflow-hidden shadow-lg">
+        <div class="max-w-xl space-y-4 relative z-10">
+            <span class="px-3 py-1 rounded-full text-[11px] font-extrabold uppercase tracking-wider bg-brand text-white inline-block">
+                Limited Time Offer
+            </span>
+            <h2 class="font-display font-black text-2xl sm:text-4xl leading-tight">
+                Save Big on Selected Gadgets &amp; Laptops
+            </h2>
+            <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                Upgrade perlengkapan kerja dan hiburan Anda dengan laptop performa tinggi dan smartphone flagship. Stok terbatas dengan harga spesial.
+            </p>
+            <div class="pt-2">
+                <a href="{{ url_for('toko.jelajah') }}" class="inline-flex items-center gap-2 bg-brand hover:bg-brand-dark text-white font-bold text-xs px-7 py-3.5 rounded-full transition shadow-md">
+                    Shop Now {{ icon('arrow-right', 'w-4 h-4') }}
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- PRODUK PER EKOSISTEM / KATALOG REKOMENDASI -->
+    {% for merek, produk_list in ekosistem %}
+    <section class="space-y-6">
+        <div class="flex items-center justify-between">
+            <div>
+                <h2 class="font-display font-extrabold text-2xl text-ink">Ekosistem {{ merek }}</h2>
+                <p class="text-xs text-muted mt-1">Jajaran produk resmi dan aksesoris original dari {{ merek }}</p>
+            </div>
+            <a href="{{ url_for('toko.jelajah', merek=merek) }}" class="text-xs font-bold text-brand hover:underline flex items-center gap-1">
+                Lihat Semua {{ merek }} {{ icon('arrow-right', 'w-3.5 h-3.5') }}
+            </a>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+            {% for produk in produk_list[:4] %}
+                {{ kartu(produk) }}
+            {% endfor %}
+        </div>
+    </section>
+    {% endfor %}
+
+    <!-- FREQUENTLY ASKED QUESTIONS (FAQ) -->
+    <section class="bg-white rounded-3xl border border-slate-100 p-6 md:p-12 space-y-6 shadow-xs">
+        <div class="text-center max-w-xl mx-auto space-y-2">
+            <h2 class="font-display font-extrabold text-2xl md:text-3xl text-ink">Frequently Asked Questions</h2>
+            <p class="text-xs text-muted">Pertanyaan yang sering diajukan pelanggan seputar pemesanan dan layanan kami.</p>
+        </div>
+
+        <div class="max-w-3xl mx-auto space-y-3">
+            <details class="group bg-slate-50 rounded-2xl p-4 border border-slate-100 open:bg-white open:ring-2 open:ring-brand-soft transition">
+                <summary class="font-bold text-sm text-ink cursor-pointer list-none flex items-center justify-between">
+                    <span>Metode pembayaran apa saja yang diterima?</span>
+                    <span class="w-6 h-6 rounded-full bg-slate-200 group-open:bg-brand group-open:text-white flex items-center justify-center text-xs transition">
+                        {{ icon('chevron-down', 'w-3.5 h-3.5 group-open:rotate-180 transition') }}
+                    </span>
+                </summary>
+                <p class="text-xs text-muted mt-3 leading-relaxed">
+                    Kami menerima transfer bank resmi (BCA, Mandiri, BNI, BRI, BSI, CIMB Niaga), pembayaran digital QRIS instan, serta pembayaran tunai melalui gerai Indomaret &amp; Alfamart.
+                </p>
+            </details>
+
+            <details class="group bg-slate-50 rounded-2xl p-4 border border-slate-100 open:bg-white open:ring-2 open:ring-brand-soft transition">
+                <summary class="font-bold text-sm text-ink cursor-pointer list-none flex items-center justify-between">
+                    <span>Berapa lama estimasi pengiriman pesanan?</span>
+                    <span class="w-6 h-6 rounded-full bg-slate-200 group-open:bg-brand group-open:text-white flex items-center justify-center text-xs transition">
+                        {{ icon('chevron-down', 'w-3.5 h-3.5 group-open:rotate-180 transition') }}
+                    </span>
+                </summary>
+                <p class="text-xs text-muted mt-3 leading-relaxed">
+                    Pesanan lokal Batam diproses dalam 1x24 jam. Pengiriman luar pulau melalui ekspedisi mitra (JNE, J&amp;T, SiCepat, SPX) rata-rata memakan waktu 2 hingga 4 hari kerja.
+                </p>
+            </details>
+
+            <details class="group bg-slate-50 rounded-2xl p-4 border border-slate-100 open:bg-white open:ring-2 open:ring-brand-soft transition">
+                <summary class="font-bold text-sm text-ink cursor-pointer list-none flex items-center justify-between">
+                    <span>Apakah seluruh produk bergaransi resmi?</span>
+                    <span class="w-6 h-6 rounded-full bg-slate-200 group-open:bg-brand group-open:text-white flex items-center justify-center text-xs transition">
+                        {{ icon('chevron-down', 'w-3.5 h-3.5 group-open:rotate-180 transition') }}
+                    </span>
+                </summary>
+                <p class="text-xs text-muted mt-3 leading-relaxed">
+                    Ya, 100% produk di e-shop merupakan produk original yang didukung garansi resmi distributor Indonesia (TAM, iBox, Asus ID, Samsung ID).
+                </p>
+            </details>
+
+            <details class="group bg-slate-50 rounded-2xl p-4 border border-slate-100 open:bg-white open:ring-2 open:ring-brand-soft transition">
+                <summary class="font-bold text-sm text-ink cursor-pointer list-none flex items-center justify-between">
+                    <span>Bagaimana cara melacak pesanan saya?</span>
+                    <span class="w-6 h-6 rounded-full bg-slate-200 group-open:bg-brand group-open:text-white flex items-center justify-center text-xs transition">
+                        {{ icon('chevron-down', 'w-3.5 h-3.5 group-open:rotate-180 transition') }}
+                    </span>
+                </summary>
+                <p class="text-xs text-muted mt-3 leading-relaxed">
+                    Anda dapat memantau status pesanan kapan saja melalui menu <strong>Pesanan Saya</strong> di profil akun. Nomor resi kurir akan diperbarui secara otomatis setelah barang dikirim.
+                </p>
+            </details>
+        </div>
+    </section>
+
+    <!-- TECH TALK (BLOG / ARTIKEL TEKNOLOGI) -->
+    <section class="space-y-6">
+        <div class="flex items-center justify-between">
+            <div>
+                <h2 class="font-display font-extrabold text-2xl text-ink">Tech Talk</h2>
+                <p class="text-xs text-muted mt-1">Dapatkan ulasan terkini, panduan memilih gadget, dan wawasan dunia teknologi</p>
+            </div>
+            <a href="#" class="text-xs font-bold text-brand hover:underline flex items-center gap-1">
+                View All {{ icon('arrow-right', 'w-3.5 h-3.5') }}
+            </a>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-6">
+            <article class="bg-white rounded-3xl border border-slate-100 p-5 shadow-xs hover:shadow-md transition group">
+                <div class="aspect-16/10 rounded-2xl bg-slate-100 overflow-hidden mb-4 relative flex items-center justify-center">
+                    {{ icon('smartphone', 'w-12 h-12 text-slate-300 group-hover:scale-110 transition duration-300') }}
+                    <span class="absolute top-3 left-3 bg-brand text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full">Gadgets</span>
+                </div>
+                <span class="text-[10px] text-muted block mb-1">10 April 2026 &middot; Yudha Pratama</span>
+                <h3 class="font-bold text-sm text-ink group-hover:text-brand transition line-clamp-2 leading-snug">
+                    Pilihan 10 Gadget Terbaik 2026 untuk Menunjang Produktivitas Harian
+                </h3>
+            </article>
+
+            <article class="bg-white rounded-3xl border border-slate-100 p-5 shadow-xs hover:shadow-md transition group">
+                <div class="aspect-16/10 rounded-2xl bg-slate-100 overflow-hidden mb-4 relative flex items-center justify-center">
+                    {{ icon('laptop', 'w-12 h-12 text-slate-300 group-hover:scale-110 transition duration-300') }}
+                    <span class="absolute top-3 left-3 bg-emerald-600 text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full">Tips &amp; Trik</span>
+                </div>
+                <span class="text-[10px] text-muted block mb-1">12 April 2026 &middot; Tim Editorial</span>
+                <h3 class="font-bold text-sm text-ink group-hover:text-brand transition line-clamp-2 leading-snug">
+                    Cara Memilih Laptop yang Tepat: Perhatikan Prosesor, RAM, dan Daya Tahan Baterai
+                </h3>
+            </article>
+
+            <article class="bg-white rounded-3xl border border-slate-100 p-5 shadow-xs hover:shadow-md transition group">
+                <div class="aspect-16/10 rounded-2xl bg-slate-100 overflow-hidden mb-4 relative flex items-center justify-center">
+                    {{ icon('tv', 'w-12 h-12 text-slate-300 group-hover:scale-110 transition duration-300') }}
+                    <span class="absolute top-3 left-3 bg-blue-600 text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full">Review</span>
+                </div>
+                <span class="text-[10px] text-muted block mb-1">16 April 2026 &middot; Pedro Juanda</span>
+                <h3 class="font-bold text-sm text-ink group-hover:text-brand transition line-clamp-2 leading-snug">
+                    Kualitas vs Harga: Mengapa Anda Harus Mulai Beralih ke Smart TV 4K OLED?
+                </h3>
+            </article>
+        </div>
+    </section>
+
 </div>
-{% endif %}
 {% endblock %}
