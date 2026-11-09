@@ -20,14 +20,14 @@
         <div class="mt-3 bg-white border border-slate-100 rounded-2xl p-4 grid grid-cols-2 md:grid-cols-5 gap-3 text-sm">
             <label class="col-span-1">
                 <span class="block font-semibold mb-1">Kategori</span>
-                <select name="kategori" class="w-full border border-slate-200 rounded-xl px-3 py-3 bg-white">
+                <select name="kategori" class="w-full border border-slate-200 rounded-xl px-3 py-3 bg-white outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand">
                     <option value="">Semua</option>
                     {% for k in kategori_list %}<option value="{{ k }}" {{ 'selected' if f.kategori == k }}>{{ k }}</option>{% endfor %}
                 </select>
             </label>
             <label class="col-span-1">
                 <span class="block font-semibold mb-1">Merek</span>
-                <select name="merek" class="w-full border border-slate-200 rounded-xl px-3 py-3 bg-white">
+                <select name="merek" class="w-full border border-slate-200 rounded-xl px-3 py-3 bg-white outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand">
                     <option value="">Semua</option>
                     {% for m in merek_list %}<option value="{{ m }}" {{ 'selected' if f.merek == m }}>{{ m }}</option>{% endfor %}
                 </select>
