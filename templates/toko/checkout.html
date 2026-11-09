@@ -140,10 +140,14 @@
                     <input type="text" id="kode_kupon" name="kode_kupon" value="{{ form.kode_kupon.data or '' }}"
                            placeholder="Contoh: FIRSTPAY"
                            class="flex-1 text-xs uppercase font-semibold px-3 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-brand/20 focus:border-brand outline-none">
+                    <button type="button" id="btn_cek_kupon" class="px-4 py-2.5 bg-brand-soft hover:bg-brand hover:text-white text-brand text-xs font-bold rounded-xl transition cursor-pointer">
+                        Cek
+                    </button>
                 </div>
+                <p id="kupon_feedback" class="text-xs mt-1.5 hidden"></p>
                 <div class="flex items-center justify-between mt-1.5 text-[11px]">
                     <span class="text-muted">Punya voucher? Coba:</span>
-                    <button type="button" onclick="document.getElementById('kode_kupon').value='FIRSTPAY'" class="font-bold text-brand hover:underline cursor-pointer">
+                    <button type="button" onclick="document.getElementById('kode_kupon').value='FIRSTPAY'; document.getElementById('btn_cek_kupon').click();" class="font-bold text-brand hover:underline cursor-pointer">
                         Gunakan FIRSTPAY (-20%)
                     </button>
                 </div>
@@ -183,5 +187,47 @@
         </button>
     </div>
 </form>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const btnCek = document.getElementById('btn_cek_kupon');
+    const inputKode = document.getElementById('kode_kupon');
+    const feedback = document.getElementById('kupon_feedback');
+    const subtotalVal = "{{ subtotal }}";
+
+    if (btnCek && inputKode && feedback) {
+        btnCek.addEventListener('click', async function () {
+            const kode = inputKode.value.trim();
+            if (!kode) {
+                feedback.textContent = 'Masukkan kode voucher terlebih dahulu.';
+                feedback.className = 'text-xs mt-1.5 text-amber-600 font-medium block';
+                return;
+            }
+            try {
+                const csrfToken = document.querySelector('input[name="csrf_token"]').value;
+                const res = await fetch("{{ url_for('belanja.checkout_cek_kupon') }}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrfToken,
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: JSON.stringify({ kode: kode, subtotal: subtotalVal })
+                });
+                const data = await res.json();
+                if (res.ok && data.valid) {
+                    feedback.textContent = data.pesan;
+                    feedback.className = 'text-xs mt-1.5 text-emerald-600 font-semibold block';
+                } else {
+                    feedback.textContent = data.pesan || 'Kode voucher tidak valid.';
+                    feedback.className = 'text-xs mt-1.5 text-coral font-medium block';
+                }
+            } catch (err) {
+                feedback.textContent = 'Gagal memeriksa kode voucher.';
+                feedback.className = 'text-xs mt-1.5 text-coral font-medium block';
+            }
+        });
+    }
+});
+</script>
 {% endblock %}
 {% block bottom_nav %}{% endblock %}
