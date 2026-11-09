@@ -3,7 +3,7 @@
 Sumber utama: desain Figma tim (Intan), salinan PDF ada di folder Drive
 `web-fundamental/figma/Design Web PBL.pdf`. File ini mencatat keputusan visual beserta alasannya
 supaya perubahan berikutnya tetap konsisten dan tidak terlihat seperti template generik.
-Aturan pemeriksaan yang dipakai: [antislop](https://github.com/miqdadbadjuber/anti-slop) (R-01 s.d. R-38).
+Aturan pemeriksaan yang dipakai: standar antarmuka web dan aksesibilitas WCAG.
 
 ## Karakter
 

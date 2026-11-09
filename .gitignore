@@ -10,3 +10,9 @@ instance/
 logs/
 static/uploads/*
 !static/uploads/.gitkeep
+
+# AI & Agent toolings
+.agents/
+.gemini/
+AGENTS.md
+GEMINI.md

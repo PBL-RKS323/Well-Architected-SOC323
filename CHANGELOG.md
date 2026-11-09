@@ -189,10 +189,9 @@ Melengkapi 3 kebutuhan OUTPUT PBL 1 yang tersisa (no. 3, 7-8, 9).
 - `pytest -q` -> 96 passed.
 - `curl -I https://toko.neteye.my.id` -> 200 dengan header CSP, HSTS, X-Frame-Options.
 
-## [0.5.1] - 2026-10-19 - Audit Anti-Slop
+## [0.5.1] - 2026-10-19 - Audit Desain & Aksesibilitas
 
-Tampilan diperiksa dengan aturan [antislop](https://github.com/miqdadbadjuber/anti-slop) agar tidak
-terlihat seperti template AI. Keputusan desain dicatat di `docs/DESIGN.md`.
+Tampilan diperiksa dengan standar aksesibilitas agar konsisten dan ramah pengguna. Keputusan desain dicatat di `docs/DESIGN.md`.
 
 ### Diubah
 - **Kontras warna (WCAG AA)**: biru `#2F80ED` menjadi `#1A68D1`, abu `#6B7280` menjadi `#636B78`,

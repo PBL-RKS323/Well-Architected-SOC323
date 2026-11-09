@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Detail Spesifikasi Produk | Nexus Tech Store Batam</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#FFF7ED',
+              100: '#FFEDD5',
+              500: '#F97316',
+              600: '#EA580C',
+              700: '#C2410C',
+              800: '#9A3412',
+              DEFAULT: '#D9531E',
+              dark: '#B83E12',
+              accent: '#E05326'
+            },
+            slate: {
+              850: '#151F32',
+              900: '#0F172A',
+              950: '#0A0F1D'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: #F8FAFC;
+      color: #0F172A;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #CBD5E1;
+      border-radius: 4px;
+    }
+    a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible {
+      outline: 2px solid #D9531E;
+      outline-offset: 2px;
+    }
+  </style>
+</head>
+<body class="text-slate-800 antialiased min-h-screen flex flex-col bg-[#F8FAFC]">
+
+  <!-- TOP ANNOUNCEMENT BAR -->
+  <div class="bg-slate-900 text-slate-300 text-xs py-2 px-4 border-b border-slate-800">
+    <div class="max-w-6xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2">
+      <div class="flex items-center space-x-3 text-[11px] text-slate-400">
+        <span class="text-brand-500 font-semibold">Toko Resmi SOC 323 Batam</span>
+        <span>|</span>
+        <span>Jaminan 100% Produk Original & Bergaransi Resmi</span>
+      </div>
+      <div class="flex items-center space-x-4 text-[11px] text-slate-300">
+        <a href="account.html" class="hover:text-white transition flex items-center space-x-1">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+          <span>Lacak Pesanan</span>
+        </a>
+        <span>|</span>
+        <a href="index.html" class="hover:text-white transition">Bantuan & FAQ</a>
+        <span>|</span>
+        <span class="font-medium text-white flex items-center space-x-1.5">
+          <span class="w-4 h-4 rounded-full bg-brand text-white flex items-center justify-center font-bold text-[9px]">YP</span>
+          <span>Yudha Pratama</span>
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN PREMIUM NAVIGATION HEADER -->
+  <header class="bg-white sticky top-0 z-40 border-b border-slate-200 shadow-xs">
+    <div class="max-w-6xl mx-auto px-4 py-3.5 flex items-center justify-between gap-6">
+      
+      <!-- Premium Brand Logo -->
+      <a href="index.html" class="flex items-center space-x-3 flex-shrink-0 group">
+        <div class="w-10 h-10 bg-slate-900 rounded-lg flex items-center justify-center text-white shadow-xs group-hover:bg-brand transition">
+          <svg class="w-6 h-6 text-brand group-hover:text-white transition" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+          </svg>
+        </div>
+        <div class="flex flex-col">
+          <span class="text-xl font-extrabold tracking-tight text-slate-900 leading-none group-hover:text-brand transition">NEXUS<span class="text-brand">TECH</span></span>
+          <span class="text-[10px] tracking-widest text-slate-400 font-semibold uppercase mt-0.5">Official Store RKS Batam</span>
+        </div>
+      </a>
+
+      <!-- Real Store Navigation Categories -->
+      <nav class="hidden lg:flex items-center space-x-6 text-xs font-semibold text-slate-600">
+        <a href="index.html" class="hover:text-brand transition text-brand font-bold">Katalog Utama</a>
+        <a href="index.html#katalog" onclick="filterByNav('smartphone')" class="hover:text-brand transition ">Smartphone</a>
+        <a href="index.html#katalog" onclick="filterByNav('laptop')" class="hover:text-brand transition ">Laptop & PC</a>
+        <a href="index.html#katalog" onclick="filterByNav('audio')" class="hover:text-brand transition ">Audio & Smartwatch</a>
+        <a href="index.html#katalog" onclick="filterByNav('aksesoris')" class="hover:text-brand transition ">Aksesoris</a>
+      </nav>
+
+      <!-- Search Bar & User Actions -->
+      <div class="flex items-center space-x-4">
+        <!-- Integrated Search Input -->
+        <div class="relative hidden sm:block w-48 md:w-60">
+          <input type="text" id="navSearchInput" oninput="handleNavSearch(this.value)" placeholder="Cari gadget pilihan..." class="w-full pl-9 pr-4 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-full focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand transition">
+          <svg class="w-4 h-4 text-slate-400 absolute left-3 top-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </div>
+
+        <!-- Orders Icon -->
+        <a href="account.html" class="p-2 text-slate-600 hover:text-brand hover:bg-slate-50 rounded-full transition" title="Riwayat & Lacak Pesanan">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+        </a>
+
+        <!-- Cart Icon with synchronized badge -->
+        <a href="cart.html" class="relative p-2 text-slate-700 hover:text-brand hover:bg-slate-50 rounded-full transition" aria-label="Buka Keranjang">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/>
+          </svg>
+          <span id="headerCartCount" class="absolute -top-0.5 -right-0.5 bg-brand text-white font-bold text-[10px] w-5 h-5 rounded-full flex items-center justify-center border-2 border-white shadow-xs">
+            2
+          </span>
+        </a>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- REUSABLE INTERACTIVE TOAST NOTIFICATION -->
+  <div id="globalToast" class="fixed top-20 right-6 z-50 bg-white border-l-4 border-brand shadow-xl rounded-lg p-4 flex items-center space-x-3 transform translate-x-96 opacity-0 transition-all duration-300 pointer-events-none" role="alert" aria-live="assertive">
+    <div class="w-7 h-7 rounded-full bg-orange-50 text-brand flex items-center justify-center flex-shrink-0">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+    </div>
+    <div>
+      <h4 class="text-xs font-bold text-slate-900" id="toastTitle">Berhasil Ditambahkan</h4>
+      <p class="text-[11px] text-slate-600" id="toastMessage">Produk pilihan Anda telah masuk ke keranjang belanja.</p>
+    </div>
+  </div>
+
+  <main class="max-w-6xl mx-auto px-4 py-8 flex-1 w-full space-y-8">
+    
+    <!-- Dynamic Breadcrumb -->
+    <nav class="flex items-center space-x-2 text-xs text-slate-500" aria-label="Breadcrumb">
+      <a href="index.html" class="hover:text-brand">Katalog</a>
+      <span>&rsaquo;</span>
+      <span id="bcCategory" class="capitalize">Smartphone</span>
+      <span>&rsaquo;</span>
+      <span id="bcName" class="text-slate-800 font-semibold truncate max-w-xs">Produk</span>
+    </nav>
+
+    <!-- Product Showcase Container -->
+    <div class="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-xs grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-12">
+      
+      <!-- Gallery Column (5 cols) -->
+      <div class="md:col-span-5 flex flex-col">
+        <div class="border border-slate-100 rounded-xl p-6 bg-slate-50 flex items-center justify-center h-84 mb-4 relative overflow-hidden group">
+          <span id="detailTag" class="absolute top-3 left-3 bg-slate-900 text-white text-[10px] font-bold px-2 py-0.5 rounded shadow-xs tracking-wider">
+            OFFICIAL
+          </span>
+          <span id="detailDiscount" class="absolute top-3 right-3 bg-brand text-white font-bold text-xs px-2 py-0.5 rounded shadow-xs">
+            -17%
+          </span>
+          <img id="detailMainImg" src="images/6ebd4.png" alt="Produk" class="max-h-72 object-contain transition duration-300 group-hover:scale-105">
+        </div>
+
+        <!-- Thumbnails switcher -->
+        <div id="detailThumbnails" class="grid grid-cols-4 gap-2.5">
+          <!-- Rendered via JS -->
+        </div>
+      </div>
+
+      <!-- Info & Actions Column (7 cols) -->
+      <div class="md:col-span-7 flex flex-col justify-between space-y-6">
+        <div>
+          <!-- Title & Official Badge -->
+          <div class="flex items-center space-x-2 mb-2">
+            <span class="bg-slate-900 text-brand text-[10px] font-extrabold px-2 py-0.5 rounded tracking-wider">OFFICIAL STORE</span>
+            <span class="text-xs text-slate-400">|</span>
+            <span class="text-xs text-slate-500 font-medium">Garansi Resmi Distributor</span>
+          </div>
+
+          <h1 id="detailTitle" class="text-xl sm:text-2xl font-extrabold text-slate-900 leading-snug">
+            Nama Produk
+          </h1>
+
+          <!-- Ratings & Sold -->
+          <div class="flex items-center space-x-4 text-xs text-slate-500 mt-3 pb-4 border-b border-slate-100">
+            <div class="flex items-center space-x-1.5 text-slate-800 font-bold">
+              <span id="detailRating" class="underline text-sm font-extrabold text-brand">4.8</span>
+              <div class="flex text-amber-500">
+                <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+              </div>
+            </div>
+            <span>|</span>
+            <span><strong id="detailSold" class="text-slate-800">1.2RB</strong> Terjual</span>
+            <span>|</span>
+            <span class="text-emerald-700 font-semibold flex items-center space-x-1">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
+              <span>Stok Tersedia di Batam</span>
+            </span>
+          </div>
+
+          <!-- Price Display Highlight -->
+          <div class="bg-slate-50 p-4 rounded-xl my-5 flex items-baseline space-x-3 border border-slate-100">
+            <span id="detailOldPrice" class="text-sm text-slate-400 line-through">Rp 0</span>
+            <span id="detailPrice" class="text-2xl sm:text-3xl font-extrabold text-brand">Rp 0</span>
+            <span class="text-xs text-slate-500 font-medium">(Termasuk PPN 11%)</span>
+          </div>
+
+          <!-- Variant Options -->
+          <div class="space-y-4">
+            <!-- Colors -->
+            <div class="flex items-center text-xs">
+              <span class="w-28 text-slate-500 font-medium">Pilihan Warna</span>
+              <div id="detailColorOptions" class="flex flex-wrap gap-2">
+                <!-- Rendered via JS -->
+              </div>
+            </div>
+
+            <!-- Configurations / RAM -->
+            <div class="flex items-center text-xs">
+              <span class="w-28 text-slate-500 font-medium">Spesifikasi</span>
+              <div id="detailVariantOptions" class="flex flex-wrap gap-2">
+                <!-- Rendered via JS -->
+              </div>
+            </div>
+
+            <!-- Quantity -->
+            <div class="flex items-center text-xs pt-1">
+              <span class="w-28 text-slate-500 font-medium">Jumlah Pembelian</span>
+              <div class="flex items-center space-x-3">
+                <div class="flex items-center border border-slate-200 rounded-lg overflow-hidden bg-white">
+                  <button onclick="changeQty(-1)" class="w-8 h-8 bg-slate-50 hover:bg-slate-100 flex items-center justify-center font-bold text-slate-700 transition">-</button>
+                  <input type="text" id="detailQty" value="1" readonly class="w-12 h-8 text-center text-xs font-bold text-slate-900 border-x border-slate-200">
+                  <button onclick="changeQty(1)" class="w-8 h-8 bg-slate-50 hover:bg-slate-100 flex items-center justify-center font-bold text-slate-700 transition">+</button>
+                </div>
+                <span class="text-slate-400 text-[11px]">Batas maksimal 10 unit per akun</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action CTAs -->
+        <div class="pt-5 border-t border-slate-100 flex flex-wrap gap-3">
+          <button onclick="addToCartCurrent()" class="flex-1 min-w-[180px] py-3.5 px-5 bg-orange-50 hover:bg-orange-100 text-brand border border-brand/50 font-bold rounded-xl text-xs sm:text-sm transition flex items-center justify-center space-x-2 shadow-xs">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg>
+            <span>Masukkan Keranjang</span>
+          </button>
+
+          <button onclick="buyNowCurrent()" class="flex-1 min-w-[180px] py-3.5 px-5 bg-slate-900 hover:bg-brand text-white font-bold rounded-xl text-xs sm:text-sm shadow-md transition flex items-center justify-center space-x-2">
+            <span>Beli Sekarang</span>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Store Profile & Commitment Banner -->
+    <div class="bg-white rounded-xl border border-slate-200 p-5 shadow-xs flex flex-col md:flex-row items-center justify-between gap-4">
+      <div class="flex items-center space-x-4">
+        <div class="w-12 h-12 rounded-xl bg-slate-900 text-brand flex items-center justify-center flex-shrink-0 shadow-xs">
+          <svg class="w-7 h-7" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        </div>
+        <div>
+          <div class="flex items-center space-x-2">
+            <h3 class="text-sm font-bold text-slate-900">Nexus Tech Store Batam (SOC 323)</h3>
+            <span class="bg-brand text-white text-[9px] font-bold px-1.5 py-0.5 rounded">Terverifikasi</span>
+          </div>
+          <p class="text-xs text-slate-500 mt-0.5">Pengiriman Prioritas | Dikemas Aman dengan Bubble Wrap Tebal</p>
+        </div>
+      </div>
+
+      <div class="flex items-center space-x-6 text-xs text-slate-600">
+        <div>
+          <span class="text-slate-400 block text-[10px]">Performa Respon</span>
+          <strong class="text-slate-900 text-sm">99% Cepat</strong>
+        </div>
+        <div>
+          <span class="text-slate-400 block text-[10px]">Kondisi Barang</span>
+          <strong class="text-brand text-sm">Baru & Bersegel</strong>
+        </div>
+        <a href="index.html" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-lg transition">
+          Koleksi Lainnya
+        </a>
+      </div>
+    </div>
+
+    <!-- Specifications & Description Table -->
+    <div class="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-xs space-y-6">
+      <div>
+        <h3 class="text-sm font-bold text-slate-900 uppercase tracking-wider mb-4 pb-2.5 border-b border-slate-100">
+          Spesifikasi Teknis
+        </h3>
+        <div id="detailSpecsGrid" class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-3 text-xs">
+          <!-- Rendered via JS -->
+        </div>
+      </div>
+
+      <div class="pt-4 border-t border-slate-100">
+        <h3 class="text-sm font-bold text-slate-900 uppercase tracking-wider mb-3">
+          Deskripsi Lengkap
+        </h3>
+        <div id="detailDescText" class="text-xs text-slate-600 leading-relaxed space-y-2">
+          <!-- Rendered via JS -->
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    const PRODUCTS = 
+[
+  {
+    "id": 1,
+    "name": "Xiaomi Redmi 13C 8/256GB - Garansi Resmi",
+    "category": "smartphone",
+    "price": 1499000,
+    "originalPrice": 1799000,
+    "image": "images/6ebd4.png",
+    "rating": 4.8,
+    "sold": 1240,
+    "location": "Kota Batam",
+    "tag": "OFFICIAL",
+    "discount": 17,
+    "colors": ["Midnight Black", "Clover Green", "Glacier White"],
+    "variants": [
+      {"name": "6/128GB", "price": 1299000, "oldPrice": 1599000},
+      {"name": "8/256GB", "price": 1499000, "oldPrice": 1799000}
+    ],
+    "specs": {
+      "Merek": "Xiaomi Indonesia",
+      "Prosesor": "MediaTek Helio G85 Octa-core 2.0 GHz",
+      "Layar": "6.74 inci 90Hz HD+ Dot Drop Display",
+      "Kamera": "50MP AI Triple Camera + 2MP Makro",
+      "Baterai": "5000 mAh (Pengisian Daya 18W Fast Charging)",
+      "Garansi": "12 Bulan Garansi Resmi Xiaomi Seluruh Indonesia"
+    },
+    "desc": "Xiaomi Redmi 13C menghadirkan performa mulus dengan dukungan layar 6.74 inci 90Hz bersertifikasi TUV Rheinland. Ditenagai prosesor MediaTek Helio G85 yang efisien untuk gaming harian, multitasking, dan daya tahan baterai seharian penuh."
+  },
+  {
+    "id": 2,
+    "name": "POCO M6 Pro 5G 6/128GB Helio G99-Ultra",
+    "category": "smartphone",
+    "price": 2199000,
+    "originalPrice": 2499000,
+    "image": "images/93a8e.png",
+    "rating": 4.9,
+    "sold": 850,
+    "location": "Kota Batam",
+    "tag": "BEST SELLER",
+    "discount": 12,
+    "colors": ["Black", "Blue", "Purple"],
+    "variants": [
+      {"name": "6/128GB", "price": 2199000, "oldPrice": 2499000},
+      {"name": "8/256GB", "price": 2599000, "oldPrice": 2899000}
+    ],
+    "specs": {
+      "Merek": "POCO Indonesia",
+      "Prosesor": "Helio G99-Ultra 6nm TSMC",
+      "Layar": "6.67 inci Flow AMOLED 120Hz FHD+",
+      "Kamera": "64MP Triple Kamera dengan OIS Stabilizer",
+      "Baterai": "5000 mAh (67W Turbo Charge In-Box)",
+      "Garansi": "15 Bulan Garansi Resmi POCO Indonesia"
+    },
+    "desc": "POCO M6 Pro membawa layar Flow AMOLED 120Hz kelas flagship dan kamera utama 64MP berteknologi Optical Image Stabilization (OIS). Dilengkapi pengisian kilat 67W Turbo Charge yang mengisi 100% dalam 44 menit."
+  },
+  {
+    "id": 3,
+    "name": "Apple MacBook Pro 14 M4 Space Black 16/512GB",
+    "category": "laptop",
+    "price": 26999000,
+    "originalPrice": 28999000,
+    "image": "images/macbook-pro-14.png",
+    "rating": 5.0,
+    "sold": 140,
+    "location": "Jakarta Pusat",
+    "tag": "PREMIUM",
+    "discount": 7,
+    "colors": ["Space Black", "Silver"],
+    "variants": [
+      {"name": "16/512GB", "price": 26999000, "oldPrice": 28999000},
+      {"name": "24/1TB", "price": 32999000, "oldPrice": 34999000}
+    ],
+    "specs": {
+      "Merek": "Apple Resmi Indonesia (iBox/Digimap)",
+      "Prosesor": "Apple M4 Chip (10-Core CPU, 10-Core GPU)",
+      "Layar": "14.2 inci Liquid Retina XDR ProMotion 120Hz",
+      "Memori": "16GB Unified Memory",
+      "Penyimpanan": "512GB Ultrafast SSD",
+      "Garansi": "1 Tahun Garansi Terbatas Apple Resmi Internasional & Lokal"
+    },
+    "desc": "MacBook Pro 14 inci dengan chip Apple M4 memberikan lonjakan performa ekstrem untuk pengembang perangkat lunak, desainer grafis, dan kreator konten profesional. Dilengkapi layar Liquid Retina XDR dengan kecerahan hingga 1600 nits dan ketahanan baterai hingga 24 jam."
+  },
+  {
+    "id": 4,
+    "name": "Amazfit GTS 2 Mini Smartwatch AMOLED SpO2",
+    "category": "audio",
+    "price": 899000,
+    "originalPrice": 1199000,
+    "image": "images/41a39.png",
+    "rating": 4.7,
+    "sold": 430,
+    "location": "Kota Batam",
+    "tag": "POPULAR",
+    "discount": 25,
+    "colors": ["Meteor Black", "Flamingo Pink", "Breeze Blue"],
+    "variants": [
+      {"name": "Standard Fit", "price": 899000, "oldPrice": 1199000}
+    ],
+    "specs": {
+      "Merek": "Amazfit",
+      "Layar": "1.55 inci AMOLED Always-on Display",
+      "Sensor": "BioTracker 2 PPG, SpO2 Oksigen Darah, Detak Jantung 24 Jam",
+      "Ketahanan Air": "5 ATM Water Resistance (Tahan Air 50 Meter)",
+      "Baterai": "Daya Tahan hingga 14 Hari Pemakaian Tipikal",
+      "Garansi": "12 Bulan Garansi Resmi Distributor"
+    },
+    "desc": "Smartwatch berdesain tipis dan ringan dengan layar AMOLED cerah. Mendukung 70+ mode olahraga terintegrasi, pemantauan kualitas tidur, tingkat stres, dan sensor kesehatan presisi."
+  },
+  {
+    "id": 5,
+    "name": "Beats Studio3 Wireless Noise Cancelling Over-Ear",
+    "category": "audio",
+    "price": 2499000,
+    "originalPrice": 3299000,
+    "image": "images/bc437.png",
+    "rating": 4.8,
+    "sold": 210,
+    "location": "Kota Batam",
+    "tag": "STUDIO",
+    "discount": 24,
+    "colors": ["Matte Black", "Shadow Gray", "White"],
+    "variants": [
+      {"name": "Standard Wireless", "price": 2499000, "oldPrice": 3299000}
+    ],
+    "specs": {
+      "Merek": "Beats by Dr. Dre (Apple)",
+      "Teknologi": "Pure Adaptive Noise Canceling (Pure ANC)",
+      "Chipset": "Apple W1 Chip untuk Konektivitas Kelas 1",
+      "Baterai": "Hingga 22 Jam (ANC Aktif), 40 Jam (ANC Nonaktif)",
+      "Fitur Fast Fuel": "Pengisian 10 Menit untuk 3 Jam Pemutaran Audio",
+      "Garansi": "1 Tahun Garansi Resmi Distributor"
+    },
+    "desc": "Headphone nirkabel premium dengan peredam bising aktif Pure ANC yang secara dinamis memblokir suara eksternal. Ditenagai chip Apple W1 untuk pairing instan dan jangkauan Bluetooth jarak jauh tanpa gangguan."
+  },
+  {
+    "id": 6,
+    "name": "Xiaomi Powerbank 10000mAh 22.5W Fast Charging",
+    "category": "aksesoris",
+    "price": 189000,
+    "originalPrice": 229000,
+    "image": "images/1250b.png",
+    "rating": 4.9,
+    "sold": 3410,
+    "location": "Kota Batam",
+    "tag": "OFFICIAL",
+    "discount": 18,
+    "colors": ["Deep Blue", "Silver Gray"],
+    "variants": [
+      {"name": "10000mAh", "price": 189000, "oldPrice": 229000}
+    ],
+    "specs": {
+      "Merek": "Xiaomi",
+      "Kapasitas": "10000 mAh (37Wh)",
+      "Daya Output": "Maksimal 22.5W Two-Way Fast Charging",
+      "Port Input/Output": "1x USB-C (In/Out), 2x USB-A (Out)",
+      "Proteksi": "9 Lapisan Perlindungan Keamanan Arus & Suhu",
+      "Garansi": "6 Bulan Garansi Resmi Xiaomi"
+    },
+    "desc": "Powerbank portabel berbahan bodi aluminium kokoh dengan teknologi pengisian cepat dua arah 22.5W. Dapat mengisi daya 3 perangkat sekaligus secara bersamaan dengan aman."
+  },
+  {
+    "id": 7,
+    "name": "Laptop ASUS TUF Gaming A15 Ryzen 7 RTX 4060",
+    "category": "laptop",
+    "price": 16499000,
+    "originalPrice": 17999000,
+    "image": "images/dd62b.png",
+    "rating": 4.9,
+    "sold": 95,
+    "location": "Kota Batam",
+    "tag": "GAMING",
+    "discount": 8,
+    "colors": ["Mecha Gray", "Jaeger Gray"],
+    "variants": [
+      {"name": "16GB / 512GB", "price": 16499000, "oldPrice": 17999000},
+      {"name": "32GB / 1TB", "price": 18999000, "oldPrice": 20499000}
+    ],
+    "specs": {
+      "Merek": "ASUS Indonesia",
+      "Prosesor": "AMD Ryzen 7 7735HS (8 Cores, 16 Threads)",
+      "Grafis": "NVIDIA GeForce RTX 4060 Laptop GPU 8GB GDDR6",
+      "Layar": "15.6 inci FHD 144Hz 100% sRGB G-Sync",
+      "Memori": "16GB DDR5 4800MHz Dual Channel",
+      "Garansi": "2 Tahun Garansi Global ASUS + 1 Tahun ASUS Perfect Warranty"
+    },
+    "desc": "Laptop gaming tangguh berstandar militer MIL-STD-810H dengan performa prosesor AMD Ryzen 7 dan GPU RTX 4060 berkekuatan MUX Switch. Siap memainkan game AAA modern dan rendering 3D berat tanpa kompromi."
+  },
+  {
+    "id": 8,
+    "name": "TWS Earbuds Bluetooth 5.3 Low Latency Bass",
+    "category": "audio",
+    "price": 129000,
+    "originalPrice": 185000,
+    "image": "images/ed9fa.png",
+    "rating": 4.6,
+    "sold": 920,
+    "location": "Kota Batam",
+    "tag": "HOT DEAL",
+    "discount": 30,
+    "colors": ["Obsidian Black", "Cloud White"],
+    "variants": [
+      {"name": "Standard Earbuds", "price": 129000, "oldPrice": 185000}
+    ],
+    "specs": {
+      "Merek": "Nexus Audio",
+      "Koneksi": "Bluetooth 5.3 Ultra-stable Wireless",
+      "Latensi": "45ms Low Latency Game Mode",
+      "Driver": "13mm Dynamic Driver Bass Booster",
+      "Baterai": "Hingga 28 Jam dengan Casing Pengisian",
+      "Garansi": "6 Bulan Garansi Tukar Baru"
+    },
+    "desc": "TWS earbuds nirkabel dengan driver dynamic 13mm untuk dentuman bass bertenaga dan audio vokal yang jernih. Dilengkapi mode latensi rendah 45ms yang responsif untuk gaming dan menonton film."
+  }
+]
+;
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const prodId = parseInt(urlParams.get('id')) || 1;
+    const currentProduct = PRODUCTS.find(item => item.id === prodId) || PRODUCTS[0];
+
+    let selectedColor = currentProduct.colors[0];
+    let selectedVariant = currentProduct.variants[0];
+    let currentQty = 1;
+
+    function formatRupiah(num) {
+      return "Rp " + num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+
+    function initDetailPage() {
+      // Update Title & Meta
+      document.title = currentProduct.name + " | Nexus Tech Store";
+      document.getElementById('bcCategory').textContent = currentProduct.category;
+      document.getElementById('bcName').textContent = currentProduct.name;
+      document.getElementById('detailTitle').textContent = currentProduct.name;
+      document.getElementById('detailTag').textContent = currentProduct.tag;
+      document.getElementById('detailDiscount').textContent = `-${currentProduct.discount}%`;
+      document.getElementById('detailRating').textContent = currentProduct.rating;
+      document.getElementById('detailSold').textContent = currentProduct.sold;
+      document.getElementById('detailMainImg').src = currentProduct.image;
+      document.getElementById('detailPrice').textContent = formatRupiah(selectedVariant.price);
+      document.getElementById('detailOldPrice').textContent = formatRupiah(selectedVariant.oldPrice);
+
+      // Thumbnails
+      const thumbBox = document.getElementById('detailThumbnails');
+      const thumbImages = [currentProduct.image, "images/6ebd4.png", "images/93a8e.png", "images/1250b.png"];
+      thumbBox.innerHTML = thumbImages.map((src, idx) => `
+        <button onclick="switchThumb('${src}', this)" class="thumb-pill border ${idx === 0 ? 'border-2 border-brand' : 'border-slate-200'} p-1 rounded-lg bg-white hover:border-brand transition flex items-center justify-center h-16">
+          <img src="${src}" class="max-h-12 object-contain">
+        </button>
+      `).join('');
+
+      // Colors
+      const colorBox = document.getElementById('detailColorOptions');
+      colorBox.innerHTML = currentProduct.colors.map((c, idx) => `
+        <button onclick="pickColor('${c}', this)" class="color-btn border ${idx === 0 ? 'border-2 border-brand bg-orange-50/50 text-brand font-bold' : 'border-slate-200 text-slate-700'} px-3.5 py-1.5 rounded-lg text-xs transition">
+          ${c}
+        </button>
+      `).join('');
+
+      // Variants
+      const varBox = document.getElementById('detailVariantOptions');
+      varBox.innerHTML = currentProduct.variants.map((v, idx) => `
+        <button onclick="pickVariant('${v.name}', ${v.price}, ${v.oldPrice}, this)" class="variant-btn border ${idx === 0 ? 'border-2 border-brand bg-orange-50/50 text-brand font-bold' : 'border-slate-200 text-slate-700'} px-3.5 py-1.5 rounded-lg text-xs transition">
+          ${v.name}
+        </button>
+      `).join('');
+
+      // Specs
+      const specsGrid = document.getElementById('detailSpecsGrid');
+      specsGrid.innerHTML = Object.entries(currentProduct.specs).map(([key, val]) => `
+        <div class="flex py-2 border-b border-slate-50">
+          <span class="w-36 text-slate-400 font-medium">${key}</span>
+          <span class="font-semibold text-slate-800 flex-1">${val}</span>
+        </div>
+      `).join('');
+
+      // Desc
+      document.getElementById('detailDescText').innerHTML = `
+        <p>${currentProduct.desc}</p>
+        <p>Paket penjualan resmi mencakup unit orisinal, kartu garansi resmi distributor 1 tahun, petunjuk penggunaan bahasa Indonesia, dan aksesori resmi pabrikan.</p>
+      `;
+    }
+
+    function switchThumb(src, el) {
+      document.getElementById('detailMainImg').src = src;
+      document.querySelectorAll('.thumb-pill').forEach(b => {
+        b.className = 'thumb-pill border border-slate-200 p-1 rounded-lg bg-white hover:border-brand transition flex items-center justify-center h-16';
+      });
+      el.className = 'thumb-pill border-2 border-brand p-1 rounded-lg bg-white hover:border-brand transition flex items-center justify-center h-16';
+    }
+
+    function pickColor(color, el) {
+      selectedColor = color;
+      document.querySelectorAll('.color-btn').forEach(b => {
+        b.className = 'color-btn border border-slate-200 text-slate-700 px-3.5 py-1.5 rounded-lg text-xs transition';
+      });
+      el.className = 'color-btn border-2 border-brand bg-orange-50/50 text-brand font-bold px-3.5 py-1.5 rounded-lg text-xs transition';
+    }
+
+    function pickVariant(name, price, oldPrice, el) {
+      selectedVariant = { name, price, oldPrice };
+      document.getElementById('detailPrice').textContent = formatRupiah(price);
+      document.getElementById('detailOldPrice').textContent = formatRupiah(oldPrice);
+
+      document.querySelectorAll('.variant-btn').forEach(b => {
+        b.className = 'variant-btn border border-slate-200 text-slate-700 px-3.5 py-1.5 rounded-lg text-xs transition';
+      });
+      el.className = 'variant-btn border-2 border-brand bg-orange-50/50 text-brand font-bold px-3.5 py-1.5 rounded-lg text-xs transition';
+    }
+
+    function changeQty(delta) {
+      let val = currentQty + delta;
+      if (val < 1) val = 1;
+      if (val > 10) val = 10;
+      currentQty = val;
+      document.getElementById('detailQty').value = currentQty;
+    }
+
+    function addToCartCurrent() {
+      const cart = getStoredCart();
+      const existing = cart.find(i => i.id === currentProduct.id && i.color === selectedColor && i.ram === selectedVariant.name);
+      if (existing) {
+        existing.qty += currentQty;
+      } else {
+        cart.push({
+          id: currentProduct.id,
+          name: currentProduct.name,
+          price: selectedVariant.price,
+          originalPrice: selectedVariant.oldPrice,
+          image: currentProduct.image,
+          color: selectedColor,
+          ram: selectedVariant.name,
+          qty: currentQty,
+          selected: true
+        });
+      }
+      saveCart(cart);
+      showToast("Berhasil Masuk Keranjang", `${currentQty}x ${currentProduct.name} (${selectedColor}, ${selectedVariant.name}) telah masuk ke keranjang.`);
+    }
+
+    function buyNowCurrent() {
+      sessionStorage.setItem('direct_checkout_item', JSON.stringify({
+        id: currentProduct.id,
+        name: currentProduct.name,
+        price: selectedVariant.price,
+        originalPrice: selectedVariant.oldPrice,
+        image: currentProduct.image,
+        color: selectedColor,
+        ram: selectedVariant.name,
+        qty: currentQty
+      }));
+
+      window.location.href = `checkout.html?direct=true&id=${currentProduct.id}&color=${encodeURIComponent(selectedColor)}&ram=${encodeURIComponent(selectedVariant.name)}&qty=${currentQty}`;
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initDetailPage();
+    });
+  </script>
+
+  <!-- FOOTER RESMI DENGAN 16 LOGO MITRA RESMI SHOPEE & PERBANKAN -->
+  <footer class="bg-white border-t border-slate-200 mt-16 text-slate-600 text-xs">
+    <div class="max-w-6xl mx-auto px-4 py-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+      <div>
+        <div class="flex items-center space-x-2 mb-3">
+          <div class="w-6 h-6 bg-slate-900 rounded flex items-center justify-center text-white">
+            <svg class="w-4 h-4 text-brand" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+          </div>
+          <span class="text-sm font-bold text-slate-900">Nexus Tech Store</span>
+        </div>
+        <p class="text-xs text-slate-500 leading-relaxed mb-4">
+          Toko ritel elektronik resmi berbasis di Kota Batam, menghadirkan produk teknologi terkurasi dengan garansi resmi distributor Indonesia.
+        </p>
+        <div class="text-[11px] text-slate-400 space-y-1">
+          <div>Politeknik Negeri Batam, Kepulauan Riau</div>
+          <div>Layanan Konsumen: halo@nexustech.id</div>
+        </div>
+      </div>
+
+      <div>
+        <h4 class="font-bold text-slate-900 mb-3 text-xs uppercase tracking-wider">Layanan & Garansi</h4>
+        <ul class="space-y-2 text-slate-600 text-xs">
+          <li><a href="account.html" class="hover:text-brand transition">Pusat Bantuan & Lacak Resi</a></li>
+          <li><a href="index.html" class="hover:text-brand transition">Panduan Pemesanan</a></li>
+          <li><a href="index.html" class="hover:text-brand transition">Ketentuan Garansi 1 Tahun</a></li>
+          <li><a href="cart.html" class="hover:text-brand transition">Pengembalian Barang & Dana</a></li>
+          <li><a href="index.html" class="hover:text-brand transition">Kebijakan Privasi Data</a></li>
+        </ul>
+      </div>
+
+      <!-- KOLOM METODE PEMBAYARAN RESMI -->
+      <div>
+        <h4 class="font-bold text-slate-900 mb-3 text-xs uppercase tracking-wider">Metode Pembayaran</h4>
+        <div class="grid grid-cols-3 sm:grid-cols-4 gap-2">
+          <!-- ShopeePay -->
+          <div class="bg-white border border-slate-200 rounded p-1 flex items-center justify-center h-8 hover:border-brand/60 transition shadow-xs" title="ShopeePay">
+            <svg viewBox="0 0 100 28" class="h-4 w-auto" xmlns="http://www.w3.org/2000/svg">
+              <path d="M7 8h10c0-2.8-2.2-5-5-5s-5 2.2-5 5zm-3 2h16c.6 0 1 .4 1 1v12c0 .6-.4 1-1 1H4c-.6 0-1-.4-1-1V11c0-.6.4-1 1-1zm6.2 4.5c-.8.2-1.2.5-1.2 1 0 .6.5.9 1.4 1l1.2.2c1.4.3 2.4.9 2.4 2.1 0 1.5-1.4 2.2-2.8 2.2-1.3 0-2.6-.5-3-1.4l1.3-.9c.3.6 1 1 1.7 1 .8 0 1.3-.4 1.3-.9 0-.5-.5-.8-1.3-.9l-1.3-.2c-1.5-.3-2.3-1.1-2.3-2.2 0-1.4 1.3-2.2 2.7-2.2 1.1 0 2.2.4 2.6 1.1l-1.2.9c-.3-.5-.8-.7-1.4-.7z" fill="#D9531E"/>
+              <text x="27" y="19" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="900" fill="#D9531E">Shopee<tspan fill="#0F172A" font-weight="700">Pay</tspan></text>
+            </svg>
+          </div>
+
+          <!-- SPayLater -->
+          <div class="bg-white border border-slate-200 rounded p-1 flex items-center justify-center h-8 hover:border-brand/60 transition shadow-xs" title="SPayLater">
+            <svg viewBox="0 0 95 28" class="h-4 w-auto" xmlns="http://www.w3.org/2000/svg">
+              <rect x="2" y="3" width="22" height="22" rx="4" fill="#D9531E"/>
+              <text x="13" y="19" text-anchor="middle" font-family="system-ui, sans-serif" font-size="14" font-weight="900" fill="#FFFFFF">S</text>
+              <text x="28" y="19" font-family="system-ui, sans-serif" font-size="11" font-weight="900" fill="#D9531E">Pay<tspan fill="#0F172A" font-weight="700">Later</tspan></text>
+            </svg>
+          </div>
+
+          <!-- BCA -->
+          <div class="bg-white border border-slate-200 rounded p-1 flex items-center justify-center h-8 hover:border-brand/60 transition shadow-xs" title="Bank Central Asia">
+            <img src="images/footer/logo_2.webp" onerror="this.onerror=null; this.src='https://down-id.img.susercontent.com/file/id-11134258-7rask-m3elfkyp7rvyc9.webp'" alt="BCA" class="max-h-5 max-w-[48px] object-contain">
+          </div>
+
+          <!-- Mandiri -->
+          <div class="bg-white border border-slate-200 rounded p-1 flex items-center justify-center h-8 hover:border-brand/60 transition shadow-xs" title="Bank Mandiri">
+            <img src="images/footer/logo_3.webp" onerror="this.onerror=null; this.src='https://down-id.img.susercontent.com/file/id-11134258-7rasi-m3elfnywtdgv0b.webp'" alt="Mandiri" class="max-h-5 max-w-[48px] object-contain">
+          </div>
+
+          <!-- BNI -->
+          <div class="bg-white border border-slate-200 rounded p-1 flex items-center justify-center h-8 hover:border-brand/60 transition shadow-xs" title="Bank BNI">
+            <img src="images/footer/logo_4.webp" onerror="this.onerror=null; this.src='https://down-id.img.susercontent.com/file/id-11134258-7rasa-m3elfqc3cpsg90.webp'" alt="BNI" class="max-h-5 max-w-[48px] object-contain">
+          </div>
+
+          <!-- BRI -->
+          <div class="bg-white border border-slate-200 rounded p-1 flex items-center justify-center h-8 hover:border-brand/60 transition shadow-xs" title="Bank BRI">
+            <img src="images/footer/logo_5.webp" onerror="this.onerror=null; this.src='https://down-id.img.susercontent.com/file/id-11134258-7rasc-m3elfssvqtqn58.webp'" alt="BRI" class="max-h-5 max-w-[48px] object-contain">
+          </div>
+
+          <!-- BSI -->
+          <div class="bg-white border border-slate-200 rounded p-1 flex items-center justify-center h-8 hover:border-brand/60 transition shadow-xs" title="Bank Syariah Indonesia">
+            <img src="images/footer/logo_6.webp" onerror="this.onerror=null; this.src='https://down-id.img.susercontent.com/file/id-11134258-7rask-m3elfv3kdsb4ae.webp'" alt="BSI" class="max-h-5 max-w-[48px] object-contain">
+          </div>
+
+          <!-- CIMB Niaga -->
+          <div class="bg-white border border-slate-200 rounded p-1 flex items-center justify-center h-8 hover:border-brand/60 transition shadow-xs" title="CIMB Niaga">
+            <img src="images/footer/logo_7.webp" onerror="this.onerror=null; this.src='https://down-id.img.susercontent.com/file/id-11134258-7ras8-m3elfxpckju7db.webp'" alt="CIMB Niaga" class="max-h-5 max-w-[48px] object-contain">
+          </div>
+
+          <!-- Indomaret -->
+          <div class="bg-white border border-slate-200 rounded p-1 flex items-center justify-center h-8 hover:border-brand/60 transition shadow-xs" title="Indomaret">
+            <img src="images/footer/logo_8.webp" onerror="this.onerror=null; this.src='https://down-id.img.susercontent.com/file/id-11134258-7rasc-m3elg0155yq700.webp'" alt="Indomaret" class="max-h-5 max-w-[48px] object-contain">
+          </div>
+
+          <!-- Alfamart -->
+          <div class="bg-white border border-slate-200 rounded p-1 flex items-center justify-center h-8 hover:border-brand/60 transition shadow-xs" title="Alfamart">
+            <img src="images/footer/logo_1.webp" onerror="this.onerror=null; this.src='https://down-id.img.susercontent.com/file/id-11134258-7rasg-m3elfigsva7j31.webp'" alt="Alfamart" class="max-h-5 max-w-[48px] object-contain">
+          </div>
+
+          <!-- Alfamidi -->
+          <div class="bg-white border border-slate-200 rounded p-1 flex items-center justify-center h-8 hover:border-brand/60 transition shadow-xs" title="Alfamidi">
+            <img src="images/footer/logo_9.webp" onerror="this.onerror=null; this.src='https://down-id.img.susercontent.com/file/id-11134258-7rasg-m3elgbu7vvkge8.webp'" alt="Alfamidi" class="max-h-5 max-w-[48px] object-contain">
+          </div>
+
+          <!-- QRIS -->
+          <div class="bg-white border border-slate-200 rounded p-1 flex items-center justify-center h-8 hover:border-brand/60 transition shadow-xs" title="QRIS">
+            <svg viewBox="0 0 65 28" class="h-4 w-auto" xmlns="http://www.w3.org/2000/svg">
+              <rect x="3" y="4" width="7" height="7" fill="#0F172A"/>
+              <rect x="4.5" y="5.5" width="4" height="4" fill="#FFFFFF"/>
+              <rect x="5.8" y="6.8" width="1.4" height="1.4" fill="#0F172A"/>
+              <text x="14" y="19" font-family="system-ui, sans-serif" font-size="13" font-weight="900" fill="#0F172A" letter-spacing="0.5">QRIS</text>
+              <circle cx="58" cy="8" r="2.5" fill="#D9531E"/>
+            </svg>
+          </div>
+
+          <!-- Visa -->
+          <div class="bg-white border border-slate-200 rounded p-1 flex items-center justify-center h-8 hover:border-brand/60 transition shadow-xs" title="Visa">
+            <svg viewBox="0 0 60 28" class="h-3.5 w-auto" xmlns="http://www.w3.org/2000/svg">
+              <text x="30" y="20" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="16" font-weight="900" font-style="italic" fill="#1A1F71" letter-spacing="1">VISA</text>
+            </svg>
+          </div>
+
+          <!-- Mastercard -->
+          <div class="bg-white border border-slate-200 rounded p-1 flex items-center justify-center h-8 hover:border-brand/60 transition shadow-xs" title="Mastercard">
+            <svg viewBox="0 0 60 28" class="h-4.5 w-auto" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="23" cy="14" r="9" fill="#EB001B"/>
+              <circle cx="37" cy="14" r="9" fill="#F79E1B"/>
+              <path d="M30 7.2a9 9 0 000 13.6 9 9 0 000-13.6z" fill="#FF5F00"/>
+            </svg>
+          </div>
+
+          <!-- COD -->
+          <div class="bg-white border border-slate-200 rounded p-1 flex items-center justify-center h-8 hover:border-brand/60 transition shadow-xs" title="Cash on Delivery">
+            <div class="bg-slate-900 text-brand font-black text-[10px] px-2 py-0.5 rounded tracking-wider">
+              COD
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- KOLOM JASA PENGIRIMAN RESMI -->
+      <div>
+        <h4 class="font-bold text-slate-900 mb-3 text-xs uppercase tracking-wider">Jasa Pengiriman</h4>
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+          <!-- SPX Express -->
+          <div class="bg-white border border-slate-200 rounded p-1 flex items-center justify-center h-8 hover:border-brand/60 transition shadow-xs" title="SPX Express">
+            <img src="images/footer/logo_10.webp" onerror="this.onerror=null; this.src='https://down-id.img.susercontent.com/file/id-11134258-7rasi-m3elgwdxtfqme2.webp'" alt="SPX Express" class="max-h-5 max-w-[48px] object-contain">
+          </div>
+
+          <!-- J&T Express -->
+          <div class="bg-white border border-slate-200 rounded p-1 flex items-center justify-center h-8 hover:border-brand/60 transition shadow-xs" title="J&T Express">
+            <img src="images/footer/logo_11.webp" onerror="this.onerror=null; this.src='https://down-id.img.susercontent.com/file/id-11134258-7rasj-m3elk3axne8sa2.webp'" alt="J&T Express" class="max-h-5 max-w-[48px] object-contain">
+          </div>
+
+          <!-- J&T Cargo -->
+          <div class="bg-white border border-slate-200 rounded p-1 flex items-center justify-center h-8 hover:border-brand/60 transition shadow-xs" title="J&T Cargo">
+            <img src="images/footer/logo_12.webp" onerror="this.onerror=null; this.src='https://down-id.img.susercontent.com/file/id-11134258-7ra0u-mcugpj7nj6b9b1.webp'" alt="J&T Cargo" class="max-h-5 max-w-[48px] object-contain">
+          </div>
+
+          <!-- SiCepat Ekspres -->
+          <div class="bg-white border border-slate-200 rounded p-1 flex items-center justify-center h-8 hover:border-brand/60 transition shadow-xs" title="SiCepat Ekspres">
+            <img src="images/footer/logo_13.webp" onerror="this.onerror=null; this.src='https://down-id.img.susercontent.com/file/id-11134258-7ras9-m3elkbmvgj1460.webp'" alt="SiCepat" class="max-h-5 max-w-[48px] object-contain">
+          </div>
+
+          <!-- JNE Express -->
+          <div class="bg-white border border-slate-200 rounded p-1 flex items-center justify-center h-8 hover:border-brand/60 transition shadow-xs" title="JNE Express">
+            <img src="images/footer/logo_14.webp" onerror="this.onerror=null; this.src='https://down-id.img.susercontent.com/file/id-11134258-7rasb-m3elkjsfixy0e0.webp'" alt="JNE" class="max-h-5 max-w-[48px] object-contain">
+          </div>
+
+          <!-- Anteraja -->
+          <div class="bg-white border border-slate-200 rounded p-1 flex items-center justify-center h-8 hover:border-brand/60 transition shadow-xs" title="Anteraja">
+            <img src="images/footer/logo_15.webp" onerror="this.onerror=null; this.src='https://down-id.img.susercontent.com/file/id-11134258-7rase-m3ell0woh4yg37.webp'" alt="Anteraja" class="max-h-5 max-w-[48px] object-contain">
+          </div>
+
+          <!-- Pos Indonesia -->
+          <div class="bg-white border border-slate-200 rounded p-1 flex items-center justify-center h-8 hover:border-brand/60 transition shadow-xs" title="Pos Indonesia">
+            <img src="images/footer/logo_16.webp" onerror="this.onerror=null; this.src='https://down-id.img.susercontent.com/file/id-11134258-7rasg-m3elktb3lhlk9e.webp'" alt="Pos Indonesia" class="max-h-5 max-w-[48px] object-contain">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sub-footer bar -->
+    <div class="border-t border-slate-100 py-4 bg-slate-50 text-center text-xs text-slate-500">
+      <div class="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+        <span>Hak Cipta 2026 Nexus Tech Store SOC 323 Politeknik Negeri Batam.</span>
+        <span class="text-slate-400 text-[11px]">Sistem Terverifikasi Garansi Resmi Distributor</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- SHARED CART AND APP LOGIC SCRIPT -->
+  <script>
+    function getStoredCart() {
+      try {
+        const data = localStorage.getItem('nexus_cart');
+        if (data) {
+          return JSON.parse(data);
+        }
+      } catch (e) {
+        console.error('Error loading cart:', e);
+      }
+      const defaultCart = [
+        {
+          id: 1,
+          name: "Xiaomi Redmi 13C 8/256GB - Garansi Resmi",
+          price: 1499000,
+          originalPrice: 1799000,
+          image: "images/6ebd4.png",
+          color: "Midnight Black",
+          ram: "8/256GB",
+          qty: 1,
+          selected: true
+        },
+        {
+          id: 4,
+          name: "Amazfit GTS 2 Mini Smartwatch AMOLED",
+          price: 899000,
+          originalPrice: 1099000,
+          image: "images/41a39.png",
+          color: "Meteor Black",
+          ram: "Standard",
+          qty: 1,
+          selected: true
+        }
+      ];
+      localStorage.setItem('nexus_cart', JSON.stringify(defaultCart));
+      return defaultCart;
+    }
+
+    function saveCart(cart) {
+      localStorage.setItem('nexus_cart', JSON.stringify(cart));
+      updateCartBadge();
+    }
+
+    function updateCartBadge() {
+      const cart = getStoredCart();
+      const count = cart.reduce((sum, item) => sum + (item.qty || 1), 0);
+      const badge = document.getElementById('headerCartCount');
+      if (badge) {
+        badge.textContent = count;
+      }
+    }
+
+    function showToast(title, message) {
+      const toast = document.getElementById('globalToast');
+      const toastTitle = document.getElementById('toastTitle');
+      const toastMessage = document.getElementById('toastMessage');
+      if (!toast) return;
+
+      toastTitle.textContent = title;
+      toastMessage.textContent = message;
+
+      toast.classList.remove('translate-x-96', 'opacity-0', 'pointer-events-none');
+      toast.classList.add('translate-x-0', 'opacity-100');
+
+      setTimeout(() => {
+        toast.classList.remove('translate-x-0', 'opacity-100');
+        toast.classList.add('translate-x-96', 'opacity-0', 'pointer-events-none');
+      }, 2500);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      updateCartBadge();
+    });
+  </script>
+</body>
+</html>

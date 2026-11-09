@@ -101,6 +101,50 @@
             </ul>
         </div>
     </div>
+    <div class="border-t border-slate-100 bg-slate-50/60 py-6">
+        <div class="max-w-6xl mx-auto px-4 grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+                <p class="font-semibold text-xs tracking-wider uppercase text-slate-500 mb-3">Metode Pembayaran</p>
+                <div class="flex flex-wrap gap-2 items-center">
+                    {% for item in [
+                        ('BCA', 'logo_2.webp', 'logo_2.png'),
+                        ('Mandiri', 'logo_3.webp', 'logo_3.png'),
+                        ('BNI', 'logo_4.webp', 'logo_4.png'),
+                        ('BRI', 'logo_5.webp', 'logo_5.png'),
+                        ('BSI', 'logo_6.webp', 'logo_6.png'),
+                        ('CIMB Niaga', 'logo_7.webp', 'logo_7.png'),
+                        ('Indomaret', 'logo_8.webp', 'logo_8.png'),
+                        ('Alfamart', 'logo_9.webp', 'logo_9.png')
+                    ] %}
+                    <div class="bg-white border border-slate-200 rounded px-2 py-1 flex items-center justify-center h-8 min-w-[56px] shadow-xs" title="{{ item[0] }}">
+                        <img src="{{ url_for('static', filename='images/footer/' ~ item[1]) }}" alt="{{ item[0] }}" class="max-h-5 max-w-[50px] object-contain" loading="lazy">
+                    </div>
+                    {% endfor %}
+                    <div class="bg-white border border-slate-200 rounded px-2 py-1 flex items-center justify-center h-8 min-w-[56px] shadow-xs" title="QRIS">
+                        <span class="font-bold text-[11px] text-slate-800 tracking-tight">QRIS</span>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <p class="font-semibold text-xs tracking-wider uppercase text-slate-500 mb-3">Jasa Pengiriman</p>
+                <div class="flex flex-wrap gap-2 items-center">
+                    {% for item in [
+                        ('SPX Express', 'logo_10.webp', 'logo_10.png'),
+                        ('J&T Express', 'logo_11.webp', 'logo_11.png'),
+                        ('J&T Cargo', 'logo_12.webp', 'logo_12.png'),
+                        ('SiCepat', 'logo_13.webp', 'logo_13.png'),
+                        ('JNE', 'logo_14.webp', 'logo_14.png'),
+                        ('Anteraja', 'logo_15.webp', 'logo_15.png'),
+                        ('Pos Indonesia', 'logo_16.webp', 'logo_16.png')
+                    ] %}
+                    <div class="bg-white border border-slate-200 rounded px-2 py-1 flex items-center justify-center h-8 min-w-[56px] shadow-xs" title="{{ item[0] }}">
+                        <img src="{{ url_for('static', filename='images/footer/' ~ item[1]) }}" alt="{{ item[0] }}" class="max-h-5 max-w-[50px] object-contain" loading="lazy">
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="border-t border-slate-100">
         <div class="max-w-6xl mx-auto px-4 py-1 md:py-2 text-xs text-muted flex flex-wrap items-center justify-between gap-x-4">
             <span>&copy; {{ app_name }} &middot; PBL RKS 323</span>
