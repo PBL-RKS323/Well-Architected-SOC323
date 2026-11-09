@@ -1,99 +1,586 @@
 {% extends 'layouts/toko.html' %}
 {% from '_icons.html' import icon %}
-{% from '_macros.html' import avatar %}
+{% from '_macros.html' import field, tombol_utama, avatar %}
 {% from '_akun.html' import area_akun %}
-{% from '_pesanan.html' import badge_status, foto_item %}
-{% block title %}Profil - {{ app_name }}{% endblock %}
+{% from '_pesanan.html' import badge_status, foto_item, info_status %}
+{% block title %}Profil & Keamanan Akun - {{ app_name }}{% endblock %}
+
 {% block content %}
 {% call area_akun('akun.profil') %}
-<div class="lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1.3fr)] lg:gap-6 lg:items-start">
-    <section class="bg-white rounded-3xl border border-slate-100 p-6 text-center">
-        <a href="{{ url_for('akun.pengaturan', _anchor='foto') }}" class="relative inline-block" aria-label="Ganti foto profil">
-            {{ avatar(current_user, 'w-24 h-24 font-display text-3xl font-extrabold ring-4 ring-brand-soft/60') }}
-            <span class="absolute -bottom-1 -right-1 w-9 h-9 rounded-full bg-white border border-slate-200 text-ink flex items-center justify-center">{{ icon('camera', 'w-4 h-4') }}</span>
-        </a>
-        <h1 class="font-display text-2xl font-extrabold mt-4">{{ current_user.display_name }}</h1>
-        <p class="text-muted break-all">{{ current_user.email }}</p>
-        <div class="grid grid-cols-2 gap-3 mt-5">
-            {% if current_user.is_staf_toko() %}
-            <div class="bg-soft rounded-2xl py-3"><p class="font-bold">{{ current_user.label_role }}</p><p class="text-xs text-muted">Jenis akun</p></div>
-            {% else %}
-            <div class="bg-soft rounded-2xl py-3"><p class="font-bold">{{ ringkasan.aktif }}</p><p class="text-xs text-muted">Pesanan aktif</p></div>
-            {% endif %}
-            <div class="bg-soft rounded-2xl py-3">
-                <p class="font-bold">{{ current_user.created_at | tanggal(false) }}</p>
-                <p class="text-xs text-muted">Bergabung</p>
+<div class="space-y-6">
+    {# Kartu Identitas Profil Header #}
+    <section class="bg-white rounded-3xl border border-slate-100 p-6 md:p-8 shadow-sm">
+        <div class="flex flex-col sm:flex-row items-center sm:items-start gap-6">
+            <div class="relative shrink-0">
+                {{ avatar(current_user, 'w-24 h-24 md:w-28 md:h-28 font-display text-3xl font-extrabold ring-4 ring-brand-soft/70 shadow-sm') }}
+                <label for="foto-avatar-input" class="absolute -bottom-1 -right-1 w-9 h-9 rounded-full bg-white border border-slate-200 text-ink shadow flex items-center justify-center cursor-pointer hover:bg-slate-50 transition" title="Ganti foto profil">
+                    {{ icon('camera', 'w-4 h-4') }}
+                </label>
+            </div>
+
+            <div class="flex-1 text-center sm:text-left min-w-0">
+                <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2 mb-1">
+                    <h1 class="font-display text-2xl md:text-3xl font-extrabold text-ink truncate">{{ current_user.display_name }}</h1>
+                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold {{ 'bg-purple-50 text-purple-700' if current_user.is_staf_toko() else 'bg-brand-soft text-brand' }}">
+                        {{ icon('shield-check' if current_user.is_staf_toko() else 'user', 'w-3.5 h-3.5') }}
+                        {{ current_user.label_role }}
+                    </span>
+                    {% if current_user.email_terverifikasi %}
+                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700">
+                        {{ icon('check', 'w-3.5 h-3.5') }} Terverifikasi
+                    </span>
+                    {% endif %}
+                </div>
+                <p class="text-sm text-muted break-all">{{ current_user.email }}</p>
+
+                <div class="flex flex-wrap items-center justify-center sm:justify-start gap-3 mt-4 text-xs font-medium text-muted">
+                    <span class="inline-flex items-center gap-1.5 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-100">
+                        {{ icon('calendar', 'w-4 h-4 text-muted') }} Bergabung: {{ current_user.created_at | tanggal(false) }}
+                    </span>
+                    {% if current_user.punya_izin('belanja') %}
+                    <span class="inline-flex items-center gap-1.5 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-100">
+                        {{ icon('package', 'w-4 h-4 text-brand') }} {{ ringkasan.aktif or 0 }} Pesanan Aktif
+                    </span>
+                    <span class="inline-flex items-center gap-1.5 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-100">
+                        {{ icon('check-circle', 'w-4 h-4 text-emerald-600') }} {{ ringkasan.selesai or 0 }} Pesanan Selesai
+                    </span>
+                    {% endif %}
+                </div>
             </div>
         </div>
+
+        {# Hidden quick avatar submit form triggered by the camera button #}
+        <form method="POST" action="{{ url_for('akun.pengaturan_foto') }}" enctype="multipart/form-data" id="quick-avatar-form" class="hidden">
+            {{ avatar_form.hidden_tag() }}
+            <input type="file" id="foto-avatar-input" name="foto-avatar" accept="image/jpeg,image/png" onchange="document.getElementById('quick-avatar-form').submit();">
+        </form>
     </section>
 
-    <div class="mt-7 lg:mt-0">
-        {% if not current_user.is_staf_toko() %}
-        {# Desktop: pesanan terbaru mengisi kolom kanan #}
-        <section class="hidden lg:block bg-white rounded-3xl border border-slate-100 p-5">
-            <div class="flex items-center justify-between mb-3">
-                <h2 class="font-display text-lg font-bold">Pesanan Terbaru</h2>
-                <a href="{{ url_for('belanja.pesanan') }}" class="text-sm font-semibold text-brand py-2">Lihat semua</a>
+    {# Tab Navigasi Terpadu #}
+    <div class="border-b border-slate-200 bg-white rounded-2xl px-3 pt-2 shadow-sm">
+        <nav class="flex overflow-x-auto space-x-2 sm:space-x-4 scrollbar-none" aria-label="Menu Tab Profil">
+            <button type="button" data-tab-btn="profil"
+                    class="tab-trigger py-3 px-4 text-sm font-semibold border-b-2 transition flex items-center gap-2 whitespace-nowrap {{ 'border-brand text-brand' if tab_aktif == 'profil' else 'border-transparent text-muted hover:text-ink hover:border-slate-300' }}">
+                {{ icon('user', 'w-4 h-4') }} Profil & Data Diri
+            </button>
+            {% if current_user.punya_izin('belanja') %}
+            <button type="button" data-tab-btn="pesanan"
+                    class="tab-trigger py-3 px-4 text-sm font-semibold border-b-2 transition flex items-center gap-2 whitespace-nowrap {{ 'border-brand text-brand' if tab_aktif == 'pesanan' else 'border-transparent text-muted hover:text-ink hover:border-slate-300' }}">
+                {{ icon('package', 'w-4 h-4') }} Pesanan & Pelacakan
+                {% if ringkasan.aktif %}<span class="px-2 py-0.5 text-xs rounded-full bg-brand text-white font-bold">{{ ringkasan.aktif }}</span>{% endif %}
+            </button>
+            <button type="button" data-tab-btn="alamat"
+                    class="tab-trigger py-3 px-4 text-sm font-semibold border-b-2 transition flex items-center gap-2 whitespace-nowrap {{ 'border-brand text-brand' if tab_aktif == 'alamat' else 'border-transparent text-muted hover:text-ink hover:border-slate-300' }}">
+                {{ icon('map-pin', 'w-4 h-4') }} Buku Alamat
+            </button>
+            {% endif %}
+            <button type="button" data-tab-btn="keamanan"
+                    class="tab-trigger py-3 px-4 text-sm font-semibold border-b-2 transition flex items-center gap-2 whitespace-nowrap {{ 'border-brand text-brand' if tab_aktif == 'keamanan' else 'border-transparent text-muted hover:text-ink hover:border-slate-300' }}">
+                {{ icon('shield-check', 'w-4 h-4') }} Keamanan Akun & SOC
+            </button>
+        </nav>
+    </div>
+
+    {# ISI TAB 1: PROFIL & DATA DIRI #}
+    <div id="tab-pane-profil" class="tab-pane {{ '' if tab_aktif == 'profil' else 'hidden' }} space-y-6">
+        <div class="grid md:grid-cols-2 gap-6">
+            {# Form Ubah Nama #}
+            <section class="bg-white rounded-3xl border border-slate-100 p-6 shadow-sm">
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="w-10 h-10 rounded-xl bg-brand-soft text-brand flex items-center justify-center">{{ icon('user', 'w-5 h-5') }}</span>
+                    <div>
+                        <h2 class="font-display text-lg font-bold">Nama Tampilan</h2>
+                        <p class="text-xs text-muted">Nama yang tampil pada ulasan dan riwayat transaksi</p>
+                    </div>
+                </div>
+                <form method="POST" action="{{ url_for('akun.pengaturan_nama') }}" class="space-y-4" novalidate>
+                    {{ nama_form.hidden_tag() }}
+                    {{ field(nama_form.nama_lengkap, ikon='user', autocomplete="name") }}
+                    <div class="pt-2">
+                        {{ tombol_utama(nama_form.submit) }}
+                    </div>
+                </form>
+            </section>
+
+            {# Manajemen Foto Profil #}
+            <section class="bg-white rounded-3xl border border-slate-100 p-6 shadow-sm">
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="w-10 h-10 rounded-xl bg-purple-50 text-purple-700 flex items-center justify-center">{{ icon('camera', 'w-5 h-5') }}</span>
+                    <div>
+                        <h2 class="font-display text-lg font-bold">Foto Profil</h2>
+                        <p class="text-xs text-muted">JPG atau PNG, maksimal 2 MB (bebas metadata EXIF)</p>
+                    </div>
+                </div>
+                <form method="POST" action="{{ url_for('akun.pengaturan_foto') }}" enctype="multipart/form-data" class="space-y-4" novalidate data-kirim-sekali>
+                    {{ avatar_form.hidden_tag() }}
+                    <div class="border-2 border-dashed border-slate-200 rounded-2xl p-4 text-center hover:bg-slate-50 transition cursor-pointer">
+                        {{ avatar_form.avatar(class="w-full text-xs text-muted file:mr-3 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-brand-soft file:text-brand file:font-semibold") }}
+                    </div>
+                    {% for error in avatar_form.avatar.errors %}
+                        <span class="text-coral text-xs block">{{ error }}</span>
+                    {% endfor %}
+                    <div class="flex items-center gap-3 pt-2">
+                        {{ tombol_utama(avatar_form.submit, cls="flex-1") }}
+                        {% if current_user.avatar %}
+                        <a href="{{ url_for('akun.pengaturan_foto_hapus') }}" data-confirm="Hapus foto profil?"
+                           class="inline-flex items-center justify-center p-3.5 rounded-full border border-slate-200 text-coral hover:bg-red-50 transition" title="Hapus Foto">
+                            {{ icon('trash-2', 'w-5 h-5') }}
+                        </a>
+                        {% endif %}
+                    </div>
+                </form>
+            </section>
+        </div>
+
+        {# Ringkasan Kredensial Sistem #}
+        <section class="bg-white rounded-3xl border border-slate-100 p-6 shadow-sm">
+            <h2 class="font-display text-lg font-bold mb-4">Informasi Akun Terdaftar</h2>
+            <div class="grid sm:grid-cols-3 gap-4 text-sm">
+                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                    <span class="text-xs text-muted block mb-1">Username Sistem</span>
+                    <span class="font-mono font-bold text-ink">{{ current_user.username }}</span>
+                </div>
+                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                    <span class="text-xs text-muted block mb-1">Email Utama</span>
+                    <span class="font-semibold text-ink truncate block">{{ current_user.email }}</span>
+                </div>
+                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                    <span class="text-xs text-muted block mb-1">Peran Akses (RBAC)</span>
+                    <span class="font-semibold text-brand">{{ current_user.label_role }}</span>
+                </div>
             </div>
-            <ul class="divide-y divide-slate-100">
-                {% for p in pesanan_terbaru %}
-                <li>
-                    <a href="{{ url_for('belanja.pesanan_detail', kode=p.kode) }}" class="flex items-center gap-3 py-3 hover:bg-soft/50 rounded-xl">
-                        {% if p.items %}{{ foto_item(p.items[0], 'w-12 h-12') }}{% endif %}
-                        <span class="min-w-0 flex-1">
-                            <span class="block font-semibold truncate">{{ p.items[0].nama_produk if p.items else p.kode }}</span>
-                            <span class="block text-xs text-muted">#{{ p.kode }} &middot; {{ p.created_at | tanggal(false) }}</span>
-                        </span>
-                        <span class="text-right">
-                            <span class="block font-semibold whitespace-nowrap">{{ p.total | rupiah }}</span>
-                            {{ badge_status(p, 'text-xs') }}
-                        </span>
-                    </a>
-                </li>
-                {% else %}
-                <li class="py-8 text-center text-sm text-muted">Belum ada pesanan. <a href="{{ url_for('toko.jelajah') }}" class="text-brand font-semibold">Lihat produk</a></li>
-                {% endfor %}
-            </ul>
         </section>
-        {% endif %}
+    </div>
 
-        {# HP: menu akun (di desktop sudah ada sidebar) #}
-        <div class="lg:hidden">
-            <h2 class="text-xs font-bold tracking-wider text-muted mb-2 px-1">AKUN</h2>
-            <nav class="bg-white rounded-2xl border border-slate-100 divide-y divide-slate-100">
-                {% if current_user.is_staf_toko() %}
-                <a href="{{ url_for('admin.dashboard') }}" class="flex items-center gap-4 p-4 hover:bg-soft/60">
-                    <span class="w-11 h-11 rounded-full bg-brand-soft text-brand flex items-center justify-center">{{ icon('layout-dashboard', 'w-5 h-5') }}</span>
-                    <span class="flex-1"><span class="block font-semibold">Panel Admin</span><span class="block text-sm text-muted">Kelola produk dan toko</span></span>
-                    <span class="text-muted">{{ icon('chevron-right', 'w-5 h-5') }}</span>
-                </a>
+    {# ISI TAB 2: PESANAN & PELACAKAN STATUS #}
+    {% if current_user.punya_izin('belanja') %}
+    <div id="tab-pane-pesanan" class="tab-pane {{ '' if tab_aktif == 'pesanan' else 'hidden' }} space-y-5">
+        {% if semua_pesanan %}
+            {% for p in semua_pesanan %}
+            <article class="bg-white rounded-3xl border border-slate-100 p-6 shadow-sm hover:border-slate-200 transition">
+                {# Header pesanan: Kode, Tanggal, Total, dan Detail Link #}
+                <div class="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-slate-100">
+                    <div class="flex items-center gap-3">
+                        <span class="w-10 h-10 rounded-2xl bg-brand-soft text-brand flex items-center justify-center font-bold text-sm">
+                            {{ icon('receipt-text', 'w-5 h-5') }}
+                        </span>
+                        <div>
+                            <span class="font-display font-extrabold text-ink text-base">Pesanan #{{ p.kode }}</span>
+                            <span class="block text-xs text-muted">{{ p.created_at | tanggal }}</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        {{ badge_status(p, 'px-3 py-1 rounded-full text-xs font-bold bg-slate-100') }}
+                        <a href="{{ url_for('belanja.pesanan_detail', kode=p.kode) }}"
+                           class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-brand text-white text-xs font-semibold hover:bg-brand-dark transition">
+                            Detail Pesanan {{ icon('chevron-right', 'w-3.5 h-3.5') }}
+                        </a>
+                    </div>
+                </div>
+
+                {# Stepper Status Pesanan Visual (5 Tahap) #}
+                {% if p.status != 'dibatalkan' %}
+                {% set status_step_map = {
+                    'menunggu_pembayaran': 1,
+                    'menunggu_verifikasi': 2,
+                    'diproses': 3,
+                    'dikirim': 4,
+                    'siap_diambil': 4,
+                    'selesai': 5
+                } %}
+                {% set cur_step = status_step_map.get(p.status, 1) %}
+                <div class="py-5 px-2">
+                    <div class="relative flex items-center justify-between">
+                        {# Baris background #}
+                        <div class="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-slate-100 -z-0"></div>
+                        <div class="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-brand transition-all -z-0"
+                             style="width: {{ ((cur_step - 1) / 4) * 100 }}%;"></div>
+
+                        {# Step 1: Bayar #}
+                        <div class="flex flex-col items-center gap-1 z-10">
+                            <span class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold {{ 'bg-brand text-white shadow' if cur_step >= 1 else 'bg-slate-100 text-slate-400 border border-slate-200' }}">
+                                {{ icon('check', 'w-3.5 h-3.5') if cur_step > 1 else '1' }}
+                            </span>
+                            <span class="text-[11px] font-semibold {{ 'text-brand' if cur_step == 1 else 'text-muted' }}">Bayar</span>
+                        </div>
+
+                        {# Step 2: Verifikasi #}
+                        <div class="flex flex-col items-center gap-1 z-10">
+                            <span class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold {{ 'bg-brand text-white shadow' if cur_step >= 2 else 'bg-slate-100 text-slate-400 border border-slate-200' }}">
+                                {{ icon('check', 'w-3.5 h-3.5') if cur_step > 2 else '2' }}
+                            </span>
+                            <span class="text-[11px] font-semibold {{ 'text-brand' if cur_step == 2 else 'text-muted' }}">Verifikasi</span>
+                        </div>
+
+                        {# Step 3: Diproses #}
+                        <div class="flex flex-col items-center gap-1 z-10">
+                            <span class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold {{ 'bg-brand text-white shadow' if cur_step >= 3 else 'bg-slate-100 text-slate-400 border border-slate-200' }}">
+                                {{ icon('check', 'w-3.5 h-3.5') if cur_step > 3 else '3' }}
+                            </span>
+                            <span class="text-[11px] font-semibold {{ 'text-brand' if cur_step == 3 else 'text-muted' }}">Diproses</span>
+                        </div>
+
+                        {# Step 4: Dikirim #}
+                        <div class="flex flex-col items-center gap-1 z-10">
+                            <span class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold {{ 'bg-brand text-white shadow' if cur_step >= 4 else 'bg-slate-100 text-slate-400 border border-slate-200' }}">
+                                {{ icon('check', 'w-3.5 h-3.5') if cur_step > 4 else '4' }}
+                            </span>
+                            <span class="text-[11px] font-semibold {{ 'text-brand' if cur_step == 4 else 'text-muted' }}">Dikirim</span>
+                        </div>
+
+                        {# Step 5: Selesai #}
+                        <div class="flex flex-col items-center gap-1 z-10">
+                            <span class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold {{ 'bg-emerald-600 text-white shadow' if cur_step == 5 else 'bg-slate-100 text-slate-400 border border-slate-200' }}">
+                                {{ icon('check', 'w-3.5 h-3.5') if cur_step == 5 else '5' }}
+                            </span>
+                            <span class="text-[11px] font-semibold {{ 'text-emerald-600' if cur_step == 5 else 'text-muted' }}">Selesai</span>
+                        </div>
+                    </div>
+                </div>
                 {% else %}
-                <a href="{{ url_for('belanja.pesanan') }}" class="flex items-center gap-4 p-4 hover:bg-soft/60">
-                    <span class="w-11 h-11 rounded-full bg-brand-soft text-brand flex items-center justify-center">{{ icon('receipt-text', 'w-5 h-5') }}</span>
-                    <span class="flex-1"><span class="block font-semibold">Pesanan Saya</span><span class="block text-sm text-muted">Lacak pesanan dan unggah bukti bayar</span></span>
-                    <span class="text-muted">{{ icon('chevron-right', 'w-5 h-5') }}</span>
-                </a>
-                <a href="{{ url_for('akun.alamat') }}" class="flex items-center gap-4 p-4 hover:bg-soft/60">
-                    <span class="w-11 h-11 rounded-full bg-brand-soft text-brand flex items-center justify-center">{{ icon('map-pin', 'w-5 h-5') }}</span>
-                    <span class="flex-1"><span class="block font-semibold">Alamat Saya</span><span class="block text-sm text-muted">Simpan alamat untuk checkout lebih cepat</span></span>
-                    <span class="text-muted">{{ icon('chevron-right', 'w-5 h-5') }}</span>
-                </a>
+                <div class="py-3 px-4 bg-red-50 rounded-2xl text-xs font-medium text-coral flex items-center gap-2 my-2">
+                    {{ icon('circle-x', 'w-4 h-4') }} Pesanan ini telah dibatalkan.
+                </div>
                 {% endif %}
-                <a href="{{ url_for('akun.pengaturan') }}" class="flex items-center gap-4 p-4 hover:bg-soft/60">
-                    <span class="w-11 h-11 rounded-full bg-brand-soft text-brand flex items-center justify-center">{{ icon('shield-check', 'w-5 h-5') }}</span>
-                    <span class="flex-1"><span class="block font-semibold">Pengaturan & Keamanan</span><span class="block text-sm text-muted">Foto profil, nama, email, dan kata sandi</span></span>
-                    <span class="text-muted">{{ icon('chevron-right', 'w-5 h-5') }}</span>
-                </a>
-            </nav>
 
-            <form action="{{ url_for('auth.logout') }}" method="POST" class="mt-6">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                <button type="submit" class="w-full flex items-center justify-center gap-2 bg-red-50 hover:bg-red-100 text-coral font-semibold py-3.5 rounded-2xl cursor-pointer">
-                    {{ icon('log-out', 'w-5 h-5') }} Keluar
-                </button>
-            </form>
+                {# Ringkasan Item & Total #}
+                <div class="pt-3 flex flex-wrap items-center justify-between gap-4">
+                    <div class="flex items-center gap-3">
+                        {% if p.items %}
+                            {{ foto_item(p.items[0], 'w-12 h-12') }}
+                            <div>
+                                <span class="block font-semibold text-sm truncate max-w-xs">{{ p.items[0].nama_produk }}</span>
+                                <span class="text-xs text-muted">{{ p.items | length }} item barang</span>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="text-right">
+                        <span class="text-xs text-muted block">Total Tagihan</span>
+                        <span class="font-display font-extrabold text-base text-ink">{{ p.total | rupiah }}</span>
+                    </div>
+                </div>
+            </article>
+            {% endfor %}
+        {% else %}
+            <div class="bg-white rounded-3xl border border-slate-100 p-12 text-center shadow-sm">
+                <span class="w-16 h-16 rounded-full bg-slate-50 text-muted inline-flex items-center justify-center mb-4">
+                    {{ icon('package', 'w-8 h-8') }}
+                </span>
+                <h3 class="font-display text-lg font-bold">Belum Ada Riwayat Pesanan</h3>
+                <p class="text-sm text-muted max-w-sm mx-auto mt-1 mb-6">Mulai belanja produk elektronik pilihan terbaikmu sekarang.</p>
+                <a href="{{ url_for('toko.jelajah') }}" class="inline-flex items-center gap-2 bg-brand hover:bg-brand-dark text-white font-semibold px-6 py-3 rounded-full text-sm transition">
+                    Jelajah Produk
+                </a>
+            </div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    {# ISI TAB 3: BUKU ALAMAT #}
+    {% if current_user.punya_izin('belanja') %}
+    <div id="tab-pane-alamat" class="tab-pane {{ '' if tab_aktif == 'alamat' else 'hidden' }} space-y-5">
+        <div class="flex items-center justify-between">
+            <div>
+                <h2 class="font-display text-xl font-bold">Alamat Pengiriman Tersimpan</h2>
+                <p class="text-xs text-muted">Kelola alamat tujuan untuk mempermudah saat proses checkout</p>
+            </div>
+            <a href="{{ url_for('akun.alamat') }}" class="inline-flex items-center gap-1.5 bg-brand hover:bg-brand-dark text-white text-xs font-semibold px-4 py-2.5 rounded-full transition">
+                {{ icon('plus', 'w-4 h-4') }} Kelola Alamat
+            </a>
+        </div>
+
+        {% if alamat_list %}
+        <div class="grid sm:grid-cols-2 gap-4">
+            {% for a in alamat_list %}
+            <div class="bg-white rounded-3xl border {{ 'border-brand ring-2 ring-brand-soft' if a.utama else 'border-slate-100' }} p-5 shadow-sm relative">
+                {% if a.utama %}
+                <span class="absolute top-4 right-4 bg-brand text-white text-[10px] font-bold px-2 py-0.5 rounded-full">Alamat Utama</span>
+                {% endif %}
+                <span class="inline-block px-2.5 py-1 rounded-lg bg-slate-100 text-xs font-bold text-slate-700 mb-2">{{ a.label }}</span>
+                <p class="font-bold text-ink text-sm">{{ a.nama_penerima }}</p>
+                <p class="text-xs text-muted mb-2">{{ a.telepon }}</p>
+                <p class="text-xs text-slate-600 leading-relaxed">{{ a.alamat }}, {{ a.kota }} {{ a.kode_pos }}</p>
+                
+                <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+                    {% if not a.utama %}
+                    <form method="POST" action="{{ url_for('akun.alamat_utama', alamat_id=a.id) }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="text-xs font-semibold text-brand hover:underline cursor-pointer">Jadikan Utama</button>
+                    </form>
+                    {% else %}
+                    <span class="text-xs font-semibold text-emerald-600 flex items-center gap-1">{{ icon('check', 'w-3 h-3') }} Utama</span>
+                    {% endif %}
+                    <a href="{{ url_for('akun.alamat_edit', alamat_id=a.id) }}" class="text-xs font-semibold text-muted hover:text-ink">Edit Alamat</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="bg-white rounded-3xl border border-slate-100 p-10 text-center shadow-sm">
+            <span class="w-14 h-14 rounded-full bg-slate-50 text-muted inline-flex items-center justify-center mb-3">
+                {{ icon('map-pin', 'w-7 h-7') }}
+            </span>
+            <p class="text-sm font-semibold text-ink">Belum ada alamat tersimpan</p>
+            <p class="text-xs text-muted mt-1 mb-4">Tambahkan alamat rumah atau kantor agar pemesanan lebih cepat.</p>
+            <a href="{{ url_for('akun.alamat') }}" class="inline-flex items-center gap-1.5 bg-brand text-white text-xs font-semibold px-5 py-2.5 rounded-full">
+                {{ icon('plus', 'w-4 h-4') }} Tambah Alamat Sekarang
+            </a>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    {# ISI TAB 4: PUSAT KEAMANAN AKUN & SOC #}
+    <div id="tab-pane-keamanan" class="tab-pane {{ '' if tab_aktif == 'keamanan' else 'hidden' }} space-y-6">
+        {# Ringkasan Status Proteksi Siber #}
+        <section class="bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-3xl p-6 md:p-8 shadow-sm">
+            <div class="flex items-center gap-3 mb-6">
+                <span class="w-11 h-11 rounded-2xl bg-white/10 text-emerald-400 flex items-center justify-center">
+                    {{ icon('shield-check', 'w-6 h-6') }}
+                </span>
+                <div>
+                    <h2 class="font-display text-xl font-bold">Pusat Keamanan Akun & SOC</h2>
+                    <p class="text-xs text-slate-300">Proteksi aktif terintegrasi dengan Wazuh SIEM & Security Logger</p>
+                </div>
+            </div>
+
+            <div class="grid sm:grid-cols-3 gap-4 text-xs">
+                <div class="bg-white/5 border border-white/10 rounded-2xl p-4">
+                    <span class="text-slate-400 block mb-1">Proteksi Autentikasi 2FA</span>
+                    <span class="font-bold text-emerald-400 text-sm flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400"></span> {{ keamanan_info.status_2fa }}
+                    </span>
+                    <p class="text-[11px] text-slate-400 mt-1">Verifikasi kode email untuk login & transaksi sensitif</p>
+                </div>
+                <div class="bg-white/5 border border-white/10 rounded-2xl p-4">
+                    <span class="text-slate-400 block mb-1">Token Sesi Perangkat</span>
+                    <span class="font-mono font-bold text-amber-300 text-sm flex items-center gap-1.5">
+                        {{ icon('key', 'w-3.5 h-3.5') }} {{ keamanan_info.sesi_token_preview }}...
+                    </span>
+                    <p class="text-[11px] text-slate-400 mt-1">Ganti kata sandi otomatis mencabut sesi perangkat lain</p>
+                </div>
+                <div class="bg-white/5 border border-white/10 rounded-2xl p-4">
+                    <span class="text-slate-400 block mb-1">Brute-Force Guard</span>
+                    <span class="font-bold text-cyan-400 text-sm flex items-center gap-1.5">
+                        {{ icon('lock', 'w-3.5 h-3.5') }} Proteksi 5x Percobaan
+                    </span>
+                    <p class="text-[11px] text-slate-400 mt-1">Kunci akun otomatis jika gagal berturut-turut</p>
+                </div>
+            </div>
+        </section>
+
+        <div class="grid md:grid-cols-2 gap-6">
+            {# Form Ubah Kata Sandi dengan Password Strength Meter #}
+            <section class="bg-white rounded-3xl border border-slate-100 p-6 shadow-sm">
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="w-10 h-10 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center">{{ icon('lock', 'w-5 h-5') }}</span>
+                    <div>
+                        <h2 class="font-display text-lg font-bold">Ubah Kata Sandi</h2>
+                        <p class="text-xs text-muted">Perbarui kata sandi untuk mengamankan akun Anda</p>
+                    </div>
+                </div>
+
+                <form method="POST" action="{{ url_for('akun.pengaturan_password') }}" class="space-y-4" novalidate>
+                    {{ password_form.hidden_tag() }}
+                    {{ field(password_form.password_sekarang, ikon='lock', autocomplete="current-password") }}
+                    
+                    {# Input password baru #}
+                    <div>
+                        {{ field(password_form.password_baru, ikon='lock', autocomplete="new-password") }}
+                        
+                        {# Password Strength Meter Interaktif #}
+                        <div class="mt-2.5 space-y-1.5 bg-slate-50 p-3 rounded-2xl border border-slate-100" id="pw-meter-box">
+                            <div class="flex items-center justify-between text-xs font-semibold text-muted">
+                                <span>Kekuatan Kata Sandi</span>
+                                <span id="pw-meter-text" class="text-slate-500">Belum diisi</span>
+                            </div>
+                            <div class="grid grid-cols-4 gap-1.5 h-1.5 w-full bg-slate-200 rounded-full overflow-hidden">
+                                <div id="pw-bar-1" class="h-full rounded-full bg-slate-300 transition-all duration-200"></div>
+                                <div id="pw-bar-2" class="h-full rounded-full bg-slate-300 transition-all duration-200"></div>
+                                <div id="pw-bar-3" class="h-full rounded-full bg-slate-300 transition-all duration-200"></div>
+                                <div id="pw-bar-4" class="h-full rounded-full bg-slate-300 transition-all duration-200"></div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-1 text-[11px] text-muted pt-1">
+                                <div id="pw-rule-len" class="flex items-center gap-1.5 text-slate-400"><span class="w-1.5 h-1.5 rounded-full bg-slate-300 inline-block"></span> Min. 8 Karakter</div>
+                                <div id="pw-rule-case" class="flex items-center gap-1.5 text-slate-400"><span class="w-1.5 h-1.5 rounded-full bg-slate-300 inline-block"></span> Huruf Besar & Kecil</div>
+                                <div id="pw-rule-num" class="flex items-center gap-1.5 text-slate-400"><span class="w-1.5 h-1.5 rounded-full bg-slate-300 inline-block"></span> Mengandung Angka</div>
+                                <div id="pw-rule-sym" class="flex items-center gap-1.5 text-slate-400"><span class="w-1.5 h-1.5 rounded-full bg-slate-300 inline-block"></span> Simbol (!@#$%^&*)</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{ field(password_form.konfirmasi_password, ikon='lock', autocomplete="new-password") }}
+                    <div class="pt-2">
+                        {{ tombol_utama(password_form.submit) }}
+                    </div>
+                </form>
+            </section>
+
+            {# Form Ubah Email & Info Sesi #}
+            <div class="space-y-6">
+                <section class="bg-white rounded-3xl border border-slate-100 p-6 shadow-sm">
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="w-10 h-10 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center">{{ icon('mail', 'w-5 h-5') }}</span>
+                        <div>
+                            <h2 class="font-display text-lg font-bold">Ubah Email</h2>
+                            <p class="text-xs text-muted">Memerlukan konfirmasi kata sandi saat ini</p>
+                        </div>
+                    </div>
+                    <form method="POST" action="{{ url_for('akun.pengaturan_email') }}" class="space-y-4" novalidate>
+                        {{ email_form.hidden_tag() }}
+                        {{ field(email_form.email_baru, ikon='mail', autocomplete="email", placeholder="nama@email.com") }}
+                        {{ field(email_form.password_sekarang, ikon='lock', autocomplete="current-password") }}
+                        <div class="pt-2">
+                            {{ tombol_utama(email_form.submit) }}
+                        </div>
+                    </form>
+                </section>
+
+                {# Log Aktivitas Keamanan Akun (Wazuh SIEM Security Feed) #}
+                <section class="bg-white rounded-3xl border border-slate-100 p-6 shadow-sm">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                            <h2 class="font-display text-base font-bold">Aktivitas Keamanan Terkini</h2>
+                        </div>
+                        <span class="text-[11px] text-muted font-mono">SOC Audit Log</span>
+                    </div>
+
+                    <div class="divide-y divide-slate-100 text-xs">
+                        {% for act in aktivitas_keamanan %}
+                        <div class="py-3 flex items-start gap-3">
+                            <span class="w-8 h-8 rounded-xl {{ act.bg }} {{ act.warna }} flex items-center justify-center shrink-0 mt-0.5">
+                                {{ icon(act.ikon, 'w-4 h-4') }}
+                            </span>
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center justify-between gap-2">
+                                    <span class="font-semibold text-ink truncate">{{ act.judul }}</span>
+                                    <span class="text-[10px] text-muted whitespace-nowrap">{{ act.waktu }}</span>
+                                </div>
+                                <span class="text-muted block mt-0.5">IP: <span class="font-mono text-slate-700">{{ act.ip }}</span>{% if act.alasan %} &middot; {{ act.alasan }}{% endif %}</span>
+                            </div>
+                        </div>
+                        {% else %}
+                        <p class="py-4 text-center text-muted">Belum ada catatan aktivitas keamanan.</p>
+                        {% endfor %}
+                    </div>
+                </section>
+            </div>
         </div>
     </div>
 </div>
+
+{# Script Interaktif untuk Tabs dan Password Strength Meter #}
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    // 1. Tab Switcher
+    const tabBtns = document.querySelectorAll("[data-tab-btn]");
+    const tabPanes = document.querySelectorAll(".tab-pane");
+
+    tabBtns.forEach(btn => {
+        btn.addEventListener("click", function() {
+            const target = this.getAttribute("data-tab-btn");
+            
+            // Update button styles
+            tabBtns.forEach(b => {
+                b.classList.remove("border-brand", "text-brand");
+                b.classList.add("border-transparent", "text-muted");
+            });
+            this.classList.add("border-brand", "text-brand");
+            this.classList.remove("border-transparent", "text-muted");
+
+            // Show active pane
+            tabPanes.forEach(pane => {
+                pane.classList.add("hidden");
+            });
+            const activePane = document.getElementById("tab-pane-" + target);
+            if (activePane) activePane.classList.remove("hidden");
+
+            // Update URL hash without jumping
+            if (history.replaceState) {
+                const url = new URL(window.location);
+                url.searchParams.set("tab", target);
+                history.replaceState(null, "", url.toString());
+            }
+        });
+    });
+
+    // 2. Password Strength Meter
+    const pwInput = document.querySelector('input[name="pw-password_baru"]');
+    if (pwInput) {
+        const bar1 = document.getElementById("pw-bar-1");
+        const bar2 = document.getElementById("pw-bar-2");
+        const bar3 = document.getElementById("pw-bar-3");
+        const bar4 = document.getElementById("pw-bar-4");
+        const meterText = document.getElementById("pw-meter-text");
+        const ruleLen = document.getElementById("pw-rule-len");
+        const ruleCase = document.getElementById("pw-rule-case");
+        const ruleNum = document.getElementById("pw-rule-num");
+        const ruleSym = document.getElementById("pw-rule-sym");
+
+        function setCheck(el, valid) {
+            if (!el) return;
+            el.className = valid ? "flex items-center gap-1.5 text-emerald-600 font-semibold" : "flex items-center gap-1.5 text-slate-400";
+            const dot = el.querySelector("span");
+            if (dot) dot.className = valid ? "w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block" : "w-1.5 h-1.5 rounded-full bg-slate-300 inline-block";
+        }
+
+        pwInput.addEventListener("input", function() {
+            const val = pwInput.value;
+            const hasLen = val.length >= 8;
+            const hasUpper = /[A-Z]/.test(val);
+            const hasLower = /[a-z]/.test(val);
+            const hasCase = hasUpper && hasLower;
+            const hasNum = /[0-9]/.test(val);
+            const hasSym = /[^A-Za-z0-9]/.test(val);
+
+            setCheck(ruleLen, hasLen);
+            setCheck(ruleCase, hasCase);
+            setCheck(ruleNum, hasNum);
+            setCheck(ruleSym, hasSym);
+
+            let score = 0;
+            if (hasLen) score++;
+            if (hasCase) score++;
+            if (hasNum) score++;
+            if (hasSym) score++;
+
+            // Reset bars
+            [bar1, bar2, bar3, bar4].forEach(b => { 
+                if (b) b.className = "h-full rounded-full bg-slate-300 transition-all duration-200"; 
+            });
+
+            if (!val) {
+                meterText.textContent = "Belum diisi";
+                meterText.className = "text-slate-500";
+                return;
+            }
+
+            if (score <= 1) {
+                meterText.textContent = "Lemah";
+                meterText.className = "text-rose-600 font-bold";
+                bar1.className = "h-full rounded-full bg-rose-500 transition-all duration-200";
+            } else if (score === 2) {
+                meterText.textContent = "Cukup";
+                meterText.className = "text-amber-600 font-bold";
+                bar1.className = "h-full rounded-full bg-amber-500 transition-all duration-200";
+                bar2.className = "h-full rounded-full bg-amber-500 transition-all duration-200";
+            } else if (score === 3) {
+                meterText.textContent = "Kuat";
+                meterText.className = "text-blue-600 font-bold";
+                bar1.className = "h-full rounded-full bg-blue-500 transition-all duration-200";
+                bar2.className = "h-full rounded-full bg-blue-500 transition-all duration-200";
+                bar3.className = "h-full rounded-full bg-blue-500 transition-all duration-200";
+            } else if (score === 4) {
+                meterText.textContent = "Sangat Kuat";
+                meterText.className = "text-emerald-600 font-bold";
+                [bar1, bar2, bar3, bar4].forEach(b => { 
+                    if (b) b.className = "h-full rounded-full bg-emerald-500 transition-all duration-200"; 
+                });
+            }
+        });
+    }
+});
+</script>
 {% endcall %}
 {% endblock %}

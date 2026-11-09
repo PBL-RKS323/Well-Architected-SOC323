@@ -1,13 +1,15 @@
 import logging
 import os
 
-from flask import render_template, redirect, url_for, flash, session, g, current_app
+from flask import render_template, redirect, url_for, flash, session, g, current_app, request
 
 from controllers.auth_controller import mulai_sesi
 from forms.akun_form import UbahNamaForm, UbahEmailForm, UbahPasswordForm, AvatarForm
+from helpers.email import email_aktif
 from helpers.image_security import simpan_avatar, delete_image
-from helpers.security_logger import log_event
+from helpers.security_logger import log_event, ambil_aktivitas_keamanan
 from models import db
+from models.alamat import Alamat
 from models.pesanan import Pesanan
 
 
@@ -40,6 +42,8 @@ def ubah_avatar():
         delete_image(lama, folder_avatar())
         log_event("AVATAR_CHANGED", user_id=g.user.id, username=g.user.username)
         flash("Foto profil berhasil diperbarui.", "success")
+        if request.referrer and "profil" in request.referrer:
+            return redirect(url_for("akun.profil", tab="profil"))
         return redirect(url_for("akun.pengaturan"))
     return _render(avatar_form=form)
 
@@ -51,19 +55,57 @@ def hapus_avatar():
         db.session.commit()
         log_event("AVATAR_REMOVED", user_id=g.user.id, username=g.user.username)
         flash("Foto profil dihapus.", "success")
+    if request.referrer and "profil" in request.referrer:
+        return redirect(url_for("akun.profil", tab="profil"))
     return redirect(url_for("akun.pengaturan"))
 
 
 def profil():
     pesanan_terbaru, ringkasan = [], {}
+    semua_pesanan = []
+    alamat_list = []
+
     if g.user.punya_izin("belanja"):
         milik = Pesanan.query.filter_by(user_id=g.user.id)
-        pesanan_terbaru = milik.order_by(Pesanan.created_at.desc()).limit(3).all()
+        semua_pesanan = milik.order_by(Pesanan.created_at.desc()).limit(10).all()
+        pesanan_terbaru = semua_pesanan[:3]
         ringkasan = {
             "aktif": milik.filter(Pesanan.status.in_(Pesanan.STATUS_AKTIF)).count(),
             "selesai": milik.filter_by(status=Pesanan.SELESAI).count(),
+            "total": milik.count(),
         }
-    return render_template("akun/profil.html", pesanan_terbaru=pesanan_terbaru, ringkasan=ringkasan)
+        alamat_list = Alamat.milik(g.user.id).all()
+
+    nama_form = UbahNamaForm(prefix="nama", formdata=None, nama_lengkap=g.user.nama_lengkap)
+    email_form = UbahEmailForm(prefix="email", formdata=None)
+    password_form = UbahPasswordForm(prefix="pw", formdata=None)
+    avatar_form = AvatarForm(prefix="foto", formdata=None)
+
+    aktivitas_keamanan = ambil_aktivitas_keamanan(g.user.id, email=g.user.email, username=g.user.username, limit=6)
+
+    keamanan_info = {
+        "status_2fa": "Aktif (Wajib)" if (current_app.config.get("OTP_LOGIN_PANEL") and g.user.is_staf_toko()) else ("Tersedia" if email_aktif() else "Nonaktif"),
+        "email_terverifikasi": g.user.email_terverifikasi,
+        "role_label": g.user.label_role,
+        "sesi_token_preview": g.user.sesi_token,
+    }
+
+    tab_aktif = request.args.get("tab", "profil")
+
+    return render_template(
+        "akun/profil.html",
+        pesanan_terbaru=pesanan_terbaru,
+        semua_pesanan=semua_pesanan,
+        ringkasan=ringkasan,
+        alamat_list=alamat_list,
+        nama_form=nama_form,
+        email_form=email_form,
+        password_form=password_form,
+        avatar_form=avatar_form,
+        aktivitas_keamanan=aktivitas_keamanan,
+        keamanan_info=keamanan_info,
+        tab_aktif=tab_aktif,
+    )
 
 
 def pengaturan():
@@ -76,6 +118,8 @@ def ubah_nama():
         g.user.nama_lengkap = " ".join(form.nama_lengkap.data.split())
         db.session.commit()
         flash("Nama berhasil diperbarui.", "success")
+        if request.referrer and "profil" in request.referrer:
+            return redirect(url_for("akun.profil", tab="profil"))
         return redirect(url_for("akun.pengaturan"))
     return _render(nama_form=form)
 
@@ -93,6 +137,8 @@ def ubah_email():
         db.session.commit()
         log_event("EMAIL_CHANGED", logging.WARNING, user_id=g.user.id, username=g.user.username)
         flash("Email berhasil diperbarui.", "success")
+        if request.referrer and "profil" in request.referrer:
+            return redirect(url_for("akun.profil", tab="keamanan"))
         return redirect(url_for("akun.pengaturan"))
     return _render(email_form=form)
 
@@ -118,5 +164,7 @@ def ubah_password():
 
         log_event("PASSWORD_CHANGED", logging.WARNING, user_id=g.user.id, username=g.user.username)
         flash("Kata sandi berhasil diperbarui.", "success")
+        if request.referrer and "profil" in request.referrer:
+            return redirect(url_for("akun.profil", tab="keamanan"))
         return redirect(url_for("akun.pengaturan"))
     return _render(password_form=form)
