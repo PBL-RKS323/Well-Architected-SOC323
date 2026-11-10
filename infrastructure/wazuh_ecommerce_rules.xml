@@ -36,4 +36,22 @@
     <match>UPLOAD_REJECTED</match>
     <description>E-Commerce: Upaya unggah file ditolak oleh filter keamanan biner</description>
   </rule>
+
+  <rule id="100205" level="6">
+    <if_sid>100200</if_sid>
+    <match>COUPON_ABUSE</match>
+    <description>E-Commerce: Percobaan fuzzer / brute-force kode voucher diskon</description>
+    <mitre>
+      <id>T1110.001</id>
+    </mitre>
+  </rule>
+
+  <rule id="100206" level="9">
+    <if_sid>100200</if_sid>
+    <match>IDOR_ATTEMPT</match>
+    <description>E-Commerce: Upaya akses data antar-pengguna (Insecure Direct Object Reference) dicegah</description>
+    <mitre>
+      <id>T1078</id>
+    </mitre>
+  </rule>
 </group>
