@@ -77,6 +77,10 @@ PostgreSQL/MySQL, pengaturan email & Google, dan solusi error ada di [docs/INSTA
 | Dokumen | Isi |
 |---|---|
 | [docs/PANDUAN-KODE.md](docs/PANDUAN-KODE.md) | Cara kerja kode, file wajib dibaca per anggota, pertanyaan dosen + jawaban, urutan demo |
+| [docs/BACKEND_ERD.md](docs/BACKEND_ERD.md) | Arsitektur database, ERD, normalisasi 3NF, relasi kategori, kupon, favorit, dan pembayaran (Pedro) |
+| [docs/KOMPONEN_UI.md](docs/KOMPONEN_UI.md) | Panduan desain UI/UX e-shop, palet warna coral, tipografi, dan komponen antarmuka (Intan) |
+| [docs/RENCANA_PENGUJIAN.md](docs/RENCANA_PENGUJIAN.md) | Matriks pengujian QA otomatis (186 pytest cases lulus 100%) dan skenario pengujian (Ripasha) |
+| [docs/AUDIT_KEAMANAN.md](docs/AUDIT_KEAMANAN.md) | Laporan audit SAST Bandit, DAST audit suite, SCA dependensi, dan aturan Wazuh SOC (Ihsan) |
 | [docs/INSTALASI.md](docs/INSTALASI.md) | Instalasi lengkap, pengujian, solusi error |
 | [docs/KEAMANAN.md](docs/KEAMANAN.md) | Kontrol keamanan & format log |
 | [docs/DEPLOY.md](docs/DEPLOY.md) | Deploy ke server, HTTPS, Gmail & Google login |
