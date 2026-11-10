@@ -14,8 +14,8 @@ Intan Sri Diana         | Desain UI/UX                     | Figma, frontend/ (p
                         |                                  | templates/_macros.html, templates/_produk.html
 Pedro Juanda Sebayang   | Backend                          | app.py, config.py, models/, controllers/,
                         |                                  | migrations/, middlewares/
-Ihsan Alfareno          | Fitur & keamanan (pentest)       | helpers/image_security.py, helpers/security_logger.py,
-                        |                                  | docs/KEAMANAN.md, uji keamanan
+Ihsan Alfareno          | System Analyst (arah fitur)      | analisis kebutuhan & prioritas fitur, acceptance criteria,
+                        |                                  | docs/BACKLOG.md, docs/KEAMANAN.md, uji keamanan
 Ripasha Alvarisi L.     | Quality Assurance (QA)           | tests/, forms/ (validasi), uji manual semua peran
 
 =====================================================================================
@@ -29,8 +29,8 @@ Spesifikasi PBL hanya mewajibkan Admin & Customer; Staf adalah nilai tambah (RBA
 
 Siapa memerankan apa saat demo:
   - Pedro   -> login sebagai Admin  (CRUD produk, dasbor admin)
-  - Ihsan   -> login sebagai Staf   (tunjukkan menu Laporan/Pengguna tidak ada, akses /admin/pengguna ditolak
-               dan tercatat ACCESS_DENIED di logs/security.log)
+  - Ihsan   -> login sebagai Staf   (System Analyst: bukti acceptance criteria -> menu Laporan/Pengguna
+               tidak ada, akses /admin/pengguna ditolak dan tercatat ACCESS_DENIED di logs/security.log)
   - Intan   -> login sebagai Pelanggan (register, katalog, detail produk, keranjang)
   - Ripasha -> QA memegang akun uji untuk KETIGA peran (pelanggan, staf, admin), karena tugas QA justru
                memastikan setiap peran hanya bisa membuka halamannya sendiri.
@@ -75,8 +75,9 @@ RUBRIK 3 - KETERLIBATAN ANGGOTA
  3. Ripasha (2 mnt) : validasi client side: kosongkan form register -> klik Buat Akun -> pesan muncul,
                       tab Network DevTools kosong (tidak ada POST). Lalu matikan JavaScript, kirim lagi ->
                       pesan tetap muncul dari server. Jalankan: pytest -q
- 4. Ihsan   (2 mnt) : login salah 5x -> akun terkunci -> buka logs/security.log. Login staf -> buka
-                      /admin/pengguna -> ditolak. Tunjukkan hash di database (bukan kata sandi asli).
+ 4. Ihsan   (2 mnt) : System Analyst: tunjukkan acceptance criteria di docs/BACKLOG.md, lalu buktikan:
+                      login salah 5x -> akun terkunci -> logs/security.log; login staf -> /admin/pengguna
+                      ditolak. Tunjukkan hash di database (bukan kata sandi asli).
  5. Pedro   (3 mnt) : login admin -> dasbor -> tambah/edit/hapus produk -> buka models/produk.py,
                       controllers/produk_controller.py, migrations/versions/.
 
@@ -92,8 +93,9 @@ Dosen menilai keterlibatan dari GitHub, jadi setiap orang membuat minimal 1 Pull
   [ ] Ripasha : tambah tes di tests/ yang memastikan form register punya atribut validasi klien
                 (type="email", data-pola, data-sama-dengan) + docs/LAPORAN-QA.md (checklist uji manual
                 per peran: hasil OK / bug).
-  [ ] Ihsan   : docs/LAPORAN-PENTEST.md: uji SQL injection di /jelajah?q=, XSS di ulasan, upload file
-                palsu (.php diganti .jpg), akses /admin sebagai pelanggan, brute force login. Tulis hasilnya.
+  [ ] Ihsan   : docs/BACKLOG.md: daftar fitur + prioritas (wajib/tambahan) + acceptance criteria tiap fitur
+                yang dipakai frontend/backend. Uji keamanan singkat (SQL injection /jelajah?q=, XSS ulasan,
+                upload file palsu .php->.jpg, akses /admin sebagai pelanggan) dicatat sebagai bagian QA.
   [ ] Intan   : docs/desain/ berisi link Figma + ekspor PNG tiap frame (Login, Register, Home, Produk,
                 Cart, Checkout, Dasbor Admin). Desain akhirnya sudah diterapkan di templates/, jadi
                 gambar desain cukup di docs/desain/, bukan di frontend/ atau static/.
@@ -143,5 +145,6 @@ Database lokal:
 
 Pembayaran:
   Spesifikasi PBL: "Upload transfer" + "Approval bukti bayar" -> sudah ada (transfer manual: pelanggan
-  upload bukti di /pesanan/<kode>, admin setujui di /admin/pesanan). Midtrans Sandbox hanya opsional
-  (nilai tambah), dan pembayaran tidak termasuk 5 fitur yang dinilai di ATS.
+  upload bukti di /pesanan/<kode>, admin setujui di /admin/pesanan). Opsi QRIS/E-Wallet Midtrans di
+  checkout masih berlabel "SEGERA" (belum ada integrasi). Midtrans Sandbox hanya opsional (nilai tambah),
+  dan pembayaran tidak termasuk 5 fitur yang dinilai di ATS.
