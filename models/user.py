@@ -57,6 +57,9 @@ class User(db.Model):
     tanggal_lahir = db.Column(db.Date, nullable=True)
     created_at = db.Column(db.DateTime, nullable=False, default=utcnow)
 
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
 

@@ -18,6 +18,9 @@ class Kategori(db.Model):
     produk_list = db.relationship("Produk", backref="kategori_rel", lazy="dynamic",
                                   foreign_keys="Produk.kategori_id")
 
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
     @classmethod
     def inisialisasi_bawaan(cls):
         """Membuat kategori default jika tabel kosong."""

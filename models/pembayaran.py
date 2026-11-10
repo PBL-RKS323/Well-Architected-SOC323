@@ -22,3 +22,6 @@ class Pembayaran(db.Model):
 
     pesanan = db.relationship("Pesanan", backref=db.backref("daftar_transaksi", cascade="all, delete-orphan"))
     verifikator = db.relationship("User", foreign_keys=[diverifikasi_oleh])
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)

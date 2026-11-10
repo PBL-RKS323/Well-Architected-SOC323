@@ -23,6 +23,9 @@ class Kupon(db.Model):
     aktif = db.Column(db.Boolean, nullable=False, default=True, server_default=db.true())
     created_at = db.Column(db.DateTime, nullable=False, default=utcnow)
 
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
     def hitung_diskon(self, subtotal):
         """Menghitung nominal potongan dari subtotal belanja (mengembalikan Decimal)."""
         sub = Decimal(str(subtotal))

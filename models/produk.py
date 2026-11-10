@@ -26,6 +26,9 @@ class Produk(db.Model):
     created_at = db.Column(db.DateTime, nullable=False, default=utcnow)
     updated_at = db.Column(db.DateTime, nullable=False, default=utcnow, onupdate=utcnow)
 
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
     @property
     def diskon_persen(self):
         """Persentase diskon dibulatkan, 0 jika tidak ada harga normal yang lebih tinggi."""

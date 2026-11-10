@@ -16,6 +16,9 @@ class Favorit(db.Model):
     user = db.relationship("User", backref=db.backref("daftar_favorit", cascade="all, delete-orphan", lazy="dynamic"))
     produk = db.relationship("Produk", backref=db.backref("daftar_peminat", cascade="all, delete-orphan", lazy="dynamic"))
 
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
     @classmethod
     def toggle(cls, user_id, produk_id):
         """Menambahkan atau menghapus produk dari wishlist."""
