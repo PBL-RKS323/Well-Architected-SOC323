@@ -7,18 +7,18 @@
 
     <!-- HERO CAROUSEL SECTION: YOUR ONE-STOP ELECTRONIC MARKET -->
     {% if unggulan %}
-    <section class="bg-white rounded-3xl border border-slate-100 p-6 md:p-10 lg:p-14 relative overflow-hidden shadow-xs" data-carousel aria-label="Produk unggulan" aria-roledescription="carousel">
-        <div class="flex overflow-x-auto snap-x snap-mandatory scrollbar-none rounded-3xl" data-carousel-track>
+    <section class="bg-white rounded-xs border border-gray-200/80 p-6 md:p-10 lg:p-12 relative overflow-hidden shadow-xs" data-carousel aria-label="Produk unggulan" aria-roledescription="carousel">
+        <div class="flex overflow-x-auto snap-x snap-mandatory scrollbar-none rounded-xs" data-carousel-track>
             {% for p in unggulan %}
             <div class="w-full shrink-0 snap-start grid md:grid-cols-2 gap-8 items-center"
                  role="group" aria-roledescription="slide" aria-label="{{ loop.index }} dari {{ unggulan | length }}">
                 <div class="space-y-4 text-center md:text-left z-10">
                     <div class="flex flex-wrap items-center justify-center md:justify-start gap-2">
-                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-brand-soft text-brand">
+                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xs text-xs font-bold bg-brand-soft text-brand">
                             {{ icon('zap', 'w-3.5 h-3.5') }} SALE &amp; DISKON SETIAP HARI
                         </span>
                         {% if p.diskon_persen %}
-                        <span class="text-xs font-bold text-coral bg-red-50 px-3 py-1 rounded-full">Diskon {{ p.diskon_persen }}%</span>
+                        <span class="text-xs font-bold text-coral bg-red-50 px-2.5 py-1 rounded-xs">Diskon {{ p.diskon_persen }}%</span>
                         {% endif %}
                     </div>
                     <h1 class="font-display text-3xl sm:text-4xl lg:text-5xl font-black text-ink leading-tight tracking-tight">
@@ -34,10 +34,10 @@
                         <p class="font-display font-extrabold text-2xl md:text-3xl text-ink">{{ p.harga | rupiah }}</p>
                     </div>
                     <div class="pt-2 flex flex-wrap justify-center md:justify-start gap-4">
-                        <a href="{{ url_for('toko.produk_detail', produk_id=p.id) }}" class="inline-flex items-center gap-2 bg-brand hover:bg-brand-dark text-white font-bold text-sm px-8 py-3.5 rounded-full shadow-md shadow-brand/20 transition transform hover:-translate-y-0.5">
+                        <a href="{{ url_for('toko.produk_detail', produk_id=p.id) }}" class="inline-flex items-center gap-2 bg-brand hover:bg-brand-dark text-white font-bold text-sm px-6 py-2.5 rounded-xs shadow-xs transition">
                             Lihat Produk {{ icon('arrow-right', 'w-4 h-4') }}
                         </a>
-                        <a href="{{ url_for('toko.jelajah') }}" class="inline-flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-ink font-bold text-sm px-6 py-3.5 rounded-full transition">
+                        <a href="{{ url_for('toko.jelajah') }}" class="inline-flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-ink font-medium text-sm px-6 py-2.5 rounded-xs transition">
                             Semua Produk
                         </a>
                     </div>
@@ -45,9 +45,9 @@
 
                 <!-- HERO IMAGE SHOWCASE -->
                 <div class="relative flex items-center justify-center">
-                    <div class="w-full max-w-md aspect-4/3 rounded-2xl bg-gradient-to-tr from-slate-100 to-slate-50 border border-slate-100 p-6 flex items-center justify-center shadow-inner relative">
+                    <div class="w-full max-w-md aspect-4/3 rounded-xs bg-slate-50 border border-gray-100 p-6 flex items-center justify-center relative">
                         <img src="{{ url_for('static', filename='uploads/' ~ p.gambar) }}" alt="{{ p.nama_produk }}"
-                             class="max-h-64 object-contain drop-shadow-2xl transform hover:scale-105 transition duration-300" {{ 'loading=lazy' if not loop.first }}>
+                             class="max-h-64 object-contain drop-shadow-sm transform hover:scale-105 transition duration-300" {{ 'loading=lazy' if not loop.first }}>
                     </div>
                 </div>
             </div>
@@ -58,12 +58,12 @@
         <div class="flex justify-center items-center gap-2 pt-6">
             {% for p in unggulan %}
             <button type="button" data-carousel-dot="{{ loop.index0 }}" aria-label="Tampilkan slide {{ loop.index }}"
-                    class="w-8 h-8 flex items-center justify-center cursor-pointer">
-                <span class="block h-2 w-2 rounded-full bg-slate-300 transition-all data-[aktif]:w-6 data-[aktif]:bg-brand" {{ 'data-aktif' if loop.first }}></span>
+                    class="w-6 h-6 flex items-center justify-center cursor-pointer">
+                <span class="block h-1.5 w-1.5 rounded-full bg-slate-300 transition-all data-[aktif]:w-5 data-[aktif]:bg-brand" {{ 'data-aktif' if loop.first }}></span>
             </button>
             {% endfor %}
             <button type="button" data-carousel-jeda aria-label="Jeda putar otomatis"
-                    class="w-8 h-8 flex items-center justify-center rounded-full text-muted hover:text-ink cursor-pointer">
+                    class="w-6 h-6 flex items-center justify-center rounded-xs text-muted hover:text-ink cursor-pointer">
                 <span data-ikon-jeda>{{ icon('pause', 'w-3.5 h-3.5') }}</span>
                 <span data-ikon-putar class="hidden">{{ icon('play', 'w-3.5 h-3.5') }}</span>
             </button>
@@ -71,7 +71,7 @@
         {% endif %}
     </section>
     {% else %}
-    <section class="rounded-3xl bg-white p-8 md:p-12 text-center border border-slate-100">
+    <section class="rounded-xs bg-white p-8 md:p-12 text-center border border-gray-200/80">
         <h1 class="font-display text-3xl font-extrabold text-ink">e-shop. Electronic Market</h1>
         <p class="text-muted mt-2">Pusat belanja gadget dan aksesoris elektronik terpercaya.</p>
     </section>
@@ -92,8 +92,8 @@
 
     <!-- 4 VALUE PROPOSITIONS -->
     <section class="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div class="bg-white p-5 rounded-2xl border border-slate-100 flex items-center gap-3.5 shadow-xs">
-            <span class="w-11 h-11 rounded-xl bg-brand-soft text-brand flex items-center justify-center shrink-0">
+        <div class="bg-white p-4 rounded-xs border border-gray-200/80 flex items-center gap-3.5 shadow-xs">
+            <span class="w-10 h-10 rounded-xs bg-brand-soft text-brand flex items-center justify-center shrink-0">
                 {{ icon('headphones', 'w-5 h-5') }}
             </span>
             <div>
@@ -101,17 +101,17 @@
                 <p class="text-[11px] text-muted">Customer service 24/7</p>
             </div>
         </div>
-        <div class="bg-white p-5 rounded-2xl border border-slate-100 flex items-center gap-3.5 shadow-xs">
-            <span class="w-11 h-11 rounded-xl bg-brand-soft text-brand flex items-center justify-center shrink-0">
+        <div class="bg-white p-4 rounded-xs border border-gray-200/80 flex items-center gap-3.5 shadow-xs">
+            <span class="w-10 h-10 rounded-xs bg-brand-soft text-brand flex items-center justify-center shrink-0">
                 {{ icon('shield-check', 'w-5 h-5') }}
             </span>
             <div>
                 <h2 class="font-bold text-xs sm:text-sm text-ink">Secure</h2>
-                <p class="text-[11px] text-muted">Terverifikasi SOC 323</p>
+                <p class="text-[11px] text-muted">Transaksi 100% Aman</p>
             </div>
         </div>
-        <div class="bg-white p-5 rounded-2xl border border-slate-100 flex items-center gap-3.5 shadow-xs">
-            <span class="w-11 h-11 rounded-xl bg-brand-soft text-brand flex items-center justify-center shrink-0">
+        <div class="bg-white p-4 rounded-xs border border-gray-200/80 flex items-center gap-3.5 shadow-xs">
+            <span class="w-10 h-10 rounded-xs bg-brand-soft text-brand flex items-center justify-center shrink-0">
                 {{ icon('truck', 'w-5 h-5') }}
             </span>
             <div>
@@ -119,50 +119,14 @@
                 <p class="text-[11px] text-muted">Pengiriman cepat &amp; aman</p>
             </div>
         </div>
-        <div class="bg-white p-5 rounded-2xl border border-slate-100 flex items-center gap-3.5 shadow-xs">
-            <span class="w-11 h-11 rounded-xl bg-brand-soft text-brand flex items-center justify-center shrink-0">
+        <div class="bg-white p-4 rounded-xs border border-gray-200/80 flex items-center gap-3.5 shadow-xs">
+            <span class="w-10 h-10 rounded-xs bg-brand-soft text-brand flex items-center justify-center shrink-0">
                 {{ icon('rotate-ccw', 'w-5 h-5') }}
             </span>
             <div>
                 <h2 class="font-bold text-xs sm:text-sm text-ink">Transparent</h2>
                 <p class="text-[11px] text-muted">Garansi resmi &amp; retur</p>
             </div>
-        </div>
-    </section>
-
-    <!-- PROMOTION BANNER GRID (3 CARDS) -->
-    <section class="grid md:grid-cols-3 gap-6">
-        <div class="bg-gradient-to-br from-amber-50 to-orange-50 rounded-3xl p-6 border border-amber-100 flex flex-col justify-between relative overflow-hidden group">
-            <div class="space-y-2 mb-6">
-                <span class="text-[10px] font-extrabold uppercase tracking-widest text-amber-700 bg-amber-100 px-2.5 py-0.5 rounded-full inline-block">Promo Ongkir</span>
-                <h3 class="font-display font-extrabold text-xl text-ink">Free Shipping Everywhere!</h3>
-                <p class="text-xs text-muted leading-relaxed">Gratis ongkir untuk seluruh pesanan tanpa batas minimal di area Batam &amp; sekitarnya.</p>
-            </div>
-            <a href="{{ url_for('toko.jelajah') }}" class="inline-flex items-center gap-1.5 text-xs font-bold text-brand hover:text-brand-dark transition self-start">
-                Shop Now {{ icon('chevron-right', 'w-3.5 h-3.5') }}
-            </a>
-        </div>
-
-        <div class="bg-gradient-to-br from-red-50 to-rose-50 rounded-3xl p-6 border border-red-100 flex flex-col justify-between relative overflow-hidden group">
-            <div class="space-y-2 mb-6">
-                <span class="text-[10px] font-extrabold uppercase tracking-widest text-red-700 bg-red-100 px-2.5 py-0.5 rounded-full inline-block">Cuci Gudang</span>
-                <h3 class="font-display font-extrabold text-xl text-ink">Clearance Sale Up to 50%</h3>
-                <p class="text-xs text-muted leading-relaxed">Diskon heboh smartphone &amp; laptop pilihan dengan kuota terbatas setiap hari.</p>
-            </div>
-            <a href="{{ url_for('toko.jelajah') }}" class="inline-flex items-center gap-1.5 text-xs font-bold text-brand hover:text-brand-dark transition self-start">
-                Shop Now {{ icon('chevron-right', 'w-3.5 h-3.5') }}
-            </a>
-        </div>
-
-        <div class="bg-gradient-to-br from-blue-50 to-sky-50 rounded-3xl p-6 border border-blue-100 flex flex-col justify-between relative overflow-hidden group">
-            <div class="space-y-2 mb-6">
-                <span class="text-[10px] font-extrabold uppercase tracking-widest text-blue-700 bg-blue-100 px-2.5 py-0.5 rounded-full inline-block">Member Baru</span>
-                <h3 class="font-display font-extrabold text-xl text-ink">Diskon 20% Pembelian Pertama</h3>
-                <p class="text-xs text-muted leading-relaxed">Daftar akun sekarang dan dapatkan potongan harga langsung di transaksi pertama Anda.</p>
-            </div>
-            <a href="{{ url_for('auth.register') }}" class="inline-flex items-center gap-1.5 text-xs font-bold text-brand hover:text-brand-dark transition self-start">
-                Daftar Akun {{ icon('chevron-right', 'w-3.5 h-3.5') }}
-            </a>
         </div>
     </section>
 
@@ -185,7 +149,7 @@
             {% endfor %}
         </div>
         {% else %}
-        <div class="bg-white rounded-3xl p-10 text-center border border-slate-100">
+        <div class="bg-white rounded-xs p-10 text-center border border-gray-200/80">
             <p class="text-muted text-sm">Belum ada produk unggulan saat ini.</p>
         </div>
         {% endif %}
@@ -194,13 +158,13 @@
     <!-- KATEGORI BELANJA -->
     <section class="space-y-4">
         <h2 class="flex items-center gap-2 font-display text-lg md:text-xl font-bold">
-            <span class="w-1.5 h-5 rounded-full bg-brand"></span> Kategori Belanja
+            <span class="w-1.5 h-5 bg-brand rounded-xs"></span> Kategori Belanja
         </h2>
         <div class="grid grid-cols-3 sm:grid-cols-6 gap-3">
             {% for k in kategori_list %}
             <a href="{{ url_for('toko.jelajah', kategori=k) }}"
-               class="bg-white border border-slate-100 rounded-2xl py-4 px-2 flex flex-col items-center gap-2 hover:border-brand hover:text-brand transition shadow-xs text-center">
-                <span class="w-12 h-12 rounded-full bg-slate-50 flex items-center justify-center">{{ icon(IKON_KATEGORI.get(k, 'package'), 'w-6 h-6 text-brand') }}</span>
+               class="bg-white border border-gray-200/80 rounded-xs py-4 px-2 flex flex-col items-center gap-2 hover:border-brand hover:text-brand transition shadow-xs text-center">
+                <span class="w-12 h-12 rounded-xs bg-slate-50 flex items-center justify-center">{{ icon(IKON_KATEGORI.get(k, 'package'), 'w-6 h-6 text-brand') }}</span>
                 <span class="text-xs font-semibold truncate w-full">{{ k }}</span>
             </a>
             {% endfor %}
@@ -208,9 +172,9 @@
     </section>
 
     <!-- BIG PROMO BANNER: SAVE BIG ON SELECTED ITEMS -->
-    <section class="bg-slate-900 text-white rounded-3xl p-8 md:p-14 relative overflow-hidden shadow-lg">
+    <section class="bg-slate-900 text-white rounded-xs p-8 md:p-14 relative overflow-hidden shadow-xs">
         <div class="max-w-xl space-y-4 relative z-10">
-            <span class="px-3 py-1 rounded-full text-[11px] font-extrabold uppercase tracking-wider bg-brand text-white inline-block">
+            <span class="px-2.5 py-1 rounded-xs text-[11px] font-bold uppercase tracking-wider bg-brand text-white inline-block">
                 Limited Time Offer
             </span>
             <h2 class="font-display font-black text-2xl sm:text-4xl leading-tight">
@@ -220,7 +184,7 @@
                 Upgrade perlengkapan kerja dan hiburan Anda dengan laptop performa tinggi dan smartphone flagship. Stok terbatas dengan harga spesial.
             </p>
             <div class="pt-2">
-                <a href="{{ url_for('toko.jelajah') }}" class="inline-flex items-center gap-2 bg-brand hover:bg-brand-dark text-white font-bold text-xs px-7 py-3.5 rounded-full transition shadow-md">
+                <a href="{{ url_for('toko.jelajah') }}" class="inline-flex items-center gap-2 bg-brand hover:bg-brand-dark text-white font-bold text-xs px-6 py-2.5 rounded-xs transition shadow-xs">
                     Shop Now {{ icon('arrow-right', 'w-4 h-4') }}
                 </a>
             </div>
@@ -249,17 +213,17 @@
     {% endfor %}
 
     <!-- FREQUENTLY ASKED QUESTIONS (FAQ) -->
-    <section class="bg-white rounded-3xl border border-slate-100 p-6 md:p-12 space-y-6 shadow-xs">
+    <section class="bg-white rounded-xs border border-gray-200/80 p-6 md:p-10 space-y-6 shadow-xs">
         <div class="text-center max-w-xl mx-auto space-y-2">
             <h2 class="font-display font-extrabold text-2xl md:text-3xl text-ink">Frequently Asked Questions</h2>
             <p class="text-xs text-muted">Pertanyaan yang sering diajukan pelanggan seputar pemesanan dan layanan kami.</p>
         </div>
 
         <div class="max-w-3xl mx-auto space-y-3">
-            <details class="group bg-slate-50 rounded-2xl p-4 border border-slate-100 open:bg-white open:ring-2 open:ring-brand-soft transition">
+            <details class="group bg-slate-50 rounded-xs p-4 border border-gray-200/70 open:bg-white open:border-brand/40 transition">
                 <summary class="font-bold text-sm text-ink cursor-pointer list-none flex items-center justify-between">
                     <span>Metode pembayaran apa saja yang diterima?</span>
-                    <span class="w-6 h-6 rounded-full bg-slate-200 group-open:bg-brand group-open:text-white flex items-center justify-center text-xs transition">
+                    <span class="w-6 h-6 rounded-xs bg-slate-200 group-open:bg-brand group-open:text-white flex items-center justify-center text-xs transition">
                         {{ icon('chevron-down', 'w-3.5 h-3.5 group-open:rotate-180 transition') }}
                     </span>
                 </summary>
@@ -268,10 +232,10 @@
                 </p>
             </details>
 
-            <details class="group bg-slate-50 rounded-2xl p-4 border border-slate-100 open:bg-white open:ring-2 open:ring-brand-soft transition">
+            <details class="group bg-slate-50 rounded-xs p-4 border border-gray-200/70 open:bg-white open:border-brand/40 transition">
                 <summary class="font-bold text-sm text-ink cursor-pointer list-none flex items-center justify-between">
                     <span>Berapa lama estimasi pengiriman pesanan?</span>
-                    <span class="w-6 h-6 rounded-full bg-slate-200 group-open:bg-brand group-open:text-white flex items-center justify-center text-xs transition">
+                    <span class="w-6 h-6 rounded-xs bg-slate-200 group-open:bg-brand group-open:text-white flex items-center justify-center text-xs transition">
                         {{ icon('chevron-down', 'w-3.5 h-3.5 group-open:rotate-180 transition') }}
                     </span>
                 </summary>
@@ -280,10 +244,10 @@
                 </p>
             </details>
 
-            <details class="group bg-slate-50 rounded-2xl p-4 border border-slate-100 open:bg-white open:ring-2 open:ring-brand-soft transition">
+            <details class="group bg-slate-50 rounded-xs p-4 border border-gray-200/70 open:bg-white open:border-brand/40 transition">
                 <summary class="font-bold text-sm text-ink cursor-pointer list-none flex items-center justify-between">
                     <span>Apakah seluruh produk bergaransi resmi?</span>
-                    <span class="w-6 h-6 rounded-full bg-slate-200 group-open:bg-brand group-open:text-white flex items-center justify-center text-xs transition">
+                    <span class="w-6 h-6 rounded-xs bg-slate-200 group-open:bg-brand group-open:text-white flex items-center justify-center text-xs transition">
                         {{ icon('chevron-down', 'w-3.5 h-3.5 group-open:rotate-180 transition') }}
                     </span>
                 </summary>
@@ -292,10 +256,10 @@
                 </p>
             </details>
 
-            <details class="group bg-slate-50 rounded-2xl p-4 border border-slate-100 open:bg-white open:ring-2 open:ring-brand-soft transition">
+            <details class="group bg-slate-50 rounded-xs p-4 border border-gray-200/70 open:bg-white open:border-brand/40 transition">
                 <summary class="font-bold text-sm text-ink cursor-pointer list-none flex items-center justify-between">
                     <span>Bagaimana cara melacak pesanan saya?</span>
-                    <span class="w-6 h-6 rounded-full bg-slate-200 group-open:bg-brand group-open:text-white flex items-center justify-center text-xs transition">
+                    <span class="w-6 h-6 rounded-xs bg-slate-200 group-open:bg-brand group-open:text-white flex items-center justify-center text-xs transition">
                         {{ icon('chevron-down', 'w-3.5 h-3.5 group-open:rotate-180 transition') }}
                     </span>
                 </summary>

@@ -152,7 +152,7 @@ def test_halaman_profil_lengkap_dan_tab_favorit(client):
     html = client.get("/profil?tab=favorit").get_data(as_text=True)
     assert "Biodata Diri" in html
     assert "Wishlist Favorit" in html
-    assert "Keamanan Akun & SOC" in html
+    assert "Keamanan Akun" in html
     assert "@budi" in html
 
 
