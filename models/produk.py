@@ -4,9 +4,11 @@ from models import db, utcnow
 class Produk(db.Model):
     __tablename__ = "produk"
 
-    # Merek elektronik yang dijual toko (handphone, laptop, dll). Hanya merek yang punya produk
-    # yang muncul di beranda; daftar ini juga mengisi pilihan di form & filter jelajah.
-    MEREK = ["Apple", "Samsung", "Xiaomi", "Lenovo", "Asus", "Dell", "HP", "Acer"]
+    # Merek elektronik yang dijual toko (handphone, laptop, dll). Merek diparodikan untuk menghindari hak cipta.
+    MEREK = [
+        "Apel", "Samsul", "Siomi", "Lenopo", "Asos", "Del", "HaPe", "Aser",
+        "Apple", "Samsung", "Xiaomi", "Lenovo", "Asus", "Dell", "HP", "Acer"
+    ]
     KATEGORI = ["Handphone", "Laptop", "Smartwatch", "Tablet", "Audio", "Aksesoris"]
     STOK_MENIPIS = 5
 

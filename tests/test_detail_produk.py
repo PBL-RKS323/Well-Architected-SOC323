@@ -84,7 +84,7 @@ def test_seed_melengkapi_spesifikasi_tanpa_menimpa_isian_admin(app):
     runner = app.test_cli_runner()
     runner.invoke(args=["seed-katalog"])
     with app.app_context():
-        watch = Produk.query.filter_by(nama_produk="Galaxy Watch 7 44mm").one()
+        watch = Produk.query.filter_by(nama_produk="Galaksi Watch 7 44mm").one()
         assert "Chip: Exynos W1000" in watch.spesifikasi and watch.garansi
         # Simulasi data lama sebelum fitur ini: spesifikasi kosong, dan satu produk sudah diisi admin
         Produk.query.update({"spesifikasi": None, "garansi": None})
@@ -94,5 +94,5 @@ def test_seed_melengkapi_spesifikasi_tanpa_menimpa_isian_admin(app):
     hasil = runner.invoke(args=["seed-katalog"])
     assert "0 produk contoh ditambahkan, 0 foto diperbarui, 17 produk dilengkapi" in hasil.output
     with app.app_context():
-        assert Produk.query.filter_by(nama_produk="Galaxy Watch 7 44mm").one().spesifikasi == "Warna: Hijau"
+        assert Produk.query.filter_by(nama_produk="Galaksi Watch 7 44mm").one().spesifikasi == "Warna: Hijau"
         assert Produk.query.filter(Produk.spesifikasi.is_(None)).count() == 0

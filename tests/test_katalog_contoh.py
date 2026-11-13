@@ -13,7 +13,7 @@ def test_seed_katalog_mengisi_produk_dan_tidak_dobel(app):
     with app.app_context():
         assert Produk.query.count() == JUMLAH
         assert {p.kategori for p in Produk.query} == set(Produk.KATEGORI)  # semua kategori terisi
-        produk = Produk.query.filter_by(nama_produk="Galaxy Watch 7 44mm").one()
+        produk = Produk.query.filter_by(nama_produk="Galaksi Watch 7 44mm").one()
         # Foto disimpan dengan nama acak di folder upload (lewat validasi gambar yang sama)
         assert os.path.isfile(os.path.join(app.config["UPLOAD_FOLDER"], produk.gambar))
         assert produk.gambar != "galaxy-watch-7.jpg"
@@ -28,14 +28,14 @@ def test_seed_katalog_perbarui_foto_tanpa_mengubah_harga(app):
     runner = app.test_cli_runner()
     runner.invoke(args=["seed-katalog"])
     with app.app_context():
-        produk = Produk.query.filter_by(nama_produk="Galaxy Watch 7 44mm").one()
+        produk = Produk.query.filter_by(nama_produk="Galaksi Watch 7 44mm").one()
         foto_lama, produk.harga = produk.gambar, 1  # admin mengubah harga
         db.session.commit()
 
     hasil = runner.invoke(args=["seed-katalog", "--perbarui-foto"])
     assert f"0 produk contoh ditambahkan, {JUMLAH} foto diperbarui" in hasil.output
     with app.app_context():
-        produk = Produk.query.filter_by(nama_produk="Galaxy Watch 7 44mm").one()
+        produk = Produk.query.filter_by(nama_produk="Galaksi Watch 7 44mm").one()
         assert produk.gambar != foto_lama and produk.harga == 1
         assert not os.path.exists(os.path.join(app.config["UPLOAD_FOLDER"], foto_lama))  # foto lama dihapus
 
