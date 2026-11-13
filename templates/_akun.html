@@ -1,47 +1,85 @@
 {% from '_icons.html' import icon %}
 {% from '_macros.html' import avatar %}
 
-{# Area akun pelanggan: di desktop (lg) ada sidebar menu di kiri agar halaman tidak kosong,
-   di HP hanya isi halaman (menu ada di navigasi bawah & halaman Profil).
-   Pakai: {% call area_akun('belanja.pesanan') %} ...isi... {% endcall %}
-   g.user dipakai karena macro yang di-import tidak membawa variabel template. #}
+{# Area akun pelanggan gaya Shopee Web: sidebar navigasi minimalis di kiri, kartu konten di kanan #}
 {% macro area_akun(aktif) %}
-{% if g.user.punya_izin('belanja') %}
-{% set menu = [
-    ('akun.profil', 'user', 'Profil'),
-    ('belanja.pesanan', 'receipt-text', 'Pesanan Saya'),
-    ('belanja.favorit', 'heart', 'Wishlist Favorit'),
-    ('akun.alamat', 'map-pin', 'Alamat Saya'),
-    ('akun.pengaturan', 'shield-check', 'Pengaturan & Keamanan'),
-] %}
-{% else %}
-{% set menu = [
-    ('akun.profil', 'user', 'Profil'),
-    ('admin.dashboard', 'layout-dashboard', 'Panel Toko'),
-    ('akun.pengaturan', 'shield-check', 'Pengaturan & Keamanan'),
-] %}
-{% endif %}
-<div class="lg:grid lg:grid-cols-[16rem_minmax(0,1fr)] lg:gap-8 lg:items-start">
-    <aside class="hidden lg:block sticky top-32 bg-white rounded-2xl border border-slate-100 p-4">
-        <div class="flex items-center gap-3 px-2 pb-4 mb-2 border-b border-slate-100">
-            {{ avatar(g.user, 'w-11 h-11') }}
-            <span class="min-w-0">
-                <span class="block font-semibold truncate">{{ g.user.display_name }}</span>
-                <span class="block text-xs text-muted truncate">{{ g.user.email }}</span>
-            </span>
+<div class="max-w-6xl mx-auto flex flex-col md:flex-row gap-6 items-start">
+    <!-- SHOPEE STYLE CLEAN SIDEBAR -->
+    <aside class="w-full md:w-52 shrink-0 py-1">
+        <!-- USER ROW -->
+        <div class="flex items-center gap-3 pb-4 mb-4 border-b border-gray-200">
+            <div class="w-12 h-12 rounded-full overflow-hidden shrink-0 border border-gray-200 bg-white">
+                {{ avatar(g.user, 'w-full h-full object-cover') }}
+            </div>
+            <div class="min-w-0">
+                <span class="block text-xs font-bold text-gray-800 truncate">@{{ g.user.username }}</span>
+                <a href="{{ url_for('akun.profil') }}" class="inline-flex items-center gap-1 text-[11px] text-gray-500 hover:text-brand transition">
+                    {{ icon('pencil', 'w-3 h-3') }} Ubah Profil
+                </a>
+            </div>
         </div>
-        <nav class="space-y-1 text-sm font-medium" aria-label="Menu akun">
-            {% for endpoint, ic, label in menu %}
-            <a href="{{ url_for(endpoint) }}" class="flex items-center gap-3 px-3 min-h-11 rounded-xl {{ 'bg-brand-soft text-brand' if aktif == endpoint else 'text-muted hover:bg-soft hover:text-ink' }}">
-                {{ icon(ic, 'w-5 h-5') }} {{ label }}
-            </a>
-            {% endfor %}
+
+        <!-- MENU -->
+        <nav class="space-y-4 text-xs font-medium" aria-label="Menu Akun">
+            <!-- GROUP: AKUN SAYA -->
+            <div>
+                <div class="flex items-center gap-2.5 text-gray-900 font-semibold mb-2">
+                    {{ icon('user', 'w-4 h-4 text-blue-600') }}
+                    <span>Akun Saya</span>
+                </div>
+                <div class="pl-6 space-y-2 text-gray-600">
+                    <a href="{{ url_for('akun.profil', tab='profil') }}" class="block transition hover:text-brand {{ 'text-brand font-bold' if aktif == 'akun.profil' and (not request.args.get('tab') or request.args.get('tab') == 'profil') else '' }}">
+                        Biodata Diri
+                    </a>
+                    {% if g.user.punya_izin('belanja') %}
+                    <a href="{{ url_for('akun.alamat') }}" class="block transition hover:text-brand {{ 'text-brand font-bold' if aktif == 'akun.alamat' else '' }}">
+                        Alamat
+                    </a>
+                    {% endif %}
+                    <a href="{{ url_for('akun.profil', tab='keamanan') }}" class="block transition hover:text-brand {{ 'text-brand font-bold' if aktif == 'akun.profil' and request.args.get('tab') == 'keamanan' else '' }}">
+                        Keamanan Akun & SOC
+                    </a>
+                </div>
+            </div>
+
+            {% if g.user.punya_izin('belanja') %}
+            <!-- GROUP: PESANAN SAYA -->
+            <div>
+                <a href="{{ url_for('belanja.pesanan') }}" class="flex items-center gap-2.5 font-semibold transition {{ 'text-brand font-bold' if aktif == 'belanja.pesanan' else 'text-gray-900 hover:text-brand' }}">
+                    {{ icon('receipt-text', 'w-4 h-4 text-blue-700') }}
+                    <span>Pesanan Saya</span>
+                </a>
+            </div>
+
+            <!-- GROUP: WISHLIST FAVORIT -->
+            <div>
+                <a href="{{ url_for('belanja.favorit') }}" class="flex items-center gap-2.5 font-semibold transition {{ 'text-brand font-bold' if aktif == 'belanja.favorit' else 'text-gray-900 hover:text-brand' }}">
+                    {{ icon('heart', 'w-4 h-4 text-rose-500') }}
+                    <span>Wishlist Favorit</span>
+                </a>
+            </div>
+            {% else %}
+            <div>
+                <a href="{{ url_for('admin.dashboard') }}" class="flex items-center gap-2.5 font-semibold text-gray-900 hover:text-brand transition">
+                    {{ icon('layout-dashboard', 'w-4 h-4 text-purple-600') }}
+                    <span>Panel Toko</span>
+                </a>
+            </div>
+            {% endif %}
+
+            <form action="{{ url_for('auth.logout') }}" method="POST" class="pt-3 border-t border-gray-200">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" class="flex items-center gap-2.5 text-xs text-gray-500 hover:text-brand transition cursor-pointer">
+                    {{ icon('log-out', 'w-4 h-4') }}
+                    <span>Keluar</span>
+                </button>
+            </form>
         </nav>
-        <form action="{{ url_for('auth.logout') }}" method="POST" class="mt-2 pt-2 border-t border-slate-100">
-            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-            <button type="submit" class="w-full flex items-center gap-3 px-3 min-h-11 rounded-xl text-sm font-medium text-coral hover:bg-red-50 cursor-pointer">{{ icon('log-out', 'w-5 h-5') }} Keluar</button>
-        </form>
     </aside>
-    <div class="min-w-0">{{ caller() }}</div>
+
+    <!-- MAIN RIGHT CONTENT (SHOPEE STYLE CARD) -->
+    <div class="flex-1 min-w-0 w-full">
+        {{ caller() }}
+    </div>
 </div>
 {% endmacro %}

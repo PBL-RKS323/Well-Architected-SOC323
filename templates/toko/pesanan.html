@@ -1,115 +1,151 @@
 {% extends 'layouts/toko.html' %}
 {% from '_icons.html' import icon %}
-{% from '_pesanan.html' import badge_status, foto_item, info_status %}
+{% from '_pesanan.html' import badge_status, foto_item, info_status, WARNA_STATUS %}
 {% from '_macros.html' import judul_halaman %}
 {% from '_akun.html' import area_akun %}
 {% block title %}Pesanan Saya - {{ app_name }}{% endblock %}
+
 {% block content %}
 {% call area_akun('belanja.pesanan') %}
-<div class="lg:hidden">{{ judul_halaman('Pesanan Saya', url_for('akun.profil'), 'Kembali ke profil') }}</div>
-<h1 class="hidden lg:block font-display text-2xl font-extrabold mb-5">Pesanan Saya</h1>
-
-<div class="lg:flex lg:items-center lg:gap-4 mb-5">
-    <form method="GET" class="relative mb-3 lg:mb-0 lg:flex-1" role="search">
-        <input type="hidden" name="tab" value="{{ tab }}">
-        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-muted">{{ icon('search', 'w-5 h-5') }}</span>
-        <input type="search" name="q" value="{{ q }}" maxlength="50" placeholder="Cari nomor pesanan atau nama produk..." aria-label="Cari pesanan"
-               class="w-full bg-white border border-slate-100 rounded-2xl pl-12 pr-4 py-3.5 outline-none focus:border-brand focus:ring-4 focus:ring-brand/15">
-    </form>
-
-    {# 4 kolom sama lebar: semua tab terlihat di HP tanpa digeser #}
-    <nav class="grid grid-cols-4 gap-1.5 lg:w-[28rem] text-[13px] sm:text-sm font-medium" aria-label="Filter status">
-        {% for nama, label in [('semua', 'Semua'), ('aktif', 'Aktif'), ('selesai', 'Selesai'), ('dibatalkan', 'Batal')] %}
-        <a href="{{ url_for('belanja.pesanan', tab=nama, q=q or None) }}"
-           class="flex flex-col sm:flex-row items-center justify-center sm:gap-1 min-h-11 py-1 rounded-2xl sm:rounded-full {{ 'bg-brand text-white' if tab == nama else 'bg-white text-muted hover:text-ink' }}">
-            <span>{{ label }}</span> <span class="text-xs sm:text-sm">({{ jumlah_tab[nama] }})</span>
-        </a>
-        {% endfor %}
-    </nav>
+<div class="lg:hidden mb-4">
+    {{ judul_halaman('Pesanan Saya', url_for('akun.profil'), 'Kembali ke profil') }}
 </div>
 
+<!-- SHOPEE STYLE HORIZONTAL TABS -->
+<div class="bg-white border border-gray-200 rounded-xs mb-3 flex items-center overflow-x-auto text-xs sm:text-sm font-medium shadow-xs">
+    {% for nama, label in [
+        ('semua', 'Semua'),
+        ('belum_bayar', 'Belum Bayar'),
+        ('dikemas', 'Sedang Dikemas'),
+        ('dikirim', 'Dikirim'),
+        ('selesai', 'Selesai'),
+        ('dibatalkan', 'Dibatalkan')
+    ] %}
+    <a href="{{ url_for('belanja.pesanan', tab=nama, q=q or None) }}"
+       class="flex-1 min-w-[100px] text-center py-3.5 px-2 transition hover:text-brand border-b-2 whitespace-nowrap {{ 'border-brand text-brand font-semibold' if tab == nama else 'border-transparent text-gray-700' }}">
+        <span>{{ label }}</span>
+        {% if jumlah_tab.get(nama, 0) > 0 %}
+        <span class="text-[11px] ml-0.5 font-normal">({{ jumlah_tab[nama] }})</span>
+        {% endif %}
+    </a>
+    {% endfor %}
+</div>
+
+<!-- SHOPEE STYLE SEARCH BAR -->
+<div class="mb-3.5">
+    <form method="GET" class="relative" role="search">
+        <input type="hidden" name="tab" value="{{ tab }}">
+        <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400">{{ icon('search', 'w-4 h-4') }}</span>
+        <input type="search" name="q" value="{{ q }}" maxlength="50"
+               placeholder="Kamu bisa cari berdasarkan No. Pesanan atau Nama Produk" aria-label="Cari pesanan"
+               class="w-full bg-[#f8f9fa] hover:bg-gray-100 focus:bg-white border border-gray-200 rounded-xs pl-10 pr-4 py-2.5 text-xs text-gray-900 outline-none focus:border-brand transition">
+    </form>
+</div>
+
+<!-- ORDER LIST -->
 {% if halaman.items %}
-<div class="grid xl:grid-cols-2 gap-4">
+<div class="space-y-3.5">
     {% for p in halaman.items %}
-    <article class="bg-white rounded-3xl border border-slate-100 p-5 flex flex-col">
-        <div class="flex flex-wrap items-start justify-between gap-x-3 gap-y-1">
-            <div>
-                <h2 class="font-display text-lg font-extrabold">#{{ p.kode }}</h2>
-                <p class="text-sm text-muted">Dipesan {{ p.created_at | tanggal(false) }}</p>
+    <article class="bg-white border border-gray-200 rounded-xs p-4 md:p-5 shadow-xs flex flex-col">
+        <!-- TOP: STORE HEADER & STATUS -->
+        <div class="flex items-center justify-between pb-3 border-b border-gray-100 text-xs">
+            <div class="flex items-center gap-2">
+                <span class="bg-brand text-white text-[10px] font-bold px-1.5 py-0.5 rounded-xs">Official</span>
+                <span class="font-bold text-gray-900">e-shop Official</span>
+                <span class="text-gray-300">|</span>
+                <span class="text-gray-500 font-mono text-[11px]">#{{ p.kode }}</span>
             </div>
-            {{ badge_status(p) }}
+            <div class="flex items-center gap-2 text-right">
+                <div class="hidden sm:block text-xs text-gray-500">
+                    {{ info_status(p) }}
+                </div>
+                <span class="font-bold uppercase tracking-wider {{ WARNA_STATUS.get(p.status, 'text-brand') }} text-xs">
+                    {{ p.label_status }}
+                </span>
+            </div>
         </div>
 
-        <a href="{{ url_for('belanja.pesanan_detail', kode=p.kode) }}" class="block mt-4 group">
-            <div class="relative">
-                {{ info_status(p) }}
-                <span class="absolute right-3 top-1/2 -translate-y-1/2 text-muted group-hover:text-ink">{{ icon('chevron-right', 'w-5 h-5') }}</span>
-            </div>
-        </a>
-
-        {% if p.items | length == 1 %}
-            {% set item = p.items[0] %}
-            <div class="flex items-center gap-3 mt-4">
-                {{ foto_item(item, 'w-16 h-16') }}
-                <div class="min-w-0">
-                    <p class="font-semibold leading-snug line-clamp-2">{{ item.nama_produk }}</p>
-                    <p class="text-xs text-muted">{{ item.merek }} &middot; {{ item.jumlah }} unit</p>
+        <!-- ITEMS -->
+        <div class="divide-y divide-gray-50">
+            {% for item in p.items %}
+            <div class="py-3 flex items-start justify-between gap-4">
+                <div class="flex items-start gap-3 min-w-0">
+                    {{ foto_item(item, 'w-16 h-16') }}
+                    <div class="min-w-0">
+                        <a href="{{ url_for('belanja.pesanan_detail', kode=p.kode) }}" class="font-medium text-xs text-gray-900 line-clamp-2 hover:text-brand transition">
+                            {{ item.nama_produk }}
+                        </a>
+                        <p class="text-[11px] text-gray-400 mt-1">{{ item.merek }} &middot; x{{ item.jumlah }}</p>
+                    </div>
+                </div>
+                <div class="text-right shrink-0">
+                    <span class="text-xs text-gray-800 font-medium">{{ item.harga_satuan | rupiah }}</span>
                 </div>
             </div>
-        {% else %}
-            <div class="flex gap-2 mt-4">
-                {% for item in p.items[:3] %}{{ foto_item(item, 'w-16 h-16') }}{% endfor %}
-                {% if p.items | length > 3 %}
-                <span class="w-16 h-16 rounded-xl bg-brand-soft text-brand flex flex-col items-center justify-center leading-tight">
-                    <span class="font-bold">+{{ p.items | length - 3 }}</span><span class="text-[10px] font-semibold">LAGI</span>
-                </span>
-                {% endif %}
-            </div>
-        {% endif %}
-
-        <div class="flex flex-wrap items-end justify-between gap-x-3 mt-auto pt-4">
-            <span class="text-sm text-muted">Total Pesanan</span>
-            <span><span class="font-display text-xl font-extrabold">{{ p.total | rupiah }}</span> <span class="text-xs text-muted">({{ p.jumlah_barang }} item)</span></span>
+            {% endfor %}
         </div>
 
-        <div class="grid grid-cols-2 gap-3 mt-4">
-            <a href="{{ url_for('belanja.pesanan_detail', kode=p.kode) }}" class="flex items-center justify-center bg-brand-soft hover:bg-blue-100 font-medium py-3 rounded-full">Detail Pesanan</a>
+        <!-- SUMMARY ROW -->
+        <div class="pt-3 border-t border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2 mt-auto">
+            <div class="text-xs text-gray-400">
+                Dipesan pada {{ p.created_at | tanggal(false) }}
+            </div>
+            <div class="flex items-center justify-end gap-2">
+                <span class="text-xs text-gray-600">Total Pesanan:</span>
+                <span class="text-base font-bold text-brand">{{ p.total | rupiah }}</span>
+            </div>
+        </div>
+
+        <!-- ACTION BUTTONS -->
+        <div class="pt-3 mt-3 border-t border-gray-100 flex flex-wrap items-center justify-end gap-2 text-xs">
+            <a href="{{ url_for('belanja.pesanan_detail', kode=p.kode) }}" class="border border-gray-300 hover:bg-gray-50 text-gray-700 font-medium px-4 py-1.5 rounded-xs transition">
+                Detail Pesanan
+            </a>
             {% if p.status == 'menunggu_pembayaran' %}
-                <a href="{{ url_for('belanja.pesanan_detail', kode=p.kode) }}#bayar" class="flex items-center justify-center gap-2 bg-brand hover:bg-brand-dark text-white font-medium py-3 rounded-full">{{ icon('wallet', 'w-4 h-4') }} Bayar</a>
+                <a href="{{ url_for('belanja.pesanan_detail', kode=p.kode) }}#bayar" class="bg-brand hover:bg-brand-dark text-white font-medium px-5 py-1.5 rounded-xs transition shadow-xs">
+                    Bayar Sekarang
+                </a>
             {% elif p.status in ['selesai', 'dibatalkan'] %}
                 <form action="{{ url_for('belanja.pesanan_beli_lagi', kode=p.kode) }}" method="POST">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                    <button type="submit" class="w-full flex items-center justify-center gap-2 bg-brand hover:bg-brand-dark text-white font-medium py-3 rounded-full cursor-pointer">{{ icon('rotate-ccw', 'w-4 h-4') }} Beli Lagi</button>
+                    <button type="submit" class="bg-brand hover:bg-brand-dark text-white font-medium px-5 py-1.5 rounded-xs transition shadow-xs cursor-pointer">
+                        Beli Lagi
+                    </button>
                 </form>
             {% else %}
-                <a href="{{ url_for('belanja.pesanan_detail', kode=p.kode) }}#lacak" class="flex items-center justify-center gap-2 bg-brand hover:bg-brand-dark text-white font-medium py-3 rounded-full">{{ icon('navigation-2', 'w-4 h-4') }} Lacak</a>
+                <a href="{{ url_for('belanja.pesanan_detail', kode=p.kode) }}#lacak" class="bg-brand hover:bg-brand-dark text-white font-medium px-5 py-1.5 rounded-xs transition shadow-xs">
+                    Lacak
+                </a>
             {% endif %}
         </div>
     </article>
     {% endfor %}
 </div>
 {% else %}
-<section class="text-center bg-white rounded-3xl border border-slate-100 px-6 py-12">
-    <span class="inline-flex w-24 h-24 rounded-full bg-brand-soft text-brand items-center justify-center">{{ icon('receipt-text', 'w-10 h-10') }}</span>
+<section class="text-center bg-white rounded-xs border border-gray-200 px-6 py-14 shadow-xs">
+    <div class="w-16 h-16 rounded-full bg-gray-100 text-gray-400 mx-auto flex items-center justify-center mb-3">
+        {{ icon('receipt-text', 'w-8 h-8') }}
+    </div>
     {% if q or tab != 'semua' %}
-        <h2 class="font-display text-xl font-extrabold mt-5">Pesanan tidak ditemukan</h2>
-        <p class="text-muted mt-2">Coba kata kunci lain atau lihat semua pesanan.</p>
-        <a href="{{ url_for('belanja.pesanan') }}" class="inline-flex mt-5 text-brand font-semibold py-3">Lihat semua pesanan</a>
+        <h2 class="text-sm font-bold text-gray-900 mt-2">Pesanan tidak ditemukan</h2>
+        <p class="text-xs text-gray-500 mt-1">Coba kata kunci lain atau lihat semua pesanan.</p>
+        <a href="{{ url_for('belanja.pesanan') }}" class="inline-flex mt-4 text-brand text-xs font-semibold hover:underline">Lihat semua pesanan</a>
     {% else %}
-        <h2 class="font-display text-xl font-extrabold mt-5">Belum ada pesanan</h2>
-        <p class="text-muted mt-2">Pesanan yang kamu buat akan muncul di sini.</p>
-        <a href="{{ url_for('toko.jelajah') }}" class="inline-flex items-center gap-2 mt-5 bg-brand hover:bg-brand-dark text-white font-medium px-7 py-3 rounded-full">Lihat Produk</a>
+        <h2 class="text-sm font-bold text-gray-900 mt-2">Belum ada pesanan</h2>
+        <p class="text-xs text-gray-500 mt-1">Pesanan yang kamu buat akan muncul di sini.</p>
+        <a href="{{ url_for('toko.jelajah') }}" class="inline-flex mt-4 bg-brand hover:bg-brand-dark text-white text-xs font-medium px-6 py-2 rounded-xs transition shadow-xs">Mulai Belanja</a>
     {% endif %}
 </section>
 {% endif %}
 
+<!-- PAGINATION -->
 {% if halaman.pages > 1 %}
-<nav class="flex items-center justify-center gap-2 mt-6" aria-label="Halaman">
+<nav class="flex items-center justify-center gap-1.5 mt-6" aria-label="Halaman">
     {% for n in halaman.iter_pages() %}
         {% if n %}
         <a href="{{ url_for('belanja.pesanan', tab=tab, q=q or None, page=n) }}"
-           class="w-11 h-11 rounded-full flex items-center justify-center text-sm font-semibold {{ 'bg-brand text-white' if n == halaman.page else 'bg-white hover:bg-brand-soft' }}">{{ n }}</a>
-        {% else %}<span class="px-1 text-muted">…</span>{% endif %}
+           class="w-8 h-8 rounded-xs border flex items-center justify-center text-xs font-medium {{ 'bg-brand border-brand text-white' if n == halaman.page else 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50' }}">{{ n }}</a>
+        {% else %}<span class="px-1 text-gray-400 text-xs">…</span>{% endif %}
     {% endfor %}
 </nav>
 {% endif %}

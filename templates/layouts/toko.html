@@ -104,16 +104,33 @@
 
             <!-- USER ACCOUNT -->
             {% if current_user %}
-                <a href="{{ url_for('akun.profil') }}" class="flex items-center gap-2.5 pl-3 border-l border-slate-200 hover:text-brand transition">
-                    {{ avatar(current_user, 'w-9 h-9 text-xs ring-2 ring-brand-soft') }}
-                    <div class="hidden sm:block text-left">
-                        <span class="block text-xs font-bold text-ink truncate max-w-[120px]">{{ current_user.display_name }}</span>
-                        <span class="block text-[10px] text-muted font-medium">{{ current_user.label_role }}</span>
+                <div class="relative group/user py-1 pl-3 border-l border-slate-200">
+                    <a href="{{ url_for('akun.profil') }}" class="flex items-center gap-2 hover:text-brand transition cursor-pointer">
+                        {{ avatar(current_user, 'w-8 h-8 text-xs border border-gray-200') }}
+                        <div class="hidden sm:block text-left">
+                            <span class="block text-xs font-semibold text-gray-800 truncate max-w-[120px]">{{ current_user.display_name }}</span>
+                            <span class="block text-[10px] text-gray-500 font-medium">{{ current_user.label_role }}</span>
+                        </div>
+                    </a>
+                    <!-- POPUP DROPDOWN SHOPEE STYLE -->
+                    <div class="absolute right-0 top-full pt-1 hidden group-hover/user:block hover:block z-50">
+                        <div class="w-36 bg-white border border-gray-200 rounded-xs shadow-lg py-1 relative before:content-[''] before:absolute before:-top-1.5 before:right-6 before:w-3 before:h-3 before:bg-white before:border-t before:border-l before:border-gray-200 before:rotate-45">
+                            <a href="{{ url_for('akun.profil') }}" class="block px-4 py-2.5 text-xs text-gray-700 hover:bg-gray-50 hover:text-brand transition">Akun Saya</a>
+                            {% if current_user.punya_izin('belanja') %}
+                            <a href="{{ url_for('belanja.pesanan') }}" class="block px-4 py-2.5 text-xs text-gray-700 hover:bg-gray-50 hover:text-brand transition">Pesanan Saya</a>
+                            {% else %}
+                            <a href="{{ url_for('admin.dashboard') }}" class="block px-4 py-2.5 text-xs text-gray-700 hover:bg-gray-50 hover:text-brand transition">Panel Toko</a>
+                            {% endif %}
+                            <form action="{{ url_for('auth.logout') }}" method="POST">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit" class="w-full text-left px-4 py-2.5 text-xs text-gray-700 hover:bg-gray-50 hover:text-brand transition cursor-pointer border-t border-gray-100">Log Out</button>
+                            </form>
+                        </div>
                     </div>
-                </a>
+                </div>
             {% else %}
-                <a href="{{ url_for('auth.login', next=request.full_path.rstrip('?')) }}" class="inline-flex items-center gap-2 bg-brand hover:bg-brand-dark text-white text-xs font-bold px-5 py-2.5 rounded-full shadow-sm transition">
-                    {{ icon('user', 'w-4 h-4') }} Masuk
+                <a href="{{ url_for('auth.login', next=request.full_path.rstrip('?')) }}" class="inline-flex items-center gap-1.5 bg-brand hover:bg-brand-dark text-white text-xs font-medium px-4 py-2 rounded-xs shadow-xs transition">
+                    {{ icon('user', 'w-3.5 h-3.5') }} Masuk
                 </a>
             {% endif %}
         </div>
@@ -178,8 +195,8 @@
             </div>
             <form onsubmit="event.preventDefault(); this.querySelector('button').textContent = 'Terdaftar!'; this.querySelector('input').disabled = true; this.querySelector('button').classList.replace('bg-brand', 'bg-emerald-600');" class="flex w-full md:w-auto max-w-md gap-2">
                 <input type="email" placeholder="Masukkan alamat email Anda..." required
-                       class="flex-1 bg-white border border-slate-200 rounded-full px-5 py-3 text-xs outline-none focus:border-brand focus:ring-2 focus:ring-brand/20">
-                <button type="submit" class="bg-brand hover:bg-brand-dark text-white px-6 py-3 rounded-full text-xs font-bold transition whitespace-nowrap cursor-pointer">
+                       class="flex-1 bg-white border border-gray-300 rounded-xs px-4 py-2 text-xs text-gray-900 outline-none focus:border-brand">
+                <button type="submit" class="bg-brand hover:bg-brand-dark text-white px-5 py-2 rounded-xs text-xs font-medium transition whitespace-nowrap cursor-pointer shadow-xs">
                     Langganan
                 </button>
             </form>

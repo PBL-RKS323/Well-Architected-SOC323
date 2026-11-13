@@ -22,9 +22,12 @@ from models.pembayaran import Pembayaran
 PER_HALAMAN = 10
 TAB = {
     "semua": None,
-    "aktif": Pesanan.STATUS_AKTIF,
+    "belum_bayar": [Pesanan.MENUNGGU_PEMBAYARAN, Pesanan.MENUNGGU_VERIFIKASI],
+    "dikemas": [Pesanan.DIPROSES],
+    "dikirim": [Pesanan.DIKIRIM, Pesanan.SIAP_DIAMBIL],
     "selesai": [Pesanan.SELESAI],
     "dibatalkan": [Pesanan.DIBATALKAN],
+    "aktif": Pesanan.STATUS_AKTIF,
 }
 
 
