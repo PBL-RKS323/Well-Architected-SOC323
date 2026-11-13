@@ -60,6 +60,7 @@ def jelajah():
     harga_max = _angka(request.args.get("max"))
     urut = request.args.get("urut", "terbaru")
     urut = urut if urut in URUTAN else "terbaru"
+    promo = request.args.get("promo", "").strip().lower() in ("1", "true", "yes")
 
     stmt = select(Produk)
     if q:
@@ -76,16 +77,18 @@ def jelajah():
         stmt = stmt.where(Produk.harga >= harga_min)
     if harga_max is not None:
         stmt = stmt.where(Produk.harga <= harga_max)
+    if promo:
+        stmt = stmt.where(Produk.harga_normal > Produk.harga)
     stmt = stmt.order_by(URUTAN[urut][1], Produk.id.desc())
 
     halaman = db.paginate(stmt, page=request.args.get("page", 1, type=int), per_page=PER_HALAMAN,
                           error_out=False)
 
-    filter_aktif = {"q": q, "kategori": kategori, "merek": merek, "min": harga_min, "max": harga_max}
+    filter_aktif = {"q": q, "kategori": kategori, "merek": merek, "min": harga_min, "max": harga_max, "promo": "1" if promo else ""}
     args_dasar = {k: v for k, v in filter_aktif.items() if v not in ("", None)}
     if urut != "terbaru":
         args_dasar["urut"] = urut
-    jumlah_filter = sum(1 for k in ("kategori", "merek", "min", "max") if k in args_dasar)
+    jumlah_filter = sum(1 for k in ("kategori", "merek", "min", "max", "promo") if k in args_dasar)
 
     return render_template(
         "toko/jelajah.html", halaman=halaman, f=filter_aktif, urut=urut, urutan=URUTAN,

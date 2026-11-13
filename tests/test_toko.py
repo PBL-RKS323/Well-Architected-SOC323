@@ -156,3 +156,10 @@ def test_admin_cari_produk(client):
 def test_file_statis_diberi_versi_agar_cache_browser_diperbarui(client):
     html = client.get("/").get_data(as_text=True)
     assert re.search(r'/static/js/app\.js\?v=\d+', html)
+
+
+def test_jelajah_filter_promo(client):
+    _isi_katalog(client)
+    html = client.get("/jelajah?promo=1").get_data(as_text=True)
+    assert "Diskon" in html
+    assert "Hanya Produk Promo / Diskon" in html

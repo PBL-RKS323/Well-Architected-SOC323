@@ -1,13 +1,11 @@
 {% extends 'layouts/toko.html' %}
 {% from '_icons.html' import icon %}
 {% from '_macros.html' import field, tombol_utama, avatar %}
-{% from '_akun.html' import area_akun %}
 {% from '_pesanan.html' import badge_status, foto_item, info_status %}
 {% block title %}Profil & Pengaturan Akun - {{ app_name }}{% endblock %}
 
 {% block content %}
-{% call area_akun('akun.profil') %}
-<div class="space-y-6">
+<div class="max-w-6xl mx-auto space-y-6">
     {# 1. Kartu Header Identitas Profil (Shopee / Tokopedia Best Practice) #}
     <section class="bg-white rounded-3xl border border-slate-100 p-6 md:p-8 shadow-sm">
         <div class="flex flex-col sm:flex-row items-center sm:items-start gap-6">
@@ -41,15 +39,15 @@
                         {{ icon('calendar', 'w-4 h-4 text-muted') }} Bergabung: {{ current_user.created_at | tanggal(false) }}
                     </span>
                     {% if current_user.punya_izin('belanja') %}
-                    <span class="inline-flex items-center gap-1.5 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-100">
+                    <a href="{{ url_for('belanja.pesanan') }}" class="inline-flex items-center gap-1.5 bg-slate-50 hover:bg-brand-soft hover:text-brand px-3 py-1.5 rounded-xl border border-slate-100 transition" title="Lihat riwayat pesanan">
                         {{ icon('package', 'w-4 h-4 text-brand') }} {{ ringkasan.aktif or 0 }} Pesanan Aktif
-                    </span>
-                    <span class="inline-flex items-center gap-1.5 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-100">
+                    </a>
+                    <a href="{{ url_for('belanja.pesanan') }}" class="inline-flex items-center gap-1.5 bg-slate-50 hover:bg-emerald-50 hover:text-emerald-700 px-3 py-1.5 rounded-xl border border-slate-100 transition" title="Lihat pesanan selesai">
                         {{ icon('check-circle', 'w-4 h-4 text-emerald-600') }} {{ ringkasan.selesai or 0 }} Selesai
-                    </span>
-                    <span class="inline-flex items-center gap-1.5 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-100">
+                    </a>
+                    <a href="{{ url_for('belanja.favorit') }}" class="inline-flex items-center gap-1.5 bg-slate-50 hover:bg-rose-50 hover:text-rose-600 px-3 py-1.5 rounded-xl border border-slate-100 transition" title="Lihat wishlist">
                         {{ icon('heart', 'w-4 h-4 text-rose-500') }} {{ ringkasan.favorit or 0 }} Wishlist
-                    </span>
+                    </a>
                     {% endif %}
                 </div>
             </div>
@@ -701,5 +699,5 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 });
 </script>
-{% endcall %}
+</div>
 {% endblock %}
