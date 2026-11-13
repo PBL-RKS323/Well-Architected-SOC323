@@ -68,6 +68,11 @@ class UbahPasswordForm(FlaskForm):
     ])
     submit = SubmitField("Simpan Kata Sandi")
 
+    @property
+    def konfirmasi(self):
+        """Alias defensif untuk template yang memanggil form.konfirmasi."""
+        return self.konfirmasi_password
+
 
 class AvatarForm(FlaskForm):
     avatar = FileField("Pilih Foto Baru", validators=[

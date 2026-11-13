@@ -154,3 +154,22 @@ def test_halaman_profil_lengkap_dan_tab_favorit(client):
     assert "Wishlist Favorit" in html
     assert "Keamanan Akun & SOC" in html
     assert "@budi" in html
+
+
+def test_halaman_profil_tab_keamanan_dan_radio_biodata(client):
+    login(client, "budi@tokoelektronik.id", CUSTOMER_PASSWORD)
+    # Test tab default (profil)
+    resp_profil = client.get("/profil")
+    assert resp_profil.status_code == 200
+    html_profil = resp_profil.get_data(as_text=True)
+    assert "Profil Saya" in html_profil
+    assert "value=\"Laki-laki\"" in html_profil
+    assert "-- Pilih Jenis Kelamin --" not in html_profil
+
+    # Test tab keamanan (mencegah jinja UndefinedError konfirmasi)
+    resp_keamanan = client.get("/profil?tab=keamanan")
+    assert resp_keamanan.status_code == 200
+    html_keamanan = resp_keamanan.get_data(as_text=True)
+    assert "Ubah Password & Keamanan Akun" in html_keamanan
+    assert "Konfirmasi Password Baru" in html_keamanan
+    assert "pw-konfirmasi_password" in html_keamanan

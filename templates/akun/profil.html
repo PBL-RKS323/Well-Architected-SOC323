@@ -62,17 +62,22 @@
                 </div>
             </div>
 
-            <!-- Jenis Kelamin Row -->
+            <!-- Jenis Kelamin Row (Shopee Style Radio) -->
             <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-xs">
                 <span class="sm:w-28 sm:text-right text-gray-500 shrink-0">Jenis Kelamin</span>
                 <div class="flex items-center gap-6">
-                    {% for subfield in nama_form.jenis_kelamin %}
-                    <label class="inline-flex items-center gap-1.5 cursor-pointer text-gray-700">
-                        {{ subfield(class="text-brand focus:ring-brand") }}
-                        <span>{{ subfield.label.text }}</span>
+                    {% for val in ['Laki-laki', 'Perempuan', 'Lainnya'] %}
+                    <label class="inline-flex items-center gap-1.5 cursor-pointer text-gray-700 hover:text-brand transition">
+                        <input type="radio" name="{{ nama_form.jenis_kelamin.name }}" value="{{ val }}"
+                               class="accent-brand cursor-pointer"
+                               {% if nama_form.jenis_kelamin.data == val %}checked{% endif %}>
+                        <span>{{ val }}</span>
                     </label>
                     {% endfor %}
                 </div>
+                {% for error in nama_form.jenis_kelamin.errors %}
+                <span class="text-red-500 text-[11px] block mt-1">{{ error }}</span>
+                {% endfor %}
             </div>
 
             <!-- Tanggal Lahir Row -->
@@ -150,9 +155,9 @@
                 {% endfor %}
             </div>
             <div>
-                <label for="pw-konfirmasi" class="block text-gray-600 mb-1">Konfirmasi Password Baru</label>
-                {{ password_form.konfirmasi(class="w-full border border-gray-300 rounded-xs px-3 py-2 text-xs focus:border-brand focus:outline-none") }}
-                {% for error in password_form.konfirmasi.errors %}
+                <label for="pw-konfirmasi_password" class="block text-gray-600 mb-1">Konfirmasi Password Baru</label>
+                {{ password_form.konfirmasi_password(class="w-full border border-gray-300 rounded-xs px-3 py-2 text-xs focus:border-brand focus:outline-none") }}
+                {% for error in password_form.konfirmasi_password.errors %}
                 <span class="text-red-500 text-[11px] block mt-1">{{ error }}</span>
                 {% endfor %}
             </div>
