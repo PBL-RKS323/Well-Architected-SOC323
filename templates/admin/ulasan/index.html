@@ -1,0 +1,80 @@
+{% extends 'layouts/admin.html' %}
+{% from '_icons.html' import icon %}
+{% from '_macros.html' import avatar %}
+{% from '_produk.html' import bintang %}
+{% block title %}Ulasan - {{ app_name }}{% endblock %}
+{% block content %}
+<div class="mb-6">
+    <h1 class="font-display text-2xl lg:text-3xl font-extrabold">Ulasan Pelanggan</h1>
+    <p class="text-muted mt-1">Balas ulasan pembeli dan hapus ulasan yang melanggar (spam, kata kasar, data pribadi).</p>
+</div>
+
+<nav class="flex flex-wrap gap-2 mb-4 text-sm font-medium" aria-label="Filter ulasan">
+    {% for kode, label in filters.items() %}
+    <a href="{{ url_for('admin.ulasan', filter=kode if kode != 'semua' else None) }}"
+       class="inline-flex items-center gap-1 px-4 min-h-11 rounded-full {{ 'bg-brand text-white' if filter_aktif == kode else 'bg-white text-muted hover:text-ink' }}">
+        {{ label }}{% if kode == 'belum_dibalas' and belum_dibalas %} <span class="text-xs font-semibold px-1.5 py-0.5 rounded-full {{ 'bg-white/20' if filter_aktif == kode else 'bg-soft' }}">{{ belum_dibalas }}</span>{% endif %}
+    </a>
+    {% endfor %}
+</nav>
+
+<section class="bg-white border border-slate-100 rounded-2xl">
+    {% for u in halaman.items %}
+    <article class="p-5 {{ '' if loop.last else 'border-b border-slate-100' }}">
+        <div class="flex flex-wrap items-start gap-3">
+            {{ avatar(u.user, 'w-10 h-10 text-xs') }}
+            <div class="min-w-0 flex-1">
+                <p class="font-semibold truncate">{{ u.user.display_name }}</p>
+                <p class="text-xs text-muted">{{ u.created_at | tanggal }}</p>
+                <a href="{{ url_for('toko.produk_detail', produk_id=u.produk_id, _anchor='ulasan') }}" class="text-sm text-brand hover:underline">{{ u.produk.nama_produk }}</a>
+            </div>
+            {{ bintang(u.rating) }}
+        </div>
+        {% if u.komentar %}<p class="mt-3 leading-relaxed whitespace-pre-line break-words">{{ u.komentar }}</p>
+        {% else %}<p class="mt-3 text-sm text-muted">Tanpa komentar.</p>{% endif %}
+
+        {% if u.balasan %}
+        <div class="mt-3 bg-soft rounded-xl p-4 text-sm">
+            <p class="font-semibold">Balasan toko <span class="font-normal text-muted">&middot; {{ u.dibalas_at | tanggal }}</span></p>
+            <p class="mt-1 text-muted whitespace-pre-line break-words">{{ u.balasan }}</p>
+        </div>
+        {% endif %}
+
+        <div class="mt-3 flex flex-wrap items-start gap-2">
+            <details class="flex-1 min-w-64 group" {{ 'open' if not u.balasan and loop.first }}>
+                <summary class="inline-flex items-center gap-1.5 min-h-11 px-4 rounded-full border border-slate-200 hover:border-brand hover:text-brand text-sm font-medium cursor-pointer list-none">
+                    {{ icon('reply', 'w-4 h-4') }} {{ 'Ubah balasan' if u.balasan else 'Balas' }}
+                </summary>
+                <form method="POST" action="{{ url_for('admin.ulasan_balas', ulasan_id=u.id) }}" class="mt-3" data-kirim-sekali>
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <input type="hidden" name="filter" value="{{ filter_aktif if filter_aktif != 'semua' else '' }}">
+                    <input type="hidden" name="page" value="{{ halaman.page }}">
+                    <label for="balasan-{{ u.id }}" class="sr-only">Balasan untuk {{ u.user.display_name }}</label>
+                    <textarea id="balasan-{{ u.id }}" name="balasan" rows="3" maxlength="1000" required placeholder="Tulis balasan yang sopan dan membantu"
+                              class="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 outline-none focus:border-brand focus:ring-4 focus:ring-brand/15">{{ u.balasan or '' }}</textarea>
+                    <button type="submit" class="mt-2 bg-brand hover:bg-brand-dark text-white font-medium px-5 min-h-11 rounded-full cursor-pointer">Kirim Balasan</button>
+                </form>
+            </details>
+            <form method="POST" action="{{ url_for('admin.ulasan_hapus', ulasan_id=u.id) }}" data-confirm="Hapus ulasan dari {{ u.user.display_name }}? Tindakan ini tidak bisa dibatalkan.">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="filter" value="{{ filter_aktif if filter_aktif != 'semua' else '' }}">
+                <input type="hidden" name="page" value="{{ halaman.page }}">
+                <button type="submit" class="inline-flex items-center gap-1.5 min-h-11 px-4 rounded-full text-sm font-medium text-coral hover:bg-red-50 cursor-pointer">{{ icon('trash-2', 'w-4 h-4') }} Hapus</button>
+            </form>
+        </div>
+    </article>
+    {% else %}
+    <p class="px-5 py-12 text-center text-muted">Tidak ada ulasan untuk filter ini.</p>
+    {% endfor %}
+    {% if halaman.pages > 1 %}
+    <nav class="flex flex-wrap items-center justify-center gap-1 px-5 py-4 border-t border-slate-100 text-sm" aria-label="Halaman">
+        {% for n in halaman.iter_pages() %}
+            {% if n %}
+            <a href="{{ url_for('admin.ulasan', filter=filter_aktif if filter_aktif != 'semua' else None, page=n) }}"
+               class="w-11 h-11 rounded-full flex items-center justify-center font-semibold {{ 'bg-brand text-white' if n == halaman.page else 'hover:bg-soft text-ink' }}">{{ n }}</a>
+            {% else %}<span class="px-1">…</span>{% endif %}
+        {% endfor %}
+    </nav>
+    {% endif %}
+</section>
+{% endblock %}

@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+
+{% block title %}Akun Saya — Gadgetin{% endblock %}
+
+{% block content %}
+<main class="mx-auto min-h-hero max-w-store px-5 pt-7 lg:px-0">
+  
+  <!-- Breadcrumb -->
+  <nav aria-label="Breadcrumb" class="mb-7 flex items-center gap-2 text-xs text-muted">
+    <a href="/" class="hover:text-blue transition">Beranda</a>
+    <i data-lucide="chevron-right" class="size-3"></i>
+    <span class="text-ink font-medium">Akun saya</span>
+  </nav>
+
+  <!-- Not Logged In State -->
+  <div id="account-logged-out-view" class="hidden mx-auto max-w-xl px-5 py-20 text-center">
+    <span class="mx-auto mb-6 flex size-20 items-center justify-center rounded-full bg-surface text-ink">
+      <i data-lucide="user-round" class="size-10"></i>
+    </span>
+    <h1 class="font-display text-3xl font-extrabold text-ink">Ruang untuk gadgetmu.</h1>
+    <p class="mb-7 mt-4 text-sm leading-7 text-muted">
+      Masuk untuk melihat profil, melacak pesanan, dan melanjutkan belanja gadget impianmu.
+    </p>
+    <div class="flex justify-center gap-3">
+      <a
+        href="/masuk"
+        class="inline-flex items-center gap-2 rounded-lg bg-ink px-6 py-3.5 text-sm font-bold text-white hover:bg-gray-800 transition"
+      >
+        <span>Masuk</span>
+        <i data-lucide="arrow-right" class="size-4"></i>
+      </a>
+      <a
+        href="/daftar"
+        class="inline-flex items-center gap-2 rounded-lg border border-line bg-white px-5 py-3 text-sm font-semibold text-ink hover:bg-surface transition"
+      >
+        Buat akun
+      </a>
+    </div>
+  </div>
+
+  <!-- Logged In View -->
+  <div id="account-logged-in-view">
+    <div class="mb-8 flex flex-wrap items-center justify-between gap-4">
+      <div>
+        <p class="mb-2 text-xs font-bold uppercase tracking-widest text-blue">
+          AKUN GADGETIN
+        </p>
+        <h1 id="user-display-name" class="font-display text-3xl font-extrabold text-ink">
+          Halo, Budi.
+        </h1>
+        <p class="mt-2 text-sm text-muted">
+          Ruang pribadimu untuk melihat pesanan dan mengelola akun.
+        </p>
+      </div>
+
+      <button
+        type="button"
+        id="btn-logout"
+        class="inline-flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 px-4 py-2.5 text-xs font-bold text-red-700 hover:bg-red-100 transition cursor-pointer"
+      >
+        <i data-lucide="log-out" class="size-4"></i>
+        <span>Keluar dari akun</span>
+      </button>
+    </div>
+
+    <!-- Quick Stats Cards 3-col -->
+    <div class="mb-10 grid gap-4 sm:grid-cols-3">
+      <div class="rounded-xl border border-line bg-white p-5">
+        <p class="text-xs text-muted mb-1">Pesanan aktif</p>
+        <p class="font-display text-2xl font-bold text-ink">1 Pesanan</p>
+        <p class="mt-2 text-xs text-blue flex items-center gap-1 font-semibold">
+          <i data-lucide="truck" class="size-3.5"></i>
+          Sedang diproses
+        </p>
+      </div>
+      <div class="rounded-xl border border-line bg-white p-5">
+        <p class="text-xs text-muted mb-1">Produk favorit</p>
+        <p id="stat-fav-count" class="font-display text-2xl font-bold text-ink">0 Produk</p>
+        <a href="/favorit" class="mt-2 text-xs text-blue hover:underline block font-semibold">
+          Lihat wishlist
+        </a>
+      </div>
+      <div class="rounded-xl border border-line bg-white p-5">
+        <p class="text-xs text-muted mb-1">Status keanggotaan</p>
+        <p class="font-display text-2xl font-bold text-ink">Member</p>
+        <p class="mt-2 text-xs text-green-700 flex items-center gap-1 font-semibold">
+          <i data-lucide="shield-check" class="size-3.5"></i>
+          Terverifikasi
+        </p>
+      </div>
+    </div>
+
+    <!-- Recent Orders Section -->
+    <section class="rounded-xl border border-line bg-white p-6 sm:p-8">
+      <div class="flex items-center justify-between border-b border-line pb-4 mb-6">
+        <h2 class="font-display text-xl font-bold text-ink flex items-center gap-2">
+          <i data-lucide="package" class="size-5 text-blue"></i>
+          Pesanan saya
+        </h2>
+        <span class="text-xs text-muted">Diperbarui hari ini</span>
+      </div>
+
+      <!-- Sample Order List -->
+      <div class="space-y-4">
+        <div class="rounded-lg border border-line p-5">
+          <div class="flex flex-wrap items-center justify-between gap-3 border-b border-line pb-4">
+            <div>
+              <p class="font-mono text-sm font-bold text-ink">GD-9A74E18F</p>
+              <p class="text-xs text-muted mt-0.5">29 Oktober 2026 · Bayar di tempat (COD)</p>
+            </div>
+            <span class="inline-flex items-center gap-1.5 rounded-full bg-blue/10 px-3 py-1 text-xs font-semibold text-blue">
+              <span class="size-2 rounded-full bg-blue animate-pulse"></span>
+              Sedang diproses
+            </span>
+          </div>
+
+          <div class="mt-4 flex flex-wrap items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+              <div class="size-14 rounded-lg bg-surface p-1 flex items-center justify-center overflow-hidden">
+                <img src="{{ url_for('static', filename='images/a0332.png') }}" alt="iPhone 14" class="h-full w-full object-contain">
+              </div>
+              <div>
+                <p class="text-sm font-bold text-ink">iPhone 14 128GB — Blue</p>
+                <p class="text-xs text-muted">1 barang × Rp 8.999.000</p>
+              </div>
+            </div>
+
+            <div class="text-right">
+              <p class="text-xs text-muted">Total Belanja</p>
+              <p class="font-display text-base font-bold text-ink">Rp 8.999.000</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const user = getUser();
+    const loggedInView = document.getElementById("account-logged-in-view");
+    const loggedOutView = document.getElementById("account-logged-out-view");
+    const userDisplayName = document.getElementById("user-display-name");
+    const statFav = document.getElementById("stat-fav-count");
+    const btnLogout = document.getElementById("btn-logout");
+
+    const favs = getFavorites();
+    if (statFav) statFav.textContent = `${favs.length} Produk`;
+
+    if (!user) {
+      if (loggedInView) loggedInView.classList.add("hidden");
+      if (loggedOutView) loggedOutView.classList.remove("hidden");
+    } else {
+      if (loggedInView) loggedInView.classList.remove("hidden");
+      if (loggedOutView) loggedOutView.classList.add("hidden");
+      if (userDisplayName) userDisplayName.textContent = `Halo, ${user.name.split(" ")[0]}.`;
+    }
+
+    if (btnLogout) {
+      btnLogout.addEventListener("click", () => {
+        saveUser(null);
+        showToast("Kamu berhasil keluar dari akun.");
+        setTimeout(() => {
+          window.location.reload();
+        }, 400);
+      });
+    }
+  });
+</script>
+{% endblock %}
+

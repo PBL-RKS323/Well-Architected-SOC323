@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+{% block title %}Produk Favorit — Gadgetin{% endblock %}
+
+{% block content %}
+<main class="mx-auto min-h-screen max-w-store px-5 pb-10 pt-7 lg:px-0">
+  
+  <!-- Breadcrumb -->
+  <nav aria-label="Breadcrumb" class="mb-7 flex items-center gap-2 text-xs text-muted">
+    <a href="/" class="hover:text-blue transition">Beranda</a>
+    <i data-lucide="chevron-right" class="size-3"></i>
+    <span class="text-ink font-medium">Produk favorit</span>
+  </nav>
+
+  <!-- Page Header -->
+  <div class="mb-8 flex flex-wrap items-end justify-between gap-4">
+    <div>
+      <p class="mb-2 text-xs font-bold uppercase tracking-widest text-blue">
+        PILIHAN PRIBADIMU
+      </p>
+      <h1 class="font-display text-3xl font-extrabold text-ink lg:text-4xl">
+        Produk favoritmu
+      </h1>
+      <p class="mt-3 text-sm text-muted">
+        Simpan yang kamu suka, belanja saat waktunya pas.
+      </p>
+    </div>
+    <span id="fav-count-badge" class="rounded-full bg-surface px-4 py-2 text-xs font-semibold text-ink">
+      0 produk
+    </span>
+  </div>
+
+  <!-- Dynamic Favorites Grid (populated via JS) -->
+  <div id="favorites-grid" class="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+    <!-- Populated by JavaScript from localStorage -->
+  </div>
+
+  <!-- Empty Favorites State -->
+  <div id="favorites-empty-state" class="hidden flex min-h-80 flex-col items-center justify-center rounded-xl border border-dashed border-line px-6 py-16 text-center">
+    <span class="mb-4 flex size-16 items-center justify-center rounded-full bg-surface text-faint">
+      <i data-lucide="heart" class="size-8"></i>
+    </span>
+    <h3 class="font-display text-xl font-bold text-ink">Belum ada produk favorit</h3>
+    <p class="mb-6 mt-2 max-w-sm text-sm text-muted">
+      Ketuk ikon hati pada produk yang kamu suka untuk menyimpannya di sini.
+    </p>
+    <a
+      href="/katalog"
+      class="inline-flex items-center gap-2 rounded-lg bg-ink px-6 py-3 text-sm font-bold text-white hover:bg-gray-800 transition"
+    >
+      <span>Jelajahi katalog</span>
+      <i data-lucide="arrow-right" class="size-4"></i>
+    </a>
+  </div>
+</main>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const grid = document.getElementById("favorites-grid");
+    const empty = document.getElementById("favorites-empty-state");
+    const badge = document.getElementById("fav-count-badge");
+    const favs = getFavorites();
+
+    if (badge) badge.textContent = `${favs.length} produk`;
+
+    if (!favs || favs.length === 0) {
+      if (grid) grid.classList.add("hidden");
+      if (empty) empty.classList.remove("hidden");
+      return;
+    }
+
+    if (grid) {
+      grid.classList.remove("hidden");
+      grid.innerHTML = favs.map((product) => {
+        const imgUrl = product.image ? `/static/images/${product.image}` : "/static/images/a0332.png";
+        return `
+          <article class="group min-w-0 rounded-xl border border-line bg-white p-3 hover:border-blue/30 hover:shadow-lg transition">
+            <div class="relative overflow-hidden rounded-xl bg-white p-3">
+              <a href="/produk/${product.slug}" class="block">
+                <div class="relative h-40 lg:h-44 overflow-hidden flex items-center justify-center">
+                  <img src="${imgUrl}" alt="${product.name}" class="h-full w-full object-contain transition duration-500 group-hover:scale-105" />
+                </div>
+              </a>
+              <button
+                type="button"
+                data-fav-btn="${product.id}"
+                aria-label="Hapus dari favorit"
+                onclick='toggleFavorite(${JSON.stringify(product)}); location.reload();'
+                class="absolute right-3 top-3 rounded-full bg-white/90 p-2 text-red-500 shadow-sm hover:bg-white transition cursor-pointer"
+              >
+                <i data-lucide="heart" class="size-4 fill-red-500 text-red-500"></i>
+              </button>
+            </div>
+            <div class="flex flex-col px-1 pb-1 pt-4">
+              <p class="mb-1 text-xs text-muted">${product.brand} · ${product.category}</p>
+              <a href="/produk/${product.slug}" class="min-h-10 text-sm font-semibold leading-5 text-ink hover:text-blue line-clamp-2 transition">
+                ${product.name}
+              </a>
+              <div class="mb-4 mt-2 flex items-center gap-2">
+                <span class="font-bold text-base text-blue">${rupiah(product.price)}</span>
+              </div>
+              <button
+                type="button"
+                onclick='addToCart(${JSON.stringify(product)}, 1)'
+                class="w-full inline-flex items-center justify-between rounded-lg border border-line bg-white px-4 py-3 text-xs font-bold text-ink hover:border-brand hover:bg-brand transition cursor-pointer"
+              >
+                <span class="inline-flex items-center gap-2">
+                  <i data-lucide="shopping-bag" class="size-4"></i>
+                  Tambah ke keranjang
+                </span>
+                <i data-lucide="arrow-up-right" class="size-4"></i>
+              </button>
+            </div>
+          </article>
+        `;
+      }).join("");
+
+      if (window.lucide) lucide.createIcons({ root: grid });
+    }
+  });
+</script>
+{% endblock %}
+

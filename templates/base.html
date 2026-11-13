@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="{% block meta_description %}e-shop - Pusat belanja gadget, handphone, laptop, tablet, dan produk elektronik original bergaransi resmi dengan transaksi aman dan terpercaya.{% endblock %}">
+    <meta name="keywords" content="toko elektronik, gadget, handphone, smartphone, laptop, audio, e-shop, belanja online, polibatam">
+    <meta name="author" content="Elektronik Store - PBL RKS 323">
+    <!-- Open Graph / Media Sosial -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="{{ app_name }}">
+    <meta property="og:title" content="{% block og_title %}{{ app_name }} - Your One-Stop Electronic Market{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}Pusat belanja gadget, handphone, laptop, dan produk elektronik original bergaransi resmi.{% endblock %}">
+    <title>{% block title %}{{ app_name }} - Your One-Stop Electronic Market{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap">
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style type="text/tailwindcss">
+        @theme {
+            --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+            --font-display: "Plus Jakarta Sans", "Inter", ui-sans-serif, sans-serif;
+            --color-brand: #F05537;
+            --color-brand-dark: #D94426;
+            --color-brand-soft: #FFF2EE;
+            --color-ink: #1A1D20;
+            --color-muted: #71777D;
+            --color-soft: #F8F9FA;
+            --color-peach: #FFF2EE;
+            --color-coral: #F05537;
+        }
+        .scrollbar-none { scrollbar-width: none; }
+        .scrollbar-none::-webkit-scrollbar { display: none; }
+    </style>
+    <script src="{{ url_for('static', filename='js/app.js') }}" defer></script>
+</head>
+<body class="bg-soft text-ink font-sans antialiased min-h-screen {% block body_class %}{% endblock %}">
+    {% if config.DEMO_MODE %}
+    <p role="note" class="bg-ink text-white text-xs text-center px-4 py-2">
+        Toko demo tugas kuliah (PBL Polibatam). Produk tidak benar-benar dijual, jangan melakukan transfer sungguhan.
+    </p>
+    {% endif %}
+    {% block body %}{% endblock %}
+</body>
+</html>

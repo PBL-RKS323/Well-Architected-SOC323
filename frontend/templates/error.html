@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}Terjadi Kendala — Gadgetin{% endblock %}
+
+{% block content %}
+<main class="mx-auto max-w-lg px-5 py-24 text-center">
+  <span class="mx-auto mb-6 flex size-16 items-center justify-center rounded-full bg-red-50 text-red-600">
+    <i data-lucide="alert-triangle" class="size-8"></i>
+  </span>
+  <h1 class="font-display text-3xl font-extrabold text-ink">
+    Sebentar, ada kendala.
+  </h1>
+  <p class="my-5 text-sm leading-7 text-muted">
+    Halaman belum dapat dimuat. Data akun dan pesananmu tetap tersimpan. Silakan coba kembali beberapa saat lagi.
+  </p>
+  <div class="flex justify-center gap-3">
+    <a
+      href="/"
+      class="inline-flex items-center gap-2 rounded-lg bg-ink px-6 py-3.5 text-sm font-bold text-white hover:bg-gray-800 transition"
+    >
+      <span>Kembali ke Beranda</span>
+      <i data-lucide="arrow-right" class="size-4"></i>
+    </a>
+  </div>
+</main>
+{% endblock %}
+

@@ -1,0 +1,45 @@
+{% from '_icons.html' import icon %}
+
+{% set WARNA_STATUS = {
+    'menunggu_pembayaran': 'text-amber-600',
+    'menunggu_verifikasi': 'text-brand',
+    'diproses': 'text-amber-600',
+    'dikirim': 'text-brand',
+    'siap_diambil': 'text-brand',
+    'selesai': 'text-emerald-600',
+    'dibatalkan': 'text-gray-400'
+} %}
+
+{# Status pesanan bergaya Shopee: teks kapital bersih tanpa latar belakang bubble #}
+{% macro badge_status(pesanan, cls="") %}
+<span class="whitespace-nowrap text-xs font-bold uppercase tracking-wider {{ WARNA_STATUS.get(pesanan.status, 'text-gray-500') }} {{ cls }}">{{ pesanan.label_status }}</span>
+{% endmacro %}
+
+{# Foto produk di item pesanan: persegi bersih dengan border halus #}
+{% macro foto_item(item, cls="w-16 h-16") %}
+{% if item.produk %}
+<img src="{{ url_for('static', filename='uploads/' ~ item.produk.gambar) }}" alt="{{ item.nama_produk }}" class="{{ cls }} shrink-0 rounded-xs border border-gray-200 object-cover bg-gray-50">
+{% else %}
+<span class="{{ cls }} shrink-0 rounded-xs border border-gray-200 bg-gray-50 text-gray-400 flex items-center justify-center">{{ icon('package', 'w-5 h-5') }}</span>
+{% endif %}
+{% endmacro %}
+
+{# Kotak info singkat status pengiriman ala Shopee #}
+{% macro info_status(pesanan) %}
+{% set info = {
+    'menunggu_pembayaran': ('wallet', 'Menunggu pembayaran', 'Bayar sebelum ' ~ (pesanan.batas_bayar | tanggal)),
+    'menunggu_verifikasi': ('hourglass', 'Bukti bayar sedang diverifikasi', 'Admin mencocokkan bukti dengan rekening toko'),
+    'diproses': ('package', 'Pesanan sedang dikemas', 'Pembayaran sudah dikonfirmasi'),
+    'dikirim': ('truck', 'Pesanan dalam perjalanan', ('Resi ' ~ pesanan.nomor_resi) if pesanan.nomor_resi else 'Kurir sedang mengantar ke alamat tujuan'),
+    'siap_diambil': ('store', 'Siap diambil di toko', 'Tunjukkan kode pesanan saat mengambil'),
+    'selesai': ('circle-check', 'Pesanan telah selesai', 'Pesanan tiba di alamat tujuan.'),
+    'dibatalkan': ('circle-x', 'Pesanan dibatalkan', pesanan.alasan_tolak or 'Pesanan tidak dilanjutkan')
+} %}
+{% set ic, judul, ket = info[pesanan.status] %}
+<div class="flex items-center gap-2.5 text-xs text-gray-600 py-1">
+    {{ icon(ic, 'w-4 h-4 text-brand shrink-0') }}
+    <span class="font-medium text-gray-800">{{ judul }}</span>
+    <span class="text-gray-400">&middot;</span>
+    <span class="text-gray-500 truncate">{{ ket }}</span>
+</div>
+{% endmacro %}

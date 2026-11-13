@@ -1,0 +1,46 @@
+{% extends 'layouts/admin.html' %}
+{% from '_icons.html' import icon %}
+{% from 'admin/pesanan/_tabel.html' import tabel_pesanan %}
+{% block title %}Pesanan - {{ app_name }}{% endblock %}
+{% block content %}
+<div class="flex flex-wrap items-end justify-between gap-4 mb-6">
+    <div>
+        <h1 class="font-display text-2xl lg:text-3xl font-extrabold">Pesanan</h1>
+        <p class="text-muted mt-1">Verifikasi pembayaran dan perbarui status pengiriman pesanan.</p>
+    </div>
+    <form method="GET" class="relative w-full sm:w-80">
+        <input type="hidden" name="tab" value="{{ tab }}">
+        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-muted">{{ icon('search', 'w-4 h-4') }}</span>
+        <input type="search" name="q" value="{{ q }}" maxlength="100" placeholder="Cari kode, nama, atau email..."
+               class="w-full bg-white border border-slate-100 rounded-full pl-11 pr-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-brand/40">
+    </form>
+</div>
+
+{# flex-wrap: semua tab terlihat di HP tanpa digeser #}
+<nav class="flex flex-wrap gap-2 mb-4 text-sm font-medium">
+    {% for nama, info in tabs.items() %}
+    <a href="{{ url_for('admin.pesanan', tab=nama, q=q or None) }}"
+       class="whitespace-nowrap inline-flex items-center gap-1 px-4 min-h-11 rounded-full {{ 'bg-brand text-white' if tab == nama else 'bg-white text-muted hover:text-ink' }}">
+        {{ info[0] }}
+        <span class="ml-0.5 text-xs font-semibold px-1.5 py-0.5 rounded-full {{ 'bg-white/20' if tab == nama else ('bg-coral text-white' if nama == 'verifikasi' and jumlah_tab[nama] else 'bg-soft') }}">{{ jumlah_tab[nama] }}</span>
+    </a>
+    {% endfor %}
+</nav>
+
+<section class="bg-white border border-slate-100 rounded-2xl overflow-hidden">
+    {{ tabel_pesanan(halaman.items, "Tidak ada pesanan untuk filter ini.") }}
+    <div class="flex flex-wrap items-center justify-between gap-3 px-5 py-4 border-t border-slate-100 text-sm text-muted">
+        <span>Menampilkan {{ halaman.items | length }} dari {{ halaman.total }} pesanan</span>
+        {% if halaman.pages > 1 %}
+        <nav class="flex items-center gap-1" aria-label="Halaman">
+            {% for n in halaman.iter_pages() %}
+                {% if n %}
+                <a href="{{ url_for('admin.pesanan', tab=tab, q=q or None, page=n) }}"
+                   class="w-11 h-11 rounded-full flex items-center justify-center font-semibold {{ 'bg-brand text-white' if n == halaman.page else 'hover:bg-soft text-ink' }}">{{ n }}</a>
+                {% else %}<span class="px-1">…</span>{% endif %}
+            {% endfor %}
+        </nav>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

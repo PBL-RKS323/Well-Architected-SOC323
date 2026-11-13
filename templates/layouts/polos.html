@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{# Layout tanpa navigasi untuk halaman login & register #}
+{% block body_class %}bg-white sm:bg-soft{% endblock %}
+{% block body %}
+{% from '_icons.html' import icon %}
+<div class="px-4 pt-4">
+    <a href="{{ url_for('toko.beranda') }}" class="inline-flex items-center gap-2 min-h-11 pr-3 text-sm font-medium text-muted hover:text-ink">
+        <span class="w-9 h-9 rounded-xs bg-white border border-gray-200 flex items-center justify-center text-gray-700 shadow-xs">{{ icon('arrow-left', 'w-4 h-4') }}</span>
+        Kembali ke toko
+    </a>
+</div>
+<main class="flex flex-col items-center px-4 pt-6 pb-12 sm:pt-10">
+    <a href="{{ url_for('toko.beranda') }}" class="font-display font-extrabold text-2xl tracking-tight text-ink mb-6">{{ app_name }}</a>
+    <div class="w-full max-w-md">
+        {% include '_flash.html' %}
+        {% block content %}{% endblock %}
+    </div>
+</main>
+{% endblock %}

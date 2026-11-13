@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Keranjang Belanja | Nexus Tech Store Batam</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#FFF7ED',
+              100: '#FFEDD5',
+              500: '#F97316',
+              600: '#EA580C',
+              700: '#C2410C',
+              800: '#9A3412',
+              DEFAULT: '#D9531E',
+              dark: '#B83E12',
+              accent: '#E05326'
+            },
+            slate: {
+              850: '#151F32',
+              900: '#0F172A',
+              950: '#0A0F1D'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: #F8FAFC;
+      color: #0F172A;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #CBD5E1;
+      border-radius: 4px;
+    }
+    a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible {
+      outline: 2px solid #D9531E;
+      outline-offset: 2px;
+    }
+  </style>
+</head>
+<body class="text-slate-800 antialiased min-h-screen flex flex-col bg-[#F8FAFC]">
+
+  <!-- TOP ANNOUNCEMENT BAR -->
+  <div class="bg-slate-900 text-slate-300 text-xs py-2 px-4 border-b border-slate-800">
+    <div class="max-w-6xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2">
+      <div class="flex items-center space-x-3 text-[11px] text-slate-400">
+        <span class="text-brand-500 font-semibold">Toko Resmi Batam</span>
+        <span>|</span>
+        <span>Jaminan 100% Produk Original & Bergaransi Resmi</span>
+      </div>
+      <div class="flex items-center space-x-4 text-[11px] text-slate-300">
+        <a href="account.html" class="hover:text-white transition flex items-center space-x-1">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+          <span>Lacak Pesanan</span>
+        </a>
+        <span>|</span>
+        <a href="index.html" class="hover:text-white transition">Bantuan & FAQ</a>
+        <span>|</span>
+        <span class="font-medium text-white flex items-center space-x-1.5">
+          <span class="w-4 h-4 rounded-full bg-brand text-white flex items-center justify-center font-bold text-[9px]">YP</span>
+          <span>Yudha Pratama</span>
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN PREMIUM NAVIGATION HEADER -->
+  <header class="bg-white sticky top-0 z-40 border-b border-slate-200 shadow-xs">
+    <div class="max-w-6xl mx-auto px-4 py-3.5 flex items-center justify-between gap-6">
+      
+      <!-- Premium Brand Logo -->
+      <a href="index.html" class="flex items-center space-x-3 flex-shrink-0 group">
+        <div class="w-10 h-10 bg-slate-900 rounded-lg flex items-center justify-center text-white shadow-xs group-hover:bg-brand transition">
+          <svg class="w-6 h-6 text-brand group-hover:text-white transition" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+          </svg>
+        </div>
+        <div class="flex flex-col">
+          <span class="text-xl font-extrabold tracking-tight text-slate-900 leading-none group-hover:text-brand transition">NEXUS<span class="text-brand">TECH</span></span>
+          <span class="text-[10px] tracking-widest text-slate-400 font-semibold uppercase mt-0.5">Official Store RKS Batam</span>
+        </div>
+      </a>
+
+      <!-- Real Store Navigation Categories -->
+      <nav class="hidden lg:flex items-center space-x-6 text-xs font-semibold text-slate-600">
+        <a href="index.html" class="hover:text-brand transition text-brand font-bold">Katalog Utama</a>
+        <a href="index.html#katalog" onclick="filterByNav('smartphone')" class="hover:text-brand transition ">Smartphone</a>
+        <a href="index.html#katalog" onclick="filterByNav('laptop')" class="hover:text-brand transition ">Laptop & PC</a>
+        <a href="index.html#katalog" onclick="filterByNav('audio')" class="hover:text-brand transition ">Audio & Smartwatch</a>
+        <a href="index.html#katalog" onclick="filterByNav('aksesoris')" class="hover:text-brand transition ">Aksesoris</a>
+      </nav>
+
+      <!-- Search Bar & User Actions -->
+      <div class="flex items-center space-x-4">
+        <!-- Integrated Search Input -->
+        <div class="relative hidden sm:block w-48 md:w-60">
+          <input type="text" id="navSearchInput" oninput="handleNavSearch(this.value)" placeholder="Cari gadget pilihan..." class="w-full pl-9 pr-4 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-full focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand transition">
+          <svg class="w-4 h-4 text-slate-400 absolute left-3 top-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </div>
+
+        <!-- Orders Icon -->
+        <a href="account.html" class="p-2 text-slate-600 hover:text-brand hover:bg-slate-50 rounded-full transition" title="Riwayat & Lacak Pesanan">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+        </a>
+
+        <!-- Cart Icon with synchronized badge -->
+        <a href="cart.html" class="relative p-2 text-slate-700 hover:text-brand hover:bg-slate-50 rounded-full transition" aria-label="Buka Keranjang">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/>
+          </svg>
+          <span id="headerCartCount" class="absolute -top-0.5 -right-0.5 bg-brand text-white font-bold text-[10px] w-5 h-5 rounded-full flex items-center justify-center border-2 border-white shadow-xs">
+            2
+          </span>
+        </a>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- REUSABLE INTERACTIVE TOAST NOTIFICATION -->
+  <div id="globalToast" class="fixed top-20 right-6 z-50 bg-white border-l-4 border-brand shadow-xl rounded-lg p-4 flex items-center space-x-3 transform translate-x-96 opacity-0 transition-all duration-300 pointer-events-none" role="alert" aria-live="assertive">
+    <div class="w-7 h-7 rounded-full bg-orange-50 text-brand flex items-center justify-center flex-shrink-0">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+    </div>
+    <div>
+      <h4 class="text-xs font-bold text-slate-900" id="toastTitle">Berhasil Ditambahkan</h4>
+      <p class="text-[11px] text-slate-600" id="toastMessage">Produk pilihan Anda telah masuk ke keranjang belanja.</p>
+    </div>
+  </div>
+
+  <main class="max-w-6xl mx-auto px-4 py-8 flex-1 w-full space-y-6">
+    <!-- Breadcrumb -->
+    <nav class="flex items-center space-x-2 text-xs text-slate-500" aria-label="Breadcrumb">
+      <a href="index.html" class="hover:text-brand">Katalog</a>
+      <span>&rsaquo;</span>
+      <span class="text-slate-800 font-semibold">Keranjang Belanja</span>
+    </nav>
+
+    <!-- Cart Items Container -->
+    <div id="cartContent" class="space-y-4">
+      <!-- Table Header (Desktop) -->
+      <div class="hidden md:grid grid-cols-12 gap-4 bg-white p-4 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 shadow-xs items-center">
+        <div class="col-span-6 flex items-center space-x-3">
+          <input type="checkbox" id="selectAllHeader" onchange="toggleSelectAll(this.checked)" class="w-4 h-4 text-brand rounded border-slate-300 focus:ring-brand">
+          <span>Produk Terpilih</span>
+        </div>
+        <div class="col-span-2 text-center">Harga Satuan</div>
+        <div class="col-span-2 text-center">Jumlah</div>
+        <div class="col-span-2 text-center">Subtotal</div>
+      </div>
+
+      <!-- Item Rows List -->
+      <div id="cartItemsList" class="space-y-3">
+        <!-- Rendered dynamically via JS -->
+      </div>
+
+      <!-- Voucher Promo Box -->
+      <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div class="flex items-center space-x-3 text-xs text-slate-700">
+          <div class="w-8 h-8 rounded-lg bg-orange-50 text-brand flex items-center justify-center flex-shrink-0">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"/></svg>
+          </div>
+          <div>
+            <span class="font-bold text-slate-900 block">Voucher Eksklusif Toko</span>
+            <span class="text-slate-500">Gunakan kode kupon <code class="bg-orange-50 text-brand px-1.5 py-0.5 rounded font-mono font-bold">PREMIUM50</code> untuk potongan Rp 50.000</span>
+          </div>
+        </div>
+        <div class="flex items-center space-x-2 w-full sm:w-auto">
+          <input type="text" id="voucherCodeInput" placeholder="Ketik kode kupon" class="px-3.5 py-2 text-xs border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand uppercase font-mono bg-slate-50 focus:bg-white w-full sm:w-44">
+          <button onclick="applyVoucher()" class="px-5 py-2 bg-slate-900 hover:bg-brand text-white text-xs font-bold rounded-lg shadow-xs transition">
+            Gunakan
+          </button>
+        </div>
+      </div>
+      <div id="voucherFeedback" class="hidden text-xs font-semibold px-4 py-2.5 rounded-lg"></div>
+
+      <!-- Cart Sticky Bottom Action Bar -->
+      <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-md flex flex-col sm:flex-row items-center justify-between gap-4 sticky bottom-4 z-30">
+        <div class="flex items-center space-x-4 text-xs text-slate-700">
+          <div class="flex items-center space-x-2">
+            <input type="checkbox" id="selectAllFooter" onchange="toggleSelectAll(this.checked)" class="w-4 h-4 text-brand rounded border-slate-300 focus:ring-brand">
+            <label for="selectAllFooter" class="cursor-pointer font-semibold">Pilih Semua</label>
+          </div>
+          <button onclick="clearSelectedCart()" class="text-slate-400 hover:text-red-600 transition font-medium">Hapus Pilihan</button>
+        </div>
+
+        <div class="flex items-center space-x-6">
+          <div class="text-right">
+            <div class="text-xs text-slate-500">
+              Total (<span id="selectedCountText">0</span> barang):
+              <strong id="cartSubtotalText" class="text-lg sm:text-2xl text-brand font-black ml-1.5">Rp 0</strong>
+            </div>
+            <div id="voucherDiscountText" class="text-[11px] text-emerald-700 font-bold hidden">
+              Potongan Kupon: -Rp 50.000
+            </div>
+          </div>
+
+          <button onclick="proceedToCheckout()" class="px-7 py-3 bg-slate-900 hover:bg-brand text-white text-xs sm:text-sm font-bold rounded-xl shadow transition">
+            Lanjut ke Checkout
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty Cart State -->
+    <div id="emptyCartState" class="hidden bg-white rounded-2xl border border-slate-200 p-16 text-center shadow-xs">
+      <div class="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-400">
+        <svg class="w-10 h-10" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg>
+      </div>
+      <h3 class="text-base font-bold text-slate-800 mb-1">Keranjang Belanja Anda Kosong</h3>
+      <p class="text-xs text-slate-500 mb-6">Pilih produk berkualitas di katalog kami dan nikmati garansi resmi.</p>
+      <a href="index.html" class="inline-block px-6 py-3 bg-slate-900 hover:bg-brand text-white text-xs font-bold rounded-xl shadow transition">
+        Jelajahi Katalog Gadget
+      </a>
+    </div>
+  </main>
+
+  <script>
+    let voucherApplied = false;
+    let voucherDiscount = 50000;
+
+    function formatRupiah(num) {
+      return "Rp " + num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+
+    function renderCart() {
+      const cart = getStoredCart();
+      const listEl = document.getElementById('cartItemsList');
+      const cartContent = document.getElementById('cartContent');
+      const emptyState = document.getElementById('emptyCartState');
+
+      if (!cart || cart.length === 0) {
+        cartContent.classList.add('hidden');
+        emptyState.classList.remove('hidden');
+        return;
+      }
+
+      cartContent.classList.remove('hidden');
+      emptyState.classList.add('hidden');
+
+      listEl.innerHTML = cart.map((item, index) => {
+        const itemTotal = (item.price || 0) * (item.qty || 1);
+        return `
+          <div class="bg-white p-4 sm:p-5 rounded-xl border border-slate-200 shadow-xs grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+            <!-- Product (6 cols) -->
+            <div class="md:col-span-6 flex items-center space-x-3">
+              <input type="checkbox" ${item.selected ? 'checked' : ''} onchange="toggleItemSelect(${index}, this.checked)" class="w-4 h-4 text-brand rounded border-slate-300 focus:ring-brand">
+              <img src="${item.image}" alt="${item.name}" class="w-16 h-16 object-contain bg-slate-50 border border-slate-100 rounded-lg p-1 flex-shrink-0">
+              <div>
+                <a href="product-detail.html?id=${item.id}" class="text-xs font-bold text-slate-800 hover:text-brand line-clamp-2 leading-snug">
+                  ${item.name}
+                </a>
+                <div class="text-[11px] text-slate-500 mt-1">
+                  Varian: <span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded font-medium">${item.color || 'Default'}, ${item.ram || 'Standar'}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Unit Price (2 cols) -->
+            <div class="md:col-span-2 text-left md:text-center">
+              <span class="text-xs font-bold text-slate-700">${formatRupiah(item.price)}</span>
+            </div>
+
+            <!-- Quantity (2 cols) -->
+            <div class="md:col-span-2 flex items-center justify-start md:justify-center">
+              <div class="flex items-center border border-slate-200 rounded-lg overflow-hidden bg-white">
+                <button onclick="updateItemQty(${index}, -1)" class="w-7 h-7 bg-slate-50 hover:bg-slate-100 flex items-center justify-center font-bold text-slate-600 transition">-</button>
+                <span class="w-8 h-7 flex items-center justify-center text-xs font-bold text-slate-800 border-x border-slate-200">${item.qty}</span>
+                <button onclick="updateItemQty(${index}, 1)" class="w-7 h-7 bg-slate-50 hover:bg-slate-100 flex items-center justify-center font-bold text-slate-600 transition">+</button>
+              </div>
+            </div>
+
+            <!-- Subtotal & Delete (2 cols) -->
+            <div class="md:col-span-2 flex items-center justify-between md:justify-end space-x-4">
+              <span class="text-xs font-black text-brand">${formatRupiah(itemTotal)}</span>
+              <button onclick="removeCartItem(${index})" class="text-slate-400 hover:text-red-600 p-1 transition" title="Hapus Barang">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      recalculateSummary();
+    }
+
+    function toggleItemSelect(index, isChecked) {
+      const cart = getStoredCart();
+      if (cart[index]) {
+        cart[index].selected = isChecked;
+        saveCart(cart);
+        recalculateSummary();
+      }
+    }
+
+    function toggleSelectAll(isChecked) {
+      const cart = getStoredCart();
+      cart.forEach(item => item.selected = isChecked);
+      saveCart(cart);
+      document.getElementById('selectAllHeader').checked = isChecked;
+      document.getElementById('selectAllFooter').checked = isChecked;
+      renderCart();
+    }
+
+    function updateItemQty(index, delta) {
+      const cart = getStoredCart();
+      if (!cart[index]) return;
+      cart[index].qty = (cart[index].qty || 1) + delta;
+      if (cart[index].qty < 1) cart[index].qty = 1;
+      saveCart(cart);
+      renderCart();
+    }
+
+    function removeCartItem(index) {
+      const cart = getStoredCart();
+      cart.splice(index, 1);
+      saveCart(cart);
+      renderCart();
+      showToast("Produk Dihapus", "Item telah dikeluarkan dari keranjang belanja.");
+    }
+
+    function clearSelectedCart() {
+      let cart = getStoredCart();
+      cart = cart.filter(item => !item.selected);
+      saveCart(cart);
+      renderCart();
+      showToast("Keranjang Diperbarui", "Produk yang dipilih telah dihapus.");
+    }
+
+    function recalculateSummary() {
+      const cart = getStoredCart();
+      let total = 0;
+      let count = 0;
+      let allSelected = cart.length > 0;
+
+      cart.forEach(item => {
+        if (item.selected) {
+          total += (item.price || 0) * (item.qty || 1);
+          count += (item.qty || 1);
+        } else {
+          allSelected = false;
+        }
+      });
+
+      let finalTotal = total;
+      if (voucherApplied && total > voucherDiscount) {
+        finalTotal = total - voucherDiscount;
+        document.getElementById('voucherDiscountText').classList.remove('hidden');
+      } else {
+        document.getElementById('voucherDiscountText').classList.add('hidden');
+      }
+
+      document.getElementById('selectedCountText').textContent = count;
+      document.getElementById('cartSubtotalText').textContent = formatRupiah(finalTotal);
+
+      const headerBox = document.getElementById('selectAllHeader');
+      const footerBox = document.getElementById('selectAllFooter');
+      if (headerBox) headerBox.checked = allSelected;
+      if (footerBox) footerBox.checked = allSelected;
+    }
+
+    function applyVoucher() {
+      const input = document.getElementById('voucherCodeInput');
+      const feedback = document.getElementById('voucherFeedback');
+      const code = input.value.trim().toUpperCase();
+
+      if (code === 'PREMIUM50' || code === 'SHOPEEHEMAT') {
+        voucherApplied = true;
+        feedback.className = "text-xs font-semibold px-4 py-2.5 rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-200 block";
+        feedback.textContent = "Kupon Aktif: Diskon Rp 50.000 berhasil diterapkan.";
+        recalculateSummary();
+      } else {
+        feedback.className = "text-xs font-semibold px-4 py-2.5 rounded-lg bg-red-50 text-red-700 border border-red-200 block";
+        feedback.textContent = "Kode kupon tidak valid. Silakan gunakan kode PREMIUM50.";
+      }
+    }
+
+    function proceedToCheckout() {
+      const cart = getStoredCart();
+      const hasSelected = cart.some(item => item.selected);
+      if (!hasSelected) {
+        showToast("Pilih Produk", "Silakan tandai setidaknya satu barang untuk checkout.");
+        return;
+      }
+      window.location.href = "checkout.html";
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      renderCart();
+    });
+  </script>
+
+  <!-- FOOTER RESMI DENGAN 16 LOGO MITRA RESMI SHOPEE & PERBANKAN -->
+  <footer class="bg-white border-t border-slate-200 mt-16 text-slate-600 text-xs">
+    <div class="max-w-6xl mx-auto px-4 py-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+      <div>
+        <div class="flex items-center space-x-2 mb-3">
+          <div class="w-6 h-6 bg-slate-900 rounded flex items-center justify-center text-white">
+            <svg class="w-4 h-4 text-brand" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+          </div>
+          <span class="text-sm font-bold text-slate-900">Nexus Tech Store</span>
+        </div>
+        <p class="text-xs text-slate-500 leading-relaxed mb-4">
+          Toko ritel elektronik resmi berbasis di Kota Batam, menghadirkan produk teknologi terkurasi dengan garansi resmi distributor Indonesia.
+        </p>
+        <div class="text-[11px] text-slate-400 space-y-1">
+          <div>Politeknik Negeri Batam, Kepulauan Riau</div>
+          <div>Layanan Konsumen: halo@nexustech.id</div>
+        </div>
+      </div>
+
+      <div>
+        <h4 class="font-bold text-slate-900 mb-3 text-xs uppercase tracking-wider">Layanan & Garansi</h4>
+        <ul class="space-y-2 text-slate-600 text-xs">
+          <li><a href="account.html" class="hover:text-brand transition">Pusat Bantuan & Lacak Resi</a></li>
+          <li><a href="index.html" class="hover:text-brand transition">Panduan Pemesanan</a></li>
+          <li><a href="index.html" class="hover:text-brand transition">Ketentuan Garansi 1 Tahun</a></li>
+          <li><a href="cart.html" class="hover:text-brand transition">Pengembalian Barang & Dana</a></li>
+          <li><a href="index.html" class="hover:text-brand transition">Kebijakan Privasi Data</a></li>
+        </ul>
+      </div>
+
+      <!-- KOLOM METODE PEMBAYARAN RESMI -->
+      <div>
+        <h4 class="font-bold text-slate-900 mb-3 text-xs uppercase tracking-wider">Metode Pembayaran</h4>
+        <div class="grid grid-cols-3 sm:grid-cols-4 gap-2">
+          <!-- ShopeePay -->
+          <div class="bg-white border border-slate-200 rounded p-1 flex items-center justify-center h-8 hover:border-brand/60 transition shadow-xs" title="ShopeePay">
+            <svg viewBox="0 0 100 28" class="h-4 w-auto" xmlns="http://www.w3.org/2000/svg">
+              <path d="M7 8h10c0-2.8-2.2-5-5-5s-5 2.2-5 5zm-3 2h16c.6 0 1 .4 1 1v12c0 .6-.4 1-1 1H4c-.6 0-1-.4-1-1V11c0-.6.4-1 1-1zm6.2 4.5c-.8.2-1.2.5-1.2 1 0 .6.5.9 1.4 1l1.2.2c1.4.3 2.4.9 2.4 2.1 0 1.5-1.4 2.2-2.8 2.2-1.3 0-2.6-.5-3-1.4l1.3-.9c.3.6 1 1 1.7 1 .8 0 1.3-.4 1.3-.9 0-.5-.5-.8-1.3-.9l-1.3-.2c-1.5-.3-2.3-1.1-2.3-2.2 0-1.4 1.3-2.2 2.7-2.2 1.1 0 2.2.4 2.6 1.1l-1.2.9c-.3-.5-.8-.7-1.4-.7z" fill="#D9531E"/>
+              <text x="27" y="19" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="900" fill="#D9531E">Shopee<tspan fill="#0F172A" font-weight="700">Pay</tspan></text>
+            </svg>
+          </div>
+
+          <!-- SPayLater -->
+          <div class="bg-white border border-slate-200 rounded p-1 flex items-center justify-center h-8 hover:border-brand/60 transition shadow-xs" title="SPayLater">
+            <svg viewBox="0 0 95 28" class="h-4 w-auto" xmlns="http://www.w3.org/2000/svg">
+              <rect x="2" y="3" width="22" height="22" rx="4" fill="#D9531E"/>
+              <text x="13" y="19" text-anchor="middle" font-family="system-ui, sans-serif" font-size="14" font-weight="900" fill="#FFFFFF">S</text>
+              <text x="28" y="19" font-family="system-ui, sans-serif" font-size="11" font-weight="900" fill="#D9531E">Pay<tspan fill="#0F172A" font-weight="700">Later</tspan></text>
+            </svg>
+          </div>
+
+          <!-- BCA -->
+          <div class="bg-white border border-slate-200 rounded p-1 flex items-center justify-center h-8 hover:border-brand/60 transition shadow-xs" title="Bank Central Asia">
+            <img src="images/footer/logo_2.webp" onerror="this.onerror=null; this.src='https://down-id.img.susercontent.com/file/id-11134258-7rask-m3elfkyp7rvyc9.webp'" alt="BCA" class="max-h-5 max-w-[48px] object-contain">
+          </div>
+
+          <!-- Mandiri -->
+          <div class="bg-white border border-slate-200 rounded p-1 flex items-center justify-center h-8 hover:border-brand/60 transition shadow-xs" title="Bank Mandiri">
+            <img src="images/footer/logo_3.webp" onerror="this.onerror=null; this.src='https://down-id.img.susercontent.com/file/id-11134258-7rasi-m3elfnywtdgv0b.webp'" alt="Mandiri" class="max-h-5 max-w-[48px] object-contain">
+          </div>
+
+          <!-- BNI -->
+          <div class="bg-white border border-slate-200 rounded p-1 flex items-center justify-center h-8 hover:border-brand/60 transition shadow-xs" title="Bank BNI">
+            <img src="images/footer/logo_4.webp" onerror="this.onerror=null; this.src='https://down-id.img.susercontent.com/file/id-11134258-7rasa-m3elfqc3cpsg90.webp'" alt="BNI" class="max-h-5 max-w-[48px] object-contain">
+          </div>
+
+          <!-- BRI -->
+          <div class="bg-white border border-slate-200 rounded p-1 flex items-center justify-center h-8 hover:border-brand/60 transition shadow-xs" title="Bank BRI">
+            <img src="images/footer/logo_5.webp" onerror="this.onerror=null; this.src='https://down-id.img.susercontent.com/file/id-11134258-7rasc-m3elfssvqtqn58.webp'" alt="BRI" class="max-h-5 max-w-[48px] object-contain">
+          </div>
+
+          <!-- BSI -->
+          <div class="bg-white border border-slate-200 rounded p-1 flex items-center justify-center h-8 hover:border-brand/60 transition shadow-xs" title="Bank Syariah Indonesia">
+            <img src="images/footer/logo_6.webp" onerror="this.onerror=null; this.src='https://down-id.img.susercontent.com/file/id-11134258-7rask-m3elfv3kdsb4ae.webp'" alt="BSI" class="max-h-5 max-w-[48px] object-contain">
+          </div>
+
+          <!-- CIMB Niaga -->
+          <div class="bg-white border border-slate-200 rounded p-1 flex items-center justify-center h-8 hover:border-brand/60 transition shadow-xs" title="CIMB Niaga">
+            <img src="images/footer/logo_7.webp" onerror="this.onerror=null; this.src='https://down-id.img.susercontent.com/file/id-11134258-7ras8-m3elfxpckju7db.webp'" alt="CIMB Niaga" class="max-h-5 max-w-[48px] object-contain">
+          </div>
+
+          <!-- Indomaret -->
+          <div class="bg-white border border-slate-200 rounded p-1 flex items-center justify-center h-8 hover:border-brand/60 transition shadow-xs" title="Indomaret">
+            <img src="images/footer/logo_8.webp" onerror="this.onerror=null; this.src='https://down-id.img.susercontent.com/file/id-11134258-7rasc-m3elg0155yq700.webp'" alt="Indomaret" class="max-h-5 max-w-[48px] object-contain">
+          </div>
+
+          <!-- Alfamart -->
+          <div class="bg-white border border-slate-200 rounded p-1 flex items-center justify-center h-8 hover:border-brand/60 transition shadow-xs" title="Alfamart">
+            <img src="images/footer/logo_1.webp" onerror="this.onerror=null; this.src='https://down-id.img.susercontent.com/file/id-11134258-7rasg-m3elfigsva7j31.webp'" alt="Alfamart" class="max-h-5 max-w-[48px] object-contain">
+          </div>
+
+          <!-- Alfamidi -->
+          <div class="bg-white border border-slate-200 rounded p-1 flex items-center justify-center h-8 hover:border-brand/60 transition shadow-xs" title="Alfamidi">
+            <img src="images/footer/logo_9.webp" onerror="this.onerror=null; this.src='https://down-id.img.susercontent.com/file/id-11134258-7rasg-m3elgbu7vvkge8.webp'" alt="Alfamidi" class="max-h-5 max-w-[48px] object-contain">
+          </div>
+
+          <!-- QRIS -->
+          <div class="bg-white border border-slate-200 rounded p-1 flex items-center justify-center h-8 hover:border-brand/60 transition shadow-xs" title="QRIS">
+            <svg viewBox="0 0 65 28" class="h-4 w-auto" xmlns="http://www.w3.org/2000/svg">
+              <rect x="3" y="4" width="7" height="7" fill="#0F172A"/>
+              <rect x="4.5" y="5.5" width="4" height="4" fill="#FFFFFF"/>
+              <rect x="5.8" y="6.8" width="1.4" height="1.4" fill="#0F172A"/>
+              <text x="14" y="19" font-family="system-ui, sans-serif" font-size="13" font-weight="900" fill="#0F172A" letter-spacing="0.5">QRIS</text>
+              <circle cx="58" cy="8" r="2.5" fill="#D9531E"/>
+            </svg>
+          </div>
+
+          <!-- Visa -->
+          <div class="bg-white border border-slate-200 rounded p-1 flex items-center justify-center h-8 hover:border-brand/60 transition shadow-xs" title="Visa">
+            <svg viewBox="0 0 60 28" class="h-3.5 w-auto" xmlns="http://www.w3.org/2000/svg">
+              <text x="30" y="20" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="16" font-weight="900" font-style="italic" fill="#1A1F71" letter-spacing="1">VISA</text>
+            </svg>
+          </div>
+
+          <!-- Mastercard -->
+          <div class="bg-white border border-slate-200 rounded p-1 flex items-center justify-center h-8 hover:border-brand/60 transition shadow-xs" title="Mastercard">
+            <svg viewBox="0 0 60 28" class="h-4.5 w-auto" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="23" cy="14" r="9" fill="#EB001B"/>
+              <circle cx="37" cy="14" r="9" fill="#F79E1B"/>
+              <path d="M30 7.2a9 9 0 000 13.6 9 9 0 000-13.6z" fill="#FF5F00"/>
+            </svg>
+          </div>
+
+          <!-- COD -->
+          <div class="bg-white border border-slate-200 rounded p-1 flex items-center justify-center h-8 hover:border-brand/60 transition shadow-xs" title="Cash on Delivery">
+            <div class="bg-slate-900 text-brand font-black text-[10px] px-2 py-0.5 rounded tracking-wider">
+              COD
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- KOLOM JASA PENGIRIMAN RESMI -->
+      <div>
+        <h4 class="font-bold text-slate-900 mb-3 text-xs uppercase tracking-wider">Jasa Pengiriman</h4>
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+          <!-- SPX Express -->
+          <div class="bg-white border border-slate-200 rounded p-1 flex items-center justify-center h-8 hover:border-brand/60 transition shadow-xs" title="SPX Express">
+            <img src="images/footer/logo_10.webp" onerror="this.onerror=null; this.src='https://down-id.img.susercontent.com/file/id-11134258-7rasi-m3elgwdxtfqme2.webp'" alt="SPX Express" class="max-h-5 max-w-[48px] object-contain">
+          </div>
+
+          <!-- J&T Express -->
+          <div class="bg-white border border-slate-200 rounded p-1 flex items-center justify-center h-8 hover:border-brand/60 transition shadow-xs" title="J&T Express">
+            <img src="images/footer/logo_11.webp" onerror="this.onerror=null; this.src='https://down-id.img.susercontent.com/file/id-11134258-7rasj-m3elk3axne8sa2.webp'" alt="J&T Express" class="max-h-5 max-w-[48px] object-contain">
+          </div>
+
+          <!-- J&T Cargo -->
+          <div class="bg-white border border-slate-200 rounded p-1 flex items-center justify-center h-8 hover:border-brand/60 transition shadow-xs" title="J&T Cargo">
+            <img src="images/footer/logo_12.webp" onerror="this.onerror=null; this.src='https://down-id.img.susercontent.com/file/id-11134258-7ra0u-mcugpj7nj6b9b1.webp'" alt="J&T Cargo" class="max-h-5 max-w-[48px] object-contain">
+          </div>
+
+          <!-- SiCepat Ekspres -->
+          <div class="bg-white border border-slate-200 rounded p-1 flex items-center justify-center h-8 hover:border-brand/60 transition shadow-xs" title="SiCepat Ekspres">
+            <img src="images/footer/logo_13.webp" onerror="this.onerror=null; this.src='https://down-id.img.susercontent.com/file/id-11134258-7ras9-m3elkbmvgj1460.webp'" alt="SiCepat" class="max-h-5 max-w-[48px] object-contain">
+          </div>
+
+          <!-- JNE Express -->
+          <div class="bg-white border border-slate-200 rounded p-1 flex items-center justify-center h-8 hover:border-brand/60 transition shadow-xs" title="JNE Express">
+            <img src="images/footer/logo_14.webp" onerror="this.onerror=null; this.src='https://down-id.img.susercontent.com/file/id-11134258-7rasb-m3elkjsfixy0e0.webp'" alt="JNE" class="max-h-5 max-w-[48px] object-contain">
+          </div>
+
+          <!-- Anteraja -->
+          <div class="bg-white border border-slate-200 rounded p-1 flex items-center justify-center h-8 hover:border-brand/60 transition shadow-xs" title="Anteraja">
+            <img src="images/footer/logo_15.webp" onerror="this.onerror=null; this.src='https://down-id.img.susercontent.com/file/id-11134258-7rase-m3ell0woh4yg37.webp'" alt="Anteraja" class="max-h-5 max-w-[48px] object-contain">
+          </div>
+
+          <!-- Pos Indonesia -->
+          <div class="bg-white border border-slate-200 rounded p-1 flex items-center justify-center h-8 hover:border-brand/60 transition shadow-xs" title="Pos Indonesia">
+            <img src="images/footer/logo_16.webp" onerror="this.onerror=null; this.src='https://down-id.img.susercontent.com/file/id-11134258-7rasg-m3elktb3lhlk9e.webp'" alt="Pos Indonesia" class="max-h-5 max-w-[48px] object-contain">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sub-footer bar -->
+    <div class="border-t border-slate-100 py-4 bg-slate-50 text-center text-xs text-slate-500">
+      <div class="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+        <span>Hak Cipta 2026 e-shop Politeknik Negeri Batam.</span>
+        <span class="text-slate-400 text-[11px]">Sistem Terverifikasi Garansi Resmi Distributor</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- SHARED CART AND APP LOGIC SCRIPT -->
+  <script>
+    function getStoredCart() {
+      try {
+        const data = localStorage.getItem('nexus_cart');
+        if (data) {
+          return JSON.parse(data);
+        }
+      } catch (e) {
+        console.error('Error loading cart:', e);
+      }
+      const defaultCart = [
+        {
+          id: 1,
+          name: "Xiaomi Redmi 13C 8/256GB - Garansi Resmi",
+          price: 1499000,
+          originalPrice: 1799000,
+          image: "images/6ebd4.png",
+          color: "Midnight Black",
+          ram: "8/256GB",
+          qty: 1,
+          selected: true
+        },
+        {
+          id: 4,
+          name: "Amazfit GTS 2 Mini Smartwatch AMOLED",
+          price: 899000,
+          originalPrice: 1099000,
+          image: "images/41a39.png",
+          color: "Meteor Black",
+          ram: "Standard",
+          qty: 1,
+          selected: true
+        }
+      ];
+      localStorage.setItem('nexus_cart', JSON.stringify(defaultCart));
+      return defaultCart;
+    }
+
+    function saveCart(cart) {
+      localStorage.setItem('nexus_cart', JSON.stringify(cart));
+      updateCartBadge();
+    }
+
+    function updateCartBadge() {
+      const cart = getStoredCart();
+      const count = cart.reduce((sum, item) => sum + (item.qty || 1), 0);
+      const badge = document.getElementById('headerCartCount');
+      if (badge) {
+        badge.textContent = count;
+      }
+    }
+
+    function showToast(title, message) {
+      const toast = document.getElementById('globalToast');
+      const toastTitle = document.getElementById('toastTitle');
+      const toastMessage = document.getElementById('toastMessage');
+      if (!toast) return;
+
+      toastTitle.textContent = title;
+      toastMessage.textContent = message;
+
+      toast.classList.remove('translate-x-96', 'opacity-0', 'pointer-events-none');
+      toast.classList.add('translate-x-0', 'opacity-100');
+
+      setTimeout(() => {
+        toast.classList.remove('translate-x-0', 'opacity-100');
+        toast.classList.add('translate-x-96', 'opacity-0', 'pointer-events-none');
+      }, 2500);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      updateCartBadge();
+    });
+  </script>
+</body>
+</html>

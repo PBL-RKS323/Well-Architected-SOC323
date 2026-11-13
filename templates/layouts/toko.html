@@ -1,0 +1,344 @@
+{% extends 'base.html' %}
+{% from '_icons.html' import icon %}
+{% from '_macros.html' import avatar %}
+{% block body_class %}pb-20 md:pb-0 bg-[#F8F9FA]{% endblock %}
+{% block body %}
+{% set ep = request.endpoint %}
+{% set is_admin = current_user and current_user.is_staf_toko() %}
+
+<!-- TOP UTILITY BAR -->
+<div class="bg-white border-b border-slate-100 text-xs text-muted py-2 hidden md:block">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center gap-4">
+        <div class="flex items-center gap-6">
+            <span class="flex items-center gap-1.5">
+                {{ icon('map-pin', 'w-3.5 h-3.5 text-brand') }}
+                {{ config.TOKO_ALAMAT }}
+            </span>
+            <span class="flex items-center gap-1.5">
+                {{ icon('phone', 'w-3.5 h-3.5 text-brand') }}
+                +62 (778) 469-8567
+            </span>
+        </div>
+        <div class="flex items-center gap-5">
+            <div class="flex items-center gap-1.5 text-slate-600 font-medium text-xs">
+                {{ icon('wallet', 'w-3.5 h-3.5 text-brand') }}
+                <span>IDR (Rp)</span>
+            </div>
+            <div class="flex items-center gap-1.5 text-slate-600 font-medium text-xs">
+                <span class="text-xs">🇮🇩</span>
+                <span>Indonesia</span>
+            </div>
+            <div class="flex items-center gap-3 pl-3 border-l border-slate-200">
+                <a href="https://facebook.com" target="_blank" rel="noopener" class="hover:text-brand transition" aria-label="Facebook" title="Facebook Official">{{ icon('facebook', 'w-3.5 h-3.5') }}</a>
+                <a href="https://instagram.com" target="_blank" rel="noopener" class="hover:text-brand transition" aria-label="Instagram" title="Instagram Official">{{ icon('instagram', 'w-3.5 h-3.5') }}</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MAIN HEADER -->
+<header class="bg-white sticky top-0 z-30 shadow-xs border-b border-slate-100">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4 md:gap-8">
+        <!-- LOGO: e-shop. -->
+        <a href="{{ url_for('toko.beranda') }}" class="shrink-0 flex items-center gap-1 group">
+            <span class="font-display font-extrabold text-2xl md:text-3xl tracking-tight text-ink">e-shop<span class="text-brand">.</span></span>
+        </a>
+
+        <!-- SEARCH BAR (DESKTOP) -->
+        <form action="{{ url_for('toko.jelajah') }}" method="GET" role="search" class="hidden md:flex flex-1 max-w-2xl items-center bg-slate-50 border border-slate-200 rounded-lg overflow-hidden focus-within:border-brand focus-within:ring-2 focus-within:ring-brand/20 transition">
+            <select name="kategori" class="bg-transparent text-xs text-ink px-3 py-3 border-r border-slate-200 outline-none font-medium cursor-pointer">
+                <option value="">Semua Kategori</option>
+                {% for k in kategori_nav %}
+                <option value="{{ k }}" {{ 'selected' if request.args.get('kategori') == k else '' }}>{{ k }}</option>
+                {% endfor %}
+            </select>
+            <input type="search" name="q" value="{{ request.args.get('q', '') if ep == 'toko.jelajah' else '' }}" maxlength="100"
+                   placeholder="Cari handphone, laptop, smartwatch..." aria-label="Cari produk"
+                   class="flex-1 bg-transparent text-sm px-4 py-2.5 outline-none placeholder:text-muted text-ink">
+            <button type="submit" aria-label="Cari" class="bg-brand hover:bg-brand-dark text-white px-5 py-3 flex items-center justify-center transition cursor-pointer">
+                {{ icon('search', 'w-4 h-4') }}
+            </button>
+        </form>
+
+        <!-- RIGHT CONTROLS: CART & USER -->
+        <div class="flex items-center gap-2 md:gap-5">
+            <a href="{{ url_for('toko.jelajah') }}" aria-label="Cari produk" class="md:hidden p-2.5 rounded-full hover:bg-soft text-ink">
+                {{ icon('search', 'w-5 h-5') }}
+            </a>
+
+            {% if not is_admin %}
+            {% if current_user and current_user.punya_izin('belanja') %}
+            <!-- WISHLIST BUTTON -->
+            <a href="{{ url_for('belanja.favorit') }}" class="flex items-center gap-2 p-2 rounded-xl hover:bg-slate-50 transition group" aria-label="Produk favorit">
+                <div class="relative p-2 rounded-full bg-slate-100 group-hover:bg-brand-soft text-ink group-hover:text-brand transition">
+                    {{ icon('heart', 'w-5 h-5') }}
+                    {% if favorit_count %}
+                    <span class="absolute -top-1 -right-1 min-w-5 h-5 px-1 rounded-full bg-brand text-white text-[11px] font-bold flex items-center justify-center shadow">
+                        {{ favorit_count }}
+                    </span>
+                    {% endif %}
+                </div>
+                <div class="hidden xl:block text-left">
+                    <span class="block text-[11px] text-muted font-medium uppercase tracking-wider">Favorit</span>
+                    <span class="block text-xs font-bold text-ink">{{ favorit_count }} Item</span>
+                </div>
+            </a>
+            {% endif %}
+
+            <!-- CART BUTTON WITH SUMMARY -->
+            <a href="{{ url_for('belanja.keranjang') }}" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-50 transition group" aria-label="Keranjang belanja">
+                <div class="relative p-2 rounded-full bg-slate-100 group-hover:bg-brand-soft text-ink group-hover:text-brand transition">
+                    {{ icon('shopping-bag', 'w-5 h-5') }}
+                    {% if cart_count %}
+                    <span data-cart-count class="absolute -top-1 -right-1 min-w-5 h-5 px-1 rounded-full bg-brand text-white text-[11px] font-bold flex items-center justify-center shadow">
+                        {{ cart_count }}
+                    </span>
+                    {% endif %}
+                </div>
+                <div class="hidden lg:block text-left">
+                    <span class="block text-[11px] text-muted font-medium uppercase tracking-wider">Keranjang</span>
+                    <span class="block text-xs font-bold text-ink">{{ cart_count }} Item</span>
+                </div>
+            </a>
+            {% endif %}
+
+            <!-- USER ACCOUNT -->
+            {% if current_user %}
+                <div class="relative group/user py-1 pl-3 border-l border-slate-200">
+                    <a href="{{ url_for('akun.profil') }}" class="flex items-center gap-2 hover:text-brand transition cursor-pointer">
+                        {{ avatar(current_user, 'w-8 h-8 text-xs border border-gray-200') }}
+                        <div class="hidden sm:block text-left">
+                            <span class="block text-xs font-semibold text-gray-800 truncate max-w-[120px]">{{ current_user.display_name }}</span>
+                            <span class="block text-[10px] text-gray-500 font-medium">{{ current_user.label_role }}</span>
+                        </div>
+                    </a>
+                    <!-- POPUP DROPDOWN SHOPEE STYLE -->
+                    <div class="absolute right-0 top-full pt-1 hidden group-hover/user:block hover:block z-50">
+                        <div class="w-36 bg-white border border-gray-200 rounded-xs shadow-lg py-1 relative before:content-[''] before:absolute before:-top-1.5 before:right-6 before:w-3 before:h-3 before:bg-white before:border-t before:border-l before:border-gray-200 before:rotate-45">
+                            <a href="{{ url_for('akun.profil') }}" class="block px-4 py-2.5 text-xs text-gray-700 hover:bg-gray-50 hover:text-brand transition">Akun Saya</a>
+                            {% if current_user.punya_izin('belanja') %}
+                            <a href="{{ url_for('belanja.pesanan') }}" class="block px-4 py-2.5 text-xs text-gray-700 hover:bg-gray-50 hover:text-brand transition">Pesanan Saya</a>
+                            {% else %}
+                            <a href="{{ url_for('admin.dashboard') }}" class="block px-4 py-2.5 text-xs text-gray-700 hover:bg-gray-50 hover:text-brand transition">Panel Toko</a>
+                            {% endif %}
+                            <form action="{{ url_for('auth.logout') }}" method="POST">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit" class="w-full text-left px-4 py-2.5 text-xs text-gray-700 hover:bg-gray-50 hover:text-brand transition cursor-pointer border-t border-gray-100">Log Out</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <a href="{{ url_for('auth.login', next=request.full_path.rstrip('?')) }}" class="inline-flex items-center gap-1.5 bg-brand hover:bg-brand-dark text-white text-xs font-medium px-4 py-2 rounded-xs shadow-xs transition">
+                    {{ icon('user', 'w-3.5 h-3.5') }} Masuk
+                </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- SECONDARY CORAL NAVBAR (DESKTOP) -->
+    <nav class="hidden md:block bg-brand text-white" aria-label="Menu navigasi e-shop">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between text-xs font-bold tracking-wide">
+            <div class="flex items-center gap-1">
+                <!-- ALL CATEGORIES BUTTON -->
+                <a href="{{ url_for('toko.jelajah') }}" class="flex items-center gap-2.5 bg-brand-dark px-5 py-3 hover:bg-black/20 transition">
+                    {{ icon('menu', 'w-4 h-4') }}
+                    <span>SEMUA KATEGORI</span>
+                </a>
+
+                <a href="{{ url_for('toko.beranda') }}" class="px-4 py-3 hover:bg-white/10 transition {{ 'bg-black/15' if ep == 'toko.beranda' else '' }}">
+                    Beranda
+                </a>
+                <a href="{{ url_for('toko.jelajah') }}" class="px-4 py-3 hover:bg-white/10 transition {{ 'bg-black/15' if ep == 'toko.jelajah' and not request.args.get('kategori') else '' }}">
+                    Semua Produk
+                </a>
+                {% for k in kategori_nav[:4] %}
+                <a href="{{ url_for('toko.jelajah', kategori=k) }}" class="px-3.5 py-3 hover:bg-white/10 transition {{ 'bg-black/15' if request.args.get('kategori') == k else '' }}">
+                    {{ k }}
+                </a>
+                {% endfor %}
+                <a href="{{ url_for('toko.jelajah', promo=1) }}" class="px-3.5 py-3 hover:bg-white/10 transition text-amber-200 flex items-center gap-1.5 {{ 'bg-black/15' if request.args.get('promo') else '' }}">
+                    {{ icon('zap', 'w-3.5 h-3.5 text-amber-300') }}
+                    <span>PROMO SPESIAL</span>
+                </a>
+            </div>
+
+            <div class="flex items-center gap-3">
+                {% if is_admin %}
+                    <a href="{{ url_for('admin.dashboard') }}" class="bg-white text-brand px-3.5 py-1.5 rounded-full font-bold hover:bg-slate-100 transition">
+                        Panel Admin
+                    </a>
+                {% elif current_user %}
+                    <a href="{{ url_for('belanja.pesanan') }}" class="px-3 py-3 hover:bg-white/10 transition {{ 'bg-black/15' if ep and ep.startswith('belanja.pesanan') else '' }}">
+                        Pesanan Saya
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+</header>
+
+<!-- MAIN CONTENT -->
+<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-16">
+    {% include '_flash.html' %}
+    {% block content %}{% endblock %}
+</main>
+
+<!-- FOOTER -->
+<footer class="border-t border-slate-200 bg-white text-sm mt-auto">
+    <!-- NEWSLETTER CALLOUT BANNER -->
+    <div class="border-b border-slate-100 bg-slate-50/50 py-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
+            <div>
+                <span class="font-display font-extrabold text-2xl text-ink block">Dapatkan Penawaran Terbaru</span>
+                <p class="text-muted text-xs mt-1">Daftarkan email Anda untuk info diskon produk elektronik dan voucher belanja mingguan.</p>
+            </div>
+            <form onsubmit="event.preventDefault(); this.querySelector('button').textContent = 'Terdaftar!'; this.querySelector('input').disabled = true; this.querySelector('button').classList.replace('bg-brand', 'bg-emerald-600');" class="flex w-full md:w-auto max-w-md gap-2">
+                <input type="email" placeholder="Masukkan alamat email Anda..." required
+                       class="flex-1 bg-white border border-gray-300 rounded-xs px-4 py-2 text-xs text-gray-900 outline-none focus:border-brand">
+                <button type="submit" class="bg-brand hover:bg-brand-dark text-white px-5 py-2 rounded-xs text-xs font-medium transition whitespace-nowrap cursor-pointer shadow-xs">
+                    Langganan
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MAIN FOOTER COLUMNS -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 grid grid-cols-1 md:grid-cols-5 gap-8">
+        <!-- BRAND INFO -->
+        <div class="md:col-span-2">
+            <span class="font-display font-black text-2xl text-ink tracking-tight block">e-shop<span class="text-brand">.</span></span>
+            <p class="text-muted text-xs leading-relaxed mt-3 max-w-sm">
+                Pusat perbelanjaan barang elektronik terpercaya. Menyediakan smartphone, laptop, gadget, dan audio berkualitas dengan garansi resmi dan proteksi transaksi aman.
+            </p>
+            <div class="mt-4 space-y-2 text-xs text-muted">
+                <p class="flex items-center gap-2">{{ icon('phone', 'w-4 h-4 text-brand') }} +62 (778) 469-8567</p>
+                <p class="flex items-center gap-2">{{ icon('mail', 'w-4 h-4 text-brand') }} support@eshop.polibatam.ac.id</p>
+                <p class="flex items-center gap-2">{{ icon('map-pin', 'w-4 h-4 text-brand') }} {{ config.TOKO_ALAMAT }}</p>
+            </div>
+        </div>
+
+        <!-- LINKS -->
+        <div>
+            <p class="font-bold text-xs uppercase tracking-wider text-ink mb-3">Tautan Belanja</p>
+            <ul class="space-y-2 text-xs text-muted">
+                <li><a href="{{ url_for('toko.jelajah') }}" class="hover:text-brand transition">Semua Produk</a></li>
+                <li><a href="{{ url_for('toko.jelajah', promo=1) }}" class="hover:text-brand transition">Promo Terbatas</a></li>
+                {% if not is_admin %}
+                <li><a href="{{ url_for('belanja.keranjang') }}" class="hover:text-brand transition">Keranjang Belanja</a></li>
+                <li><a href="{{ url_for('belanja.pesanan') }}" class="hover:text-brand transition">Lacak Pesanan</a></li>
+                {% endif %}
+            </ul>
+        </div>
+
+        <!-- SUPPORTS -->
+        <div>
+            <p class="font-bold text-xs uppercase tracking-wider text-ink mb-3">Bantuan & Akun</p>
+            <ul class="space-y-2 text-xs text-muted">
+                {% if current_user %}
+                <li><a href="{{ url_for('akun.profil') }}" class="hover:text-brand transition">Profil Saya</a></li>
+                <li><a href="{{ url_for('akun.profil', tab='keamanan') }}" class="hover:text-brand transition">Keamanan Akun</a></li>
+                <li><a href="{{ url_for('akun.profil', tab='alamat') }}" class="hover:text-brand transition">Buku Alamat</a></li>
+                {% else %}
+                <li><a href="{{ url_for('auth.login') }}" class="hover:text-brand transition">Masuk</a></li>
+                <li><a href="{{ url_for('auth.register') }}" class="hover:text-brand transition">Daftar Akun Baru</a></li>
+                {% endif %}
+                <li><a href="{{ url_for('toko.kredit_foto') }}" class="hover:text-brand transition">Kredit Foto Produk</a></li>
+            </ul>
+        </div>
+
+        <!-- CATEGORIES -->
+        <div>
+            <p class="font-bold text-xs uppercase tracking-wider text-ink mb-3">Kategori Produk</p>
+            <ul class="space-y-2 text-xs text-muted">
+                {% for k in kategori_nav %}
+                <li><a href="{{ url_for('toko.jelajah', kategori=k) }}" class="hover:text-brand transition">{{ k }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <!-- PARTNER BADGES (QA & TEST COMPLIANT) -->
+    <div class="border-t border-slate-100 bg-slate-50/60 py-6">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+                <p class="font-semibold text-xs tracking-wider uppercase text-slate-500 mb-3">Metode Pembayaran</p>
+                <div class="flex flex-wrap gap-2 items-center">
+                    {% for item in [
+                        ('BCA', 'logo_2.webp', 'logo_2.png'),
+                        ('Mandiri', 'logo_3.webp', 'logo_3.png'),
+                        ('BNI', 'logo_4.webp', 'logo_4.png'),
+                        ('BRI', 'logo_5.webp', 'logo_5.png'),
+                        ('BSI', 'logo_6.webp', 'logo_6.png'),
+                        ('CIMB Niaga', 'logo_7.webp', 'logo_7.png'),
+                        ('Indomaret', 'logo_8.webp', 'logo_8.png'),
+                        ('Alfamart', 'logo_9.webp', 'logo_9.png')
+                    ] %}
+                    <div class="bg-white border border-slate-200 rounded px-2 py-1 flex items-center justify-center h-8 min-w-[56px] shadow-xs" title="{{ item[0] }}">
+                        <img src="{{ url_for('static', filename='images/footer/' ~ item[1]) }}" alt="{{ item[0] }}" class="max-h-5 max-w-[50px] object-contain" loading="lazy">
+                    </div>
+                    {% endfor %}
+                    <div class="bg-white border border-slate-200 rounded px-2 py-1 flex items-center justify-center h-8 min-w-[56px] shadow-xs" title="QRIS">
+                        <span class="font-bold text-[11px] text-slate-800 tracking-tight">QRIS</span>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <p class="font-semibold text-xs tracking-wider uppercase text-slate-500 mb-3">Jasa Pengiriman</p>
+                <div class="flex flex-wrap gap-2 items-center">
+                    {% for item in [
+                        ('SPX Express', 'logo_10.webp', 'logo_10.png'),
+                        ('J&T Express', 'logo_11.webp', 'logo_11.png'),
+                        ('J&T Cargo', 'logo_12.webp', 'logo_12.png'),
+                        ('SiCepat', 'logo_13.webp', 'logo_13.png'),
+                        ('JNE', 'logo_14.webp', 'logo_14.png'),
+                        ('Anteraja', 'logo_15.webp', 'logo_15.png'),
+                        ('Pos Indonesia', 'logo_16.webp', 'logo_16.png')
+                    ] %}
+                    <div class="bg-white border border-slate-200 rounded px-2 py-1 flex items-center justify-center h-8 min-w-[56px] shadow-xs" title="{{ item[0] }}">
+                        <img src="{{ url_for('static', filename='images/footer/' ~ item[1]) }}" alt="{{ item[0] }}" class="max-h-5 max-w-[50px] object-contain" loading="lazy">
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- COPYRIGHT -->
+    <div class="border-t border-slate-100 py-4 text-xs text-muted text-center">
+        <p>&copy; 2026 e-shop. Electronic Market &middot; PBL RKS 323 Politeknik Negeri Batam. All Rights Reserved.</p>
+    </div>
+</footer>
+
+<!-- BOTTOM NAV FOR MOBILE -->
+<nav class="md:hidden fixed bottom-0 inset-x-0 z-30 bg-white border-t border-slate-100 shadow-[0_-4px_16px_rgba(15,23,42,0.06)]">
+    {% set items = [
+        ('toko.beranda', 'store', 'Beranda', ['toko.beranda']),
+        ('toko.jelajah', 'layout-grid', 'Jelajah', ['toko.jelajah', 'toko.produk_detail']),
+    ] %}
+    {% if is_admin %}
+        {% set items = items + [
+            ('admin.dashboard', 'layout-dashboard', 'Admin', []),
+            ('akun.profil', 'user', 'Profil', ['akun.profil', 'akun.pengaturan']),
+        ] %}
+    {% elif current_user %}
+        {% set items = items + [
+            ('belanja.keranjang', 'shopping-bag', 'Keranjang', ['belanja.keranjang']),
+            ('belanja.pesanan', 'receipt-text', 'Pesanan', ['belanja.pesanan', 'belanja.pesanan_detail', 'belanja.pesanan_konfirmasi']),
+            ('akun.profil', 'user', 'Profil', ['akun.profil', 'akun.pengaturan']),
+        ] %}
+    {% else %}
+        {% set items = items + [
+            ('belanja.keranjang', 'shopping-bag', 'Keranjang', ['belanja.keranjang']),
+            ('auth.login', 'user', 'Masuk', ['auth.login', 'auth.register']),
+        ] %}
+    {% endif %}
+    <div class="grid {{ 'grid-cols-5' if items | length == 5 else 'grid-cols-4' }} text-[11px] font-medium">
+        {% for endpoint, ic, label, active in items %}
+        <a href="{{ url_for(endpoint, next=request.full_path.rstrip('?') if endpoint == 'auth.login' else None) }}" class="flex flex-col items-center gap-1 py-2.5 {{ 'text-brand font-bold' if ep in active else 'text-muted' }}">
+            {{ icon(ic, 'w-5 h-5') }}<span>{{ label }}</span>
+        </a>
+        {% endfor %}
+    </div>
+</nav>
+{% endblock %}

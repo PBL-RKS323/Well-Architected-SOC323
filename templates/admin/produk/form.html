@@ -1,0 +1,46 @@
+{% extends 'layouts/admin.html' %}
+{% from '_macros.html' import field %}
+{% from '_icons.html' import icon %}
+{% block title %}{{ 'Tambah' if mode == 'tambah' else 'Edit' }} Produk - {{ app_name }}{% endblock %}
+{% block content %}
+<a href="{{ url_for('admin.produk') }}" class="inline-flex items-center gap-2 text-sm font-medium text-muted hover:text-ink mb-4">{{ icon('arrow-left', 'w-4 h-4') }} Kembali ke daftar produk</a>
+<h1 class="font-display text-3xl font-extrabold mb-6">{{ 'Tambah Produk' if mode == 'tambah' else 'Edit Produk' }}</h1>
+
+<form method="POST" enctype="multipart/form-data" class="grid lg:grid-cols-3 gap-5" novalidate>
+    {{ form.hidden_tag() }}
+    <section class="lg:col-span-2 bg-white border border-slate-100 rounded-2xl p-6 space-y-5">
+        {{ field(form.nama_produk, placeholder="Contoh: Galaxy S25 Ultra 256GB") }}
+        <div class="grid sm:grid-cols-2 gap-5">
+            {{ field(form.merek) }}
+            {{ field(form.kategori) }}
+            {{ field(form.harga, placeholder="Contoh: 18999000") }}
+            {{ field(form.harga_normal, placeholder="Kosongkan jika tidak diskon") }}
+            {{ field(form.stok, placeholder="0") }}
+        </div>
+        {{ field(form.deskripsi, rows=5) }}
+        <div>
+            {{ field(form.spesifikasi, rows=7, placeholder="Prosesor: Intel Core i5-1235U\nRAM: 16GB DDR4\nPenyimpanan: SSD 512GB\nLayar: 14 inci FHD IPS\nBaterai: 52,5 Wh") }}
+            <p class="text-xs text-muted mt-1.5">Satu spesifikasi per baris dengan format <strong>Nama: Nilai</strong>. Tiga baris pertama tampil sebagai ringkasan di bawah nama produk.</p>
+        </div>
+        {{ field(form.garansi, placeholder="Contoh: Garansi resmi Lenovo Indonesia 1 tahun") }}
+    </section>
+
+    <section class="bg-white border border-slate-100 rounded-2xl p-6 space-y-4 h-fit">
+        <h2 class="font-display font-bold">Foto Produk</h2>
+        {% if produk %}
+            <img src="{{ url_for('static', filename='uploads/' ~ produk.gambar) }}" alt="" class="w-full aspect-square object-cover rounded-xl border border-slate-100">
+            <p class="text-xs text-muted">Kosongkan input di bawah jika tidak ingin mengganti gambar.</p>
+        {% else %}
+            <div class="w-full aspect-square rounded-xl bg-soft border border-dashed border-slate-300 flex flex-col items-center justify-center text-muted">
+                {{ icon('image-plus', 'w-10 h-10') }}
+                <span class="text-xs mt-2">JPG/PNG, maks. 2 MB</span>
+            </div>
+        {% endif %}
+        {{ field(form.gambar, accept=".jpg,.jpeg,.png") }}
+        <div class="flex gap-3 pt-2">
+            <a href="{{ url_for('admin.produk') }}" class="flex-1 text-center border border-slate-200 hover:bg-soft px-4 py-3 rounded-full text-sm font-medium">Batal</a>
+            {{ form.submit(class="flex-1 bg-brand hover:bg-brand-dark text-white font-medium px-5 py-3 rounded-full text-sm cursor-pointer") }}
+        </div>
+    </section>
+</form>
+{% endblock %}

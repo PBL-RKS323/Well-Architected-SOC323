@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+
+{% block title %}Keranjang Belanja — Gadgetin{% endblock %}
+
+{% block content %}
+<main class="mx-auto min-h-hero max-w-store px-5 pt-7 lg:px-0">
+  
+  <!-- Breadcrumb -->
+  <nav aria-label="Breadcrumb" class="mb-7 flex items-center gap-2 text-xs text-muted">
+    <a href="/" class="hover:text-blue transition">Beranda</a>
+    <i data-lucide="chevron-right" class="size-3"></i>
+    <span class="text-ink font-medium">Keranjang belanja</span>
+  </nav>
+
+  <!-- Page Header & Stepper -->
+  <div class="mb-8 flex flex-wrap items-center justify-between gap-4">
+    <h1 class="font-display text-3xl font-extrabold text-ink">
+      Keranjang belanjamu
+    </h1>
+    <div class="flex items-center gap-3 text-xs text-muted">
+      <span class="font-bold text-blue flex items-center gap-1">
+        01 Keranjang
+      </span>
+      <i data-lucide="arrow-right" class="size-3 text-muted"></i>
+      <span>02 Checkout</span>
+      <i data-lucide="arrow-right" class="size-3 text-muted"></i>
+      <span>03 Selesai</span>
+    </div>
+  </div>
+
+  <!-- Empty Cart State -->
+  <div id="cart-empty-state" class="hidden flex flex-col items-center rounded-2xl border border-line bg-white px-5 py-16 text-center">
+    <span class="mb-5 rounded-full bg-surface p-6 text-muted">
+      <i data-lucide="shopping-bag" class="size-10"></i>
+    </span>
+    <h3 class="font-display text-xl font-bold text-ink">Keranjangmu menunggu gadget baru.</h3>
+    <p class="mb-7 mt-3 max-w-md text-sm text-muted">
+      Temukan produk favorit dan mulai upgrade harimu dengan teknologi original langsung dari Gadgetin.
+    </p>
+    <a
+      href="/katalog"
+      class="inline-flex items-center gap-2 rounded-lg bg-ink px-6 py-3.5 text-sm font-bold text-white hover:bg-gray-800 transition"
+    >
+      <span>Jelajahi produk</span>
+      <i data-lucide="arrow-right" class="size-4"></i>
+    </a>
+  </div>
+
+  <!-- Cart Items & Summary Grid -->
+  <div id="cart-layout" class="grid items-start gap-7 lg:grid-cols-3">
+    
+    <!-- Left: Cart Items List -->
+    <div class="lg:col-span-2">
+      <div class="overflow-hidden rounded-xl border border-line bg-white">
+        <div class="hidden grid-cols-12 bg-surface px-6 py-4 text-xs font-bold uppercase text-muted sm:grid">
+          <span class="col-span-7">Produk</span>
+          <span class="col-span-3">Jumlah</span>
+          <span class="col-span-2 text-right">Subtotal</span>
+        </div>
+        
+        <!-- Cart Items Dynamic Container -->
+        <div id="cart-items-container">
+          <!-- Populated by main.js from localStorage -->
+        </div>
+      </div>
+
+      <a
+        href="/katalog"
+        class="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-blue hover:underline"
+      >
+        <i data-lucide="arrow-left" class="size-4"></i>
+        <span>Lanjut belanja</span>
+      </a>
+    </div>
+
+    <!-- Right: Summary Sidebar -->
+    <aside class="rounded-xl border border-line bg-white p-6">
+      <h3 class="font-display text-xl font-bold text-ink">Ringkasan belanja</h3>
+      
+      <div class="mt-6 space-y-4 text-sm">
+        <div class="flex justify-between text-muted">
+          <span>Subtotal <span id="cart-summary-count">(0 produk)</span></span>
+          <span id="cart-summary-subtotal" class="font-semibold text-ink">Rp 0</span>
+        </div>
+        <div class="flex justify-between text-muted">
+          <span>Pengiriman reguler</span>
+          <span class="font-semibold text-green-700">Gratis</span>
+        </div>
+        <div class="flex justify-between border-t border-line pt-5">
+          <span class="font-bold text-ink">Total</span>
+          <span id="cart-summary-total" class="font-display text-xl font-extrabold text-ink">
+            Rp 0
+          </span>
+        </div>
+      </div>
+
+      <p class="my-4 text-xs leading-5 text-muted">
+        Harga dan ketersediaan diperiksa kembali saat pesanan dibuat. Estimasi tiba 2–5 hari kerja setelah konfirmasi.
+      </p>
+
+      <a
+        href="/checkout"
+        id="btn-to-checkout"
+        class="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-ink px-6 py-3.5 text-sm font-bold text-white hover:bg-gray-800 transition cursor-pointer"
+      >
+        <span>Lanjut ke checkout</span>
+        <i data-lucide="arrow-right" class="size-4"></i>
+      </a>
+
+      <p class="mt-4 flex items-center justify-center gap-1.5 text-xs text-muted">
+        <i data-lucide="shield-check" class="size-3.5 text-brand"></i>
+        Aman. Original. Langsung dari Gadgetin.
+      </p>
+
+      <div class="mt-5 flex items-center gap-3 border-t border-line pt-5 text-xs text-muted">
+        <i data-lucide="truck" class="size-5 text-blue shrink-0"></i>
+        <span>Dikemas aman untuk setiap perjalanan.</span>
+      </div>
+    </aside>
+  </div>
+</main>
+{% endblock %}
+

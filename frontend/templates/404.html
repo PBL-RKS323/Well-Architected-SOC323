@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Halaman Tidak Ditemukan (404) — Gadgetin{% endblock %}
+
+{% block content %}
+<main class="mx-auto max-w-lg px-5 py-24 text-center">
+  <p class="mb-5 font-display text-7xl font-extrabold text-brand">
+    404
+  </p>
+  <h1 class="font-display text-3xl font-extrabold text-ink">
+    Gadgetnya tidak di sini.
+  </h1>
+  <p class="my-5 text-sm leading-6 text-muted">
+    Halaman atau produk yang kamu cari tidak tersedia atau tautannya telah berubah. Masih banyak pilihan gadget menarik lainnya untukmu.
+  </p>
+  <a
+    href="/katalog"
+    class="inline-flex items-center gap-2 rounded-lg bg-ink px-6 py-3.5 text-sm font-bold text-white hover:bg-gray-800 transition"
+  >
+    <span>Jelajahi katalog</span>
+    <i data-lucide="arrow-right" class="size-4"></i>
+  </a>
+</main>
+{% endblock %}
+

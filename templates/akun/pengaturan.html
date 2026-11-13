@@ -1,0 +1,214 @@
+{% extends 'layouts/admin.html' if current_user.is_staf_toko() else 'layouts/toko.html' %}
+{% from '_macros.html' import field, tombol_utama, avatar %}
+{% from '_icons.html' import icon %}
+{% from '_akun.html' import area_akun %}
+{% block title %}Pengaturan Akun & Biodata - {{ app_name }}{% endblock %}
+{% block content %}
+{# Isi yang sama dipakai di panel admin dan area akun pelanggan (dengan sidebar di desktop) #}
+{% set isi %}
+<div class="max-w-4xl space-y-6">
+    {% if not current_user.is_staf_toko() %}
+    <a href="{{ url_for('akun.profil') }}" class="lg:hidden inline-flex items-center gap-2 text-sm font-medium text-muted hover:text-ink mb-2">
+        <span class="w-10 h-10 rounded-full bg-white border border-slate-100 flex items-center justify-center">{{ icon('arrow-left', 'w-4 h-4') }}</span>
+        Kembali ke Profil
+    </a>
+    {% endif %}
+
+    <div>
+        <h1 class="font-display text-2xl md:text-3xl font-extrabold text-ink">Pengaturan & Biodata Akun</h1>
+        <p class="text-muted text-sm mt-1">Kelola data diri, kontak, foto profil, dan keamanan akun Anda</p>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-6">
+        {# 1. Foto Profil #}
+        <section id="foto" class="bg-white p-6 rounded-3xl border border-slate-100 md:col-span-2 shadow-sm scroll-mt-32">
+            <h2 class="font-display text-lg font-bold mb-4">Foto Profil</h2>
+            <div class="flex flex-col sm:flex-row sm:items-center gap-5">
+                {{ avatar(current_user, 'w-20 h-20 font-display text-2xl font-extrabold ring-4 ring-brand-soft/70') }}
+                <form method="POST" action="{{ url_for('akun.pengaturan_foto') }}" enctype="multipart/form-data" class="flex-1 min-w-0" novalidate data-kirim-sekali>
+                    {{ avatar_form.hidden_tag() }}
+                    {{ avatar_form.avatar.label(class="block text-sm font-semibold mb-1.5") }}
+                    <div class="flex flex-col sm:flex-row gap-3">
+                        {{ avatar_form.avatar(accept="image/jpeg,image/png", class="flex-1 min-w-0 text-sm text-muted file:mr-3 file:min-h-11 file:px-4 file:rounded-full file:border-0 file:bg-brand-soft file:text-brand file:font-semibold file:cursor-pointer") }}
+                        {{ avatar_form.submit(class="sm:w-auto bg-brand hover:bg-brand-dark text-white font-medium px-6 py-3 rounded-full cursor-pointer transition") }}
+                    </div>
+                    <p class="text-xs text-muted mt-2">JPG atau PNG, maksimal 2 MB. Foto dipotong persegi dan data lokasi (EXIF) otomatis dibersihkan.</p>
+                    {% for error in avatar_form.avatar.errors %}<span class="text-coral text-xs block mt-1.5">{{ error }}</span>{% endfor %}
+                </form>
+                {% if current_user.avatar %}
+                <form method="POST" action="{{ url_for('akun.pengaturan_foto_hapus') }}" data-confirm="Hapus foto profil?">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="inline-flex items-center gap-2 min-h-11 px-4 rounded-full text-sm font-semibold text-coral hover:bg-red-50 cursor-pointer transition">{{ icon('trash-2', 'w-4 h-4') }} Hapus</button>
+                </form>
+                {% endif %}
+            </div>
+        </section>
+
+        {# 2. Form Biodata Diri (Standar E-Commerce) #}
+        <section class="bg-white p-6 rounded-3xl border border-slate-100 md:col-span-2 shadow-sm">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="w-10 h-10 rounded-xl bg-brand-soft text-brand flex items-center justify-center">{{ icon('user', 'w-5 h-5') }}</span>
+                <div>
+                    <h2 class="font-display text-lg font-bold">Biodata Diri</h2>
+                    <p class="text-xs text-muted">Informasi ini digunakan untuk personalisasi layanan dan pengiriman barang</p>
+                </div>
+            </div>
+
+            <form method="POST" action="{{ url_for('akun.pengaturan_nama') }}" class="space-y-4" novalidate>
+                {{ nama_form.hidden_tag() }}
+                <div class="grid sm:grid-cols-2 gap-4">
+                    <div>
+                        {{ field(nama_form.nama_lengkap, ikon='user', autocomplete="name") }}
+                    </div>
+                    <div>
+                        {{ field(nama_form.telepon, ikon='phone', placeholder="Contoh: 081234567890", autocomplete="tel") }}
+                    </div>
+                </div>
+                <div class="grid sm:grid-cols-2 gap-4">
+                    <div>
+                        {{ nama_form.jenis_kelamin.label(class="block text-sm font-semibold mb-1.5 text-ink") }}
+                        <div class="relative">
+                            <span class="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-muted">{{ icon('user', 'w-5 h-5') }}</span>
+                            {{ nama_form.jenis_kelamin(class="w-full bg-white border border-slate-200 rounded-xl py-3 pl-11 pr-4 outline-none transition focus:border-brand focus:ring-4 focus:ring-brand/15 text-sm text-ink") }}
+                        </div>
+                        {% for error in nama_form.jenis_kelamin.errors %}
+                        <span class="text-coral text-xs block mt-1.5">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    <div>
+                        {{ nama_form.tanggal_lahir.label(class="block text-sm font-semibold mb-1.5 text-ink") }}
+                        <div class="relative">
+                            <span class="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-muted">{{ icon('calendar', 'w-5 h-5') }}</span>
+                            {{ nama_form.tanggal_lahir(class="w-full bg-white border border-slate-200 rounded-xl py-3 pl-11 pr-4 outline-none transition focus:border-brand focus:ring-4 focus:ring-brand/15 text-sm text-ink", type="date") }}
+                        </div>
+                        <p class="text-[11px] text-muted mt-1">Dapatkan penawaran voucher belanja khusus di hari ulang tahun Anda.</p>
+                        {% for error in nama_form.tanggal_lahir.errors %}
+                        <span class="text-coral text-xs block mt-1.5">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="pt-2">
+                    {{ tombol_utama(nama_form.submit) }}
+                </div>
+            </form>
+        </section>
+
+        {# 3. Ubah Email #}
+        <section class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="w-10 h-10 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center">{{ icon('mail', 'w-5 h-5') }}</span>
+                <div>
+                    <h2 class="font-display text-lg font-bold">Ubah Email</h2>
+                    <p class="text-xs text-muted">Email saat ini: <strong class="text-ink">{{ current_user.email }}</strong></p>
+                </div>
+            </div>
+            <form method="POST" action="{{ url_for('akun.pengaturan_email') }}" class="space-y-4" novalidate>
+                {{ email_form.hidden_tag() }}
+                {{ field(email_form.email_baru, ikon='mail', autocomplete="email", placeholder="nama@email.com") }}
+                {{ field(email_form.password_sekarang, ikon='lock', autocomplete="current-password") }}
+                <div class="pt-2">
+                    {{ tombol_utama(email_form.submit) }}
+                </div>
+            </form>
+        </section>
+
+        {# 4. Ubah Kata Sandi #}
+        <section class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="w-10 h-10 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center">{{ icon('lock', 'w-5 h-5') }}</span>
+                <div>
+                    <h2 class="font-display text-lg font-bold">Ubah Kata Sandi</h2>
+                    <p class="text-xs text-muted">Perbarui kata sandi untuk keamanan akun Anda</p>
+                </div>
+            </div>
+            <form method="POST" action="{{ url_for('akun.pengaturan_password') }}" class="space-y-4" novalidate>
+                {{ password_form.hidden_tag() }}
+                {{ field(password_form.password_sekarang, ikon='lock', autocomplete="current-password") }}
+                <div>
+                    {{ field(password_form.password_baru, ikon='lock', autocomplete="new-password") }}
+                    <div class="mt-2 space-y-1.5 bg-slate-50 p-2.5 rounded-2xl border border-slate-100">
+                        <div class="flex items-center justify-between text-xs font-semibold text-muted">
+                            <span>Kekuatan Kata Sandi</span>
+                            <span id="pw-meter-text-p" class="text-slate-500">Belum diisi</span>
+                        </div>
+                        <div class="grid grid-cols-4 gap-1.5 h-1.5 w-full bg-slate-200 rounded-full overflow-hidden">
+                            <div id="pw-bar-1-p" class="h-full rounded-full bg-slate-300 transition-all duration-200"></div>
+                            <div id="pw-bar-2-p" class="h-full rounded-full bg-slate-300 transition-all duration-200"></div>
+                            <div id="pw-bar-3-p" class="h-full rounded-full bg-slate-300 transition-all duration-200"></div>
+                            <div id="pw-bar-4-p" class="h-full rounded-full bg-slate-300 transition-all duration-200"></div>
+                        </div>
+                        <p class="text-[11px] text-muted">Minimal 8 karakter, huruf besar & kecil, angka, dan simbol.</p>
+                    </div>
+                </div>
+                {{ field(password_form.konfirmasi_password, ikon='lock', autocomplete="new-password") }}
+                <div class="pt-2">
+                    {{ tombol_utama(password_form.submit) }}
+                </div>
+            </form>
+        </section>
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const pwInput = document.querySelector('input[name="pw-password_baru"]');
+    if (pwInput) {
+        const bar1 = document.getElementById("pw-bar-1-p");
+        const bar2 = document.getElementById("pw-bar-2-p");
+        const bar3 = document.getElementById("pw-bar-3-p");
+        const bar4 = document.getElementById("pw-bar-4-p");
+        const meterText = document.getElementById("pw-meter-text-p");
+
+        pwInput.addEventListener("input", function() {
+            const val = pwInput.value;
+            const hasLen = val.length >= 8;
+            const hasUpper = /[A-Z]/.test(val);
+            const hasLower = /[a-z]/.test(val);
+            const hasCase = hasUpper && hasLower;
+            const hasNum = /[0-9]/.test(val);
+            const hasSym = /[^A-Za-z0-9]/.test(val);
+
+            let score = 0;
+            if (hasLen) score++;
+            if (hasCase) score++;
+            if (hasNum) score++;
+            if (hasSym) score++;
+
+            [bar1, bar2, bar3, bar4].forEach(b => { if (b) b.className = "h-full rounded-full bg-slate-300 transition-all duration-200"; });
+
+            if (!val) {
+                meterText.textContent = "Belum diisi";
+                meterText.className = "text-slate-500";
+                return;
+            }
+            if (score <= 1) {
+                meterText.textContent = "Lemah";
+                meterText.className = "text-rose-600 font-bold";
+                bar1.className = "h-full rounded-full bg-rose-500 transition-all duration-200";
+            } else if (score === 2) {
+                meterText.textContent = "Cukup";
+                meterText.className = "text-amber-600 font-bold";
+                bar1.className = "h-full rounded-full bg-amber-500 transition-all duration-200";
+                bar2.className = "h-full rounded-full bg-amber-500 transition-all duration-200";
+            } else if (score === 3) {
+                meterText.textContent = "Kuat";
+                meterText.className = "text-blue-600 font-bold";
+                bar1.className = "h-full rounded-full bg-blue-500 transition-all duration-200";
+                bar2.className = "h-full rounded-full bg-blue-500 transition-all duration-200";
+                bar3.className = "h-full rounded-full bg-blue-500 transition-all duration-200";
+            } else if (score === 4) {
+                meterText.textContent = "Sangat Kuat";
+                meterText.className = "text-emerald-600 font-bold";
+                [bar1, bar2, bar3, bar4].forEach(b => { b.className = "h-full rounded-full bg-emerald-500 transition-all duration-200"; });
+            }
+        });
+    }
+});
+</script>
+{% endset %}
+{% if current_user.is_staf_toko() %}
+    {{ isi }}
+{% else %}
+    {% call area_akun('akun.pengaturan') %}{{ isi }}{% endcall %}
+{% endif %}
+{% endblock %}

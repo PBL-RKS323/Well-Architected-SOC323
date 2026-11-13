@@ -1,0 +1,18 @@
+venv/
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+instance/
+
+# Rahasia & data lokal
+.env
+logs/
+static/uploads/*
+!static/uploads/.gitkeep
+
+# AI & Agent toolings
+.agents/
+.gemini/
+AGENTS.md
+GEMINI.md

@@ -1,0 +1,285 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard Toko — Gadgetin{% endblock %}
+
+{% block content %}
+<main class="mx-auto max-w-store px-5 pt-9 lg:px-0">
+  <!-- Header Bar -->
+  <div class="mb-7 flex flex-wrap items-center justify-between gap-5">
+    <div>
+      <p class="mb-2 flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-blue">
+        <i data-lucide="shield-check" class="size-4 text-blue"></i>
+        ADMIN PREVIEW MODE
+      </p>
+      <h1 class="font-display text-3xl font-extrabold text-ink">Dashboard toko</h1>
+      <p class="mt-2 text-sm text-muted">
+        Kelola katalog produk gadget, tinjau pesanan, dan pantau ringkasan toko.
+      </p>
+    </div>
+    <div class="flex items-center gap-3">
+      <span class="rounded-full bg-green-50 px-3 py-1.5 text-xs font-semibold text-green-700">
+        Admin · admin@gadgetin.id
+      </span>
+      <a href="/katalog" class="inline-flex items-center gap-1.5 rounded-lg border border-line bg-white px-4 py-2 text-xs font-bold text-ink hover:bg-surface transition">
+        Lihat Katalog
+        <i data-lucide="external-link" class="size-3.5"></i>
+      </a>
+    </div>
+  </div>
+
+  <!-- Metric Summary Cards (4-col) -->
+  <div class="mb-8 grid grid-cols-2 gap-4 lg:grid-cols-4">
+    <div class="flex items-center gap-4 rounded-xl border border-line bg-white p-5 shadow-sm">
+      <span class="rounded-lg bg-soft-yellow p-3 text-ink">
+        <i data-lucide="package" class="size-6"></i>
+      </span>
+      <div>
+        <p class="text-xs text-muted">Total produk</p>
+        <p class="mt-1 font-display text-3xl font-extrabold text-ink">{{ products | length }}</p>
+      </div>
+    </div>
+    <div class="flex items-center gap-4 rounded-xl border border-line bg-white p-5 shadow-sm">
+      <span class="rounded-lg bg-soft-yellow p-3 text-ink">
+        <i data-lucide="shopping-bag" class="size-6"></i>
+      </span>
+      <div>
+        <p class="text-xs text-muted">Pesanan</p>
+        <p class="mt-1 font-display text-3xl font-extrabold text-ink">4</p>
+      </div>
+    </div>
+    <div class="flex items-center gap-4 rounded-xl border border-line bg-white p-5 shadow-sm">
+      <span class="rounded-lg bg-soft-yellow p-3 text-ink">
+        <i data-lucide="users" class="size-6"></i>
+      </span>
+      <div>
+        <p class="text-xs text-muted">Pelanggan</p>
+        <p class="mt-1 font-display text-3xl font-extrabold text-ink">128</p>
+      </div>
+    </div>
+    <div class="flex items-center gap-4 rounded-xl border border-line bg-white p-5 shadow-sm">
+      <span class="rounded-lg bg-soft-yellow p-3 text-ink">
+        <i data-lucide="activity" class="size-6"></i>
+      </span>
+      <div>
+        <p class="text-xs text-muted">Stok terbatas</p>
+        <p class="mt-1 font-display text-3xl font-extrabold text-ink">
+          {{ products | selectattr('stock', 'lt', 10) | list | length }}
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabs Navigation -->
+  <div class="mb-6 flex flex-wrap items-center justify-between gap-4 border-b border-line">
+    <div class="flex gap-6 overflow-x-auto">
+      <button
+        type="button"
+        id="tab-btn-products"
+        onclick="switchDashboardTab('products')"
+        class="dash-tab-btn flex items-center gap-2 border-b-2 border-blue px-1 py-4 text-sm font-bold text-blue transition cursor-pointer"
+      >
+        <i data-lucide="package" class="size-4.5"></i>
+        <span>Manajemen produk</span>
+      </button>
+      <button
+        type="button"
+        id="tab-btn-orders"
+        onclick="switchDashboardTab('orders')"
+        class="dash-tab-btn flex items-center gap-2 border-b-2 border-transparent px-1 py-4 text-sm text-muted hover:text-ink transition cursor-pointer"
+      >
+        <i data-lucide="shopping-bag" class="size-4.5"></i>
+        <span>Pesanan masuk</span>
+      </button>
+      <button
+        type="button"
+        id="tab-btn-logs"
+        onclick="switchDashboardTab('logs')"
+        class="dash-tab-btn flex items-center gap-2 border-b-2 border-transparent px-1 py-4 text-sm text-muted hover:text-ink transition cursor-pointer"
+      >
+        <i data-lucide="shield-check" class="size-4.5"></i>
+        <span>Log aktivitas</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Tab 1: Products Management -->
+  <section id="dash-tab-products" class="dash-tab-pane">
+    <div class="mb-5 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-2 rounded-lg border border-line bg-white px-3 py-1">
+        <i data-lucide="search" class="size-4 text-muted"></i>
+        <input
+          id="dash-search-input"
+          oninput="filterDashboardTable(this.value)"
+          placeholder="Cari produk..."
+          class="border-0 px-1 py-2 text-sm text-ink outline-none focus:ring-0 placeholder:text-faint"
+        >
+      </div>
+      <button
+        type="button"
+        onclick="showToast('Fitur penambahan produk tersedia pada panel CMS.');"
+        class="inline-flex items-center gap-2 rounded-lg bg-ink px-4 py-2.5 text-xs font-bold text-white hover:bg-gray-800 transition cursor-pointer"
+      >
+        <i data-lucide="plus" class="size-4"></i>
+        <span>Tambah produk</span>
+      </button>
+    </div>
+
+    <div class="overflow-auto rounded-xl border border-line bg-white shadow-sm">
+      <table class="w-full min-w-2xl text-left text-sm">
+        <thead class="bg-surface text-xs uppercase text-muted">
+          <tr>
+            <th class="px-5 py-4 font-semibold">Produk</th>
+            <th class="px-5 py-4 font-semibold">Kategori</th>
+            <th class="px-5 py-4 font-semibold">Harga</th>
+            <th class="px-5 py-4 font-semibold">Stok</th>
+            <th class="px-5 py-4 font-semibold text-right">Aksi</th>
+          </tr>
+        </thead>
+        <tbody id="dash-product-table-body" class="divide-y divide-line">
+          {% for item in products %}
+          <tr class="hover:bg-surface/40 transition">
+            <td class="px-5 py-4">
+              <div class="flex items-center gap-3">
+                <div class="size-12 rounded-lg bg-surface p-1 flex items-center justify-center shrink-0">
+                  <img src="{{ url_for('static', filename='images/' + item.image) }}" alt="{{ item.name }}" class="h-full w-full object-contain">
+                </div>
+                <div>
+                  <p class="font-semibold text-ink">{{ item.name }}</p>
+                  <p class="mt-0.5 text-xs text-muted">{{ item.brand }}</p>
+                </div>
+              </div>
+            </td>
+            <td class="px-5 py-4 text-muted">{{ item.category }}</td>
+            <td class="px-5 py-4 font-semibold text-ink">{{ item.price | rupiah }}</td>
+            <td class="px-5 py-4">
+              <span class="rounded-full px-3 py-1 text-xs font-semibold {% if item.stock < 5 %}bg-red-50 text-red-700{% else %}bg-green-50 text-green-700{% endif %}">
+                {{ item.stock }} unit
+              </span>
+            </td>
+            <td class="px-5 py-4 text-right">
+              <div class="flex items-center justify-end gap-2">
+                <a
+                  href="/produk/{{ item.slug }}"
+                  class="p-2 text-muted hover:text-blue transition rounded-lg hover:bg-surface"
+                  title="Lihat detail produk"
+                >
+                  <i data-lucide="external-link" class="size-4"></i>
+                </a>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Tab 2: Orders View -->
+  <section id="dash-tab-orders" class="dash-tab-pane hidden space-y-4">
+    <div class="rounded-xl border border-line bg-white p-6 shadow-sm">
+      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-line pb-4">
+        <div>
+          <p class="font-mono text-sm font-bold text-ink">GD-49F1B2C8</p>
+          <p class="text-xs text-muted mt-0.5">Pemesan: Budi Santoso (081234567890) · Jakarta Pusat</p>
+        </div>
+        <span class="inline-flex items-center gap-1.5 rounded-full bg-blue/10 px-3 py-1 text-xs font-semibold text-blue">
+          <span class="size-2 rounded-full bg-blue animate-pulse"></span>
+          Menunggu konfirmasi
+        </span>
+      </div>
+      <div class="mt-4 flex flex-wrap items-center justify-between gap-4">
+        <p class="text-sm text-ink font-medium">1x MacBook Pro 14 inci M4 (Apple)</p>
+        <p class="font-display text-base font-bold text-ink">Rp 24.999.000 · Bayar di tempat (COD)</p>
+      </div>
+    </div>
+
+    <div class="rounded-xl border border-line bg-white p-6 shadow-sm">
+      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-line pb-4">
+        <div>
+          <p class="font-mono text-sm font-bold text-ink">GD-9A74E18F</p>
+          <p class="text-xs text-muted mt-0.5">Pemesan: Siti Rahma (087711223344) · Bandung</p>
+        </div>
+        <span class="inline-flex items-center gap-1.5 rounded-full bg-green-50 px-3 py-1 text-xs font-semibold text-green-700">
+          <i data-lucide="check" class="size-3.5"></i>
+          Sedang diproses
+        </span>
+      </div>
+      <div class="mt-4 flex flex-wrap items-center justify-between gap-4">
+        <p class="text-sm text-ink font-medium">1x iPhone 14 128GB — Blue</p>
+        <p class="font-display text-base font-bold text-ink">Rp 8.999.000 · Bayar di tempat (COD)</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tab 3: Security & Activity Logs -->
+  <section id="dash-tab-logs" class="dash-tab-pane hidden">
+    <div class="rounded-xl border border-line bg-white overflow-hidden shadow-sm">
+      <table class="w-full text-left text-sm">
+        <thead class="bg-surface text-xs uppercase text-muted">
+          <tr>
+            <th class="px-5 py-4 font-semibold">Waktu</th>
+            <th class="px-5 py-4 font-semibold">Aksi</th>
+            <th class="px-5 py-4 font-semibold">Pengguna</th>
+            <th class="px-5 py-4 font-semibold">Status</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-line text-xs">
+          <tr>
+            <td class="px-5 py-3.5 text-muted">29 Okt 2026, 23:10</td>
+            <td class="px-5 py-3.5 font-medium text-ink">Pesanan baru dibuat (GD-49F1B2C8)</td>
+            <td class="px-5 py-3.5 text-muted">budi@email.com</td>
+            <td class="px-5 py-3.5"><span class="text-green-700 font-semibold">Sukses</span></td>
+          </tr>
+          <tr>
+            <td class="px-5 py-3.5 text-muted">29 Okt 2026, 22:50</td>
+            <td class="px-5 py-3.5 font-medium text-ink">Login pengguna</td>
+            <td class="px-5 py-3.5 text-muted">user@gadgetin.id</td>
+            <td class="px-5 py-3.5"><span class="text-green-700 font-semibold">Sukses</span></td>
+          </tr>
+          <tr>
+            <td class="px-5 py-3.5 text-muted">29 Okt 2026, 20:15</td>
+            <td class="px-5 py-3.5 font-medium text-ink">Pemeriksaan katalog & stok</td>
+            <td class="px-5 py-3.5 text-muted">admin@gadgetin.id</td>
+            <td class="px-5 py-3.5"><span class="text-blue font-semibold">Verified</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</main>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  function switchDashboardTab(tabId) {
+    document.querySelectorAll(".dash-tab-btn").forEach((btn) => {
+      btn.classList.remove("border-blue", "text-blue", "font-bold");
+      btn.classList.add("border-transparent", "text-muted");
+    });
+    document.querySelectorAll(".dash-tab-pane").forEach((pane) => {
+      pane.classList.add("hidden");
+    });
+
+    const activeBtn = document.getElementById("tab-btn-" + tabId);
+    const activePane = document.getElementById("dash-tab-" + tabId);
+
+    if (activeBtn) {
+      activeBtn.classList.add("border-blue", "text-blue", "font-bold");
+      activeBtn.classList.remove("border-transparent", "text-muted");
+    }
+    if (activePane) {
+      activePane.classList.remove("hidden");
+    }
+  }
+
+  function filterDashboardTable(query) {
+    const q = query.toLowerCase();
+    const rows = document.querySelectorAll("#dash-product-table-body tr");
+    rows.forEach((row) => {
+      const text = row.textContent.toLowerCase();
+      row.style.display = text.includes(q) ? "" : "none";
+    });
+  }
+</script>
+{% endblock %}
+

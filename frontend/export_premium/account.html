@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pesanan Saya & Lacak Pengiriman | Nexus Tech Store Batam</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#FFF7ED',
+              100: '#FFEDD5',
+              500: '#F97316',
+              600: '#EA580C',
+              700: '#C2410C',
+              800: '#9A3412',
+              DEFAULT: '#D9531E',
+              dark: '#B83E12',
+              accent: '#E05326'
+            },
+            slate: {
+              850: '#151F32',
+              900: '#0F172A',
+              950: '#0A0F1D'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: #F8FAFC;
+      color: #0F172A;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #CBD5E1;
+      border-radius: 4px;
+    }
+    a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible {
+      outline: 2px solid #D9531E;
+      outline-offset: 2px;
+    }
+  </style>
+</head>
+<body class="text-slate-800 antialiased min-h-screen flex flex-col bg-[#F8FAFC]">
+
+  <!-- TOP ANNOUNCEMENT BAR -->
+  <div class="bg-slate-900 text-slate-300 text-xs py-2 px-4 border-b border-slate-800">
+    <div class="max-w-6xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2">
+      <div class="flex items-center space-x-3 text-[11px] text-slate-400">
+        <span class="text-brand-500 font-semibold">Toko Resmi Batam</span>
+        <span>|</span>
+        <span>Jaminan 100% Produk Original & Bergaransi Resmi</span>
+      </div>
+      <div class="flex items-center space-x-4 text-[11px] text-slate-300">
+        <a href="account.html" class="hover:text-white transition flex items-center space-x-1">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+          <span>Lacak Pesanan</span>
+        </a>
+        <span>|</span>
+        <a href="index.html" class="hover:text-white transition">Bantuan & FAQ</a>
+        <span>|</span>
+        <span class="font-medium text-white flex items-center space-x-1.5">
+          <span class="w-4 h-4 rounded-full bg-brand text-white flex items-center justify-center font-bold text-[9px]">YP</span>
+          <span>Yudha Pratama</span>
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN PREMIUM NAVIGATION HEADER -->
+  <header class="bg-white sticky top-0 z-40 border-b border-slate-200 shadow-xs">
+    <div class="max-w-6xl mx-auto px-4 py-3.5 flex items-center justify-between gap-6">
+      
+      <!-- Premium Brand Logo -->
+      <a href="index.html" class="flex items-center space-x-3 flex-shrink-0 group">
+        <div class="w-10 h-10 bg-slate-900 rounded-lg flex items-center justify-center text-white shadow-xs group-hover:bg-brand transition">
+          <svg class="w-6 h-6 text-brand group-hover:text-white transition" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+          </svg>
+        </div>
+        <div class="flex flex-col">
+          <span class="text-xl font-extrabold tracking-tight text-slate-900 leading-none group-hover:text-brand transition">NEXUS<span class="text-brand">TECH</span></span>
+          <span class="text-[10px] tracking-widest text-slate-400 font-semibold uppercase mt-0.5">Official Store RKS Batam</span>
+        </div>
+      </a>
+
+      <!-- Real Store Navigation Categories -->
+      <nav class="hidden lg:flex items-center space-x-6 text-xs font-semibold text-slate-600">
+        <a href="index.html" class="hover:text-brand transition text-brand font-bold">Katalog Utama</a>
+        <a href="index.html#katalog" onclick="filterByNav('smartphone')" class="hover:text-brand transition ">Smartphone</a>
+        <a href="index.html#katalog" onclick="filterByNav('laptop')" class="hover:text-brand transition ">Laptop & PC</a>
+        <a href="index.html#katalog" onclick="filterByNav('audio')" class="hover:text-brand transition ">Audio & Smartwatch</a>
+        <a href="index.html#katalog" onclick="filterByNav('aksesoris')" class="hover:text-brand transition ">Aksesoris</a>
+      </nav>
+
+      <!-- Search Bar & User Actions -->
+      <div class="flex items-center space-x-4">
+        <!-- Integrated Search Input -->
+        <div class="relative hidden sm:block w-48 md:w-60">
+          <input type="text" id="navSearchInput" oninput="handleNavSearch(this.value)" placeholder="Cari gadget pilihan..." class="w-full pl-9 pr-4 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-full focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand transition">
+          <svg class="w-4 h-4 text-slate-400 absolute left-3 top-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </div>
+
+        <!-- Orders Icon -->
+        <a href="account.html" class="p-2 text-slate-600 hover:text-brand hover:bg-slate-50 rounded-full transition" title="Riwayat & Lacak Pesanan">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+        </a>
+
+        <!-- Cart Icon with synchronized badge -->
+        <a href="cart.html" class="relative p-2 text-slate-700 hover:text-brand hover:bg-slate-50 rounded-full transition" aria-label="Buka Keranjang">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/>
+          </svg>
+          <span id="headerCartCount" class="absolute -top-0.5 -right-0.5 bg-brand text-white font-bold text-[10px] w-5 h-5 rounded-full flex items-center justify-center border-2 border-white shadow-xs">
+            2
+          </span>
+        </a>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- REUSABLE INTERACTIVE TOAST NOTIFICATION -->
+  <div id="globalToast" class="fixed top-20 right-6 z-50 bg-white border-l-4 border-brand shadow-xl rounded-lg p-4 flex items-center space-x-3 transform translate-x-96 opacity-0 transition-all duration-300 pointer-events-none" role="alert" aria-live="assertive">
+    <div class="w-7 h-7 rounded-full bg-orange-50 text-brand flex items-center justify-center flex-shrink-0">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+    </div>
+    <div>
+      <h4 class="text-xs font-bold text-slate-900" id="toastTitle">Berhasil Ditambahkan</h4>
+      <p class="text-[11px] text-slate-600" id="toastMessage">Produk pilihan Anda telah masuk ke keranjang belanja.</p>
+    </div>
+  </div>
+
+  <main class="max-w-6xl mx-auto px-4 py-8 flex-1 w-full space-y-6">
+    <!-- Breadcrumb -->
+    <nav class="flex items-center space-x-2 text-xs text-slate-500" aria-label="Breadcrumb">
+      <a href="index.html" class="hover:text-brand">Katalog</a>
+      <span>&rsaquo;</span>
+      <span class="text-slate-800 font-semibold">Riwayat & Lacak Pesanan</span>
+    </nav>
+
+    <!-- User Profile Header Card -->
+    <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-6">
+      <div class="flex items-center space-x-4">
+        <div class="w-16 h-16 rounded-2xl bg-slate-900 text-brand flex items-center justify-center font-black text-xl shadow-xs flex-shrink-0">
+          YP
+        </div>
+        <div>
+          <div class="flex items-center space-x-2.5">
+            <h2 class="text-base font-extrabold text-slate-900">Yudha Pratama</h2>
+            <span class="bg-orange-50 border border-brand/30 text-brand text-[10px] font-bold px-2 py-0.5 rounded-full">Member Prioritas</span>
+          </div>
+          <p class="text-xs text-slate-500 mt-1">Politeknik Negeri Batam &bull; Well-Architected Store</p>
+        </div>
+      </div>
+
+      <div class="flex items-center space-x-8 text-xs text-slate-600 border-t sm:border-t-0 pt-4 sm:pt-0 w-full sm:w-auto justify-around sm:justify-start">
+        <div class="text-center sm:text-right">
+          <span class="text-slate-400 block text-[10px]">Saldo Digital</span>
+          <strong class="text-slate-900 text-sm font-bold">Rp 2.500.000</strong>
+        </div>
+        <div class="text-center sm:text-right">
+          <span class="text-slate-400 block text-[10px]">Poin Loyalitas</span>
+          <strong class="text-brand text-sm font-bold">15.400 Pts</strong>
+        </div>
+        <div class="text-center sm:text-right">
+          <span class="text-slate-400 block text-[10px]">Voucher Toko</span>
+          <strong class="text-slate-900 text-sm font-bold">4 Tersedia</strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- Orders Filter Tabs -->
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+      <div class="flex border-b border-slate-200 text-xs font-bold overflow-x-auto custom-scrollbar">
+        <button onclick="filterStatus('semua', this)" class="order-tab flex-1 py-3.5 px-4 text-center border-b-2 border-brand text-brand whitespace-nowrap transition">
+          Semua Pesanan
+        </button>
+        <button onclick="filterStatus('dikirim', this)" class="order-tab flex-1 py-3.5 px-4 text-center border-b-2 border-transparent text-slate-500 hover:text-slate-800 whitespace-nowrap transition">
+          Sedang Dikirim (1)
+        </button>
+        <button onclick="filterStatus('selesai', this)" class="order-tab flex-1 py-3.5 px-4 text-center border-b-2 border-transparent text-slate-500 hover:text-slate-800 whitespace-nowrap transition">
+          Selesai (1)
+        </button>
+        <button onclick="filterStatus('batal', this)" class="order-tab flex-1 py-3.5 px-4 text-center border-b-2 border-transparent text-slate-500 hover:text-slate-800 whitespace-nowrap transition">
+          Dibatalkan (0)
+        </button>
+      </div>
+
+      <!-- Orders List Container -->
+      <div id="ordersContainer" class="p-6 space-y-4">
+        <!-- Order 1: Active In-Transit Order -->
+        <div class="order-card border border-slate-200 rounded-xl p-5 space-y-4 hover:shadow-xs transition" data-status="dikirim">
+          <div class="flex flex-wrap items-center justify-between pb-3 border-b border-slate-100 gap-2 text-xs">
+            <div class="flex items-center space-x-2">
+              <span class="font-bold text-slate-900">Nomor Pesanan #NEX-20261108-001</span>
+              <span class="text-slate-300">|</span>
+              <span class="text-slate-500">08 Nov 2026, 14:15 WIB</span>
+            </div>
+            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-bold bg-blue-50 text-blue-700 border border-blue-200">
+              Sedang Dalam Pengiriman
+            </span>
+          </div>
+
+          <!-- Product Item Details -->
+          <div class="flex items-center justify-between gap-4 text-xs">
+            <div class="flex items-center space-x-3.5">
+              <img src="images/6ebd4.png" alt="Xiaomi Redmi 13C" class="w-16 h-16 object-contain bg-slate-50 border border-slate-100 rounded-lg p-1.5 flex-shrink-0">
+              <div>
+                <h4 class="font-bold text-slate-900 leading-snug">Xiaomi Redmi 13C 8/256GB - Garansi Resmi Distributor</h4>
+                <div class="text-[11px] text-slate-500 mt-1">Varian: Midnight Black, 8/256GB &bull; Kuantitas: 1 unit</div>
+                <div class="text-slate-700 font-semibold text-[11px] mt-1 flex items-center space-x-1.5">
+                  <svg class="w-3.5 h-3.5 text-brand" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+                  <span>SPX Express Reguler (No. Resi: SPXID0294829104)</span>
+                </div>
+              </div>
+            </div>
+            <div class="text-right flex-shrink-0">
+              <span class="text-slate-400 line-through text-[11px]">Rp 1.799.000</span>
+              <div class="font-black text-slate-900 text-sm">Rp 1.499.000</div>
+            </div>
+          </div>
+
+          <!-- Courier Status Highlight Box -->
+          <div class="bg-slate-50 border border-slate-200/80 p-3.5 rounded-lg text-xs text-slate-600 flex items-start space-x-2.5">
+            <svg class="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <div>
+              <strong class="text-slate-800">Status Kurir Terkini:</strong> Paket tiba di Hub Sortir Batam Batam Centre dan sedang dibawa kurir menuju alamat Politeknik Negeri Batam.
+            </div>
+          </div>
+
+          <!-- Footer Actions -->
+          <div class="flex flex-wrap items-center justify-between pt-3 border-t border-slate-100 gap-3">
+            <div class="text-xs text-slate-600">
+              Total Pembayaran: <strong class="text-base font-black text-brand ml-1">Rp 1.462.000</strong>
+            </div>
+            <div class="flex items-center space-x-2">
+              <button onclick="openTrackingModal()" class="px-4 py-2 border border-slate-200 hover:border-brand text-slate-800 text-xs font-bold rounded-lg transition">
+                Lacak Pengiriman
+              </button>
+              <button onclick="confirmOrder(this)" class="px-4 py-2 bg-slate-900 hover:bg-brand text-white text-xs font-bold rounded-lg shadow-xs transition">
+                Konfirmasi Diterima
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Order 2: Completed Order -->
+        <div class="order-card border border-slate-200 rounded-xl p-5 space-y-4 hover:shadow-xs transition" data-status="selesai">
+          <div class="flex flex-wrap items-center justify-between pb-3 border-b border-slate-100 gap-2 text-xs">
+            <div class="flex items-center space-x-2">
+              <span class="font-bold text-slate-900">Nomor Pesanan #NEX-20261104-092</span>
+              <span class="text-slate-300">|</span>
+              <span class="text-slate-500">04 Nov 2026, 10:20 WIB</span>
+            </div>
+            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">
+              Pesanan Telah Selesai
+            </span>
+          </div>
+
+          <!-- Product Details -->
+          <div class="flex items-center justify-between gap-4 text-xs">
+            <div class="flex items-center space-x-3.5">
+              <img src="images/41a39.png" alt="Amazfit GTS 2" class="w-16 h-16 object-contain bg-slate-50 border border-slate-100 rounded-lg p-1.5 flex-shrink-0">
+              <div>
+                <h4 class="font-bold text-slate-900 leading-snug">Amazfit GTS 2 Mini Smartwatch AMOLED SpO2</h4>
+                <div class="text-[11px] text-slate-500 mt-1">Varian: Meteor Black &bull; Kuantitas: 1 unit</div>
+                <div class="text-slate-400 text-[11px] mt-1">Diterima oleh Yudha Pratama pada 05 Nov 2026</div>
+              </div>
+            </div>
+            <div class="text-right flex-shrink-0">
+              <div class="font-black text-slate-900 text-sm">Rp 899.000</div>
+            </div>
+          </div>
+
+          <div class="flex flex-wrap items-center justify-between pt-3 border-t border-slate-100 gap-3">
+            <div class="text-xs text-slate-600">
+              Total Pembayaran: <strong class="text-base font-black text-brand ml-1">Rp 899.000</strong>
+            </div>
+            <a href="product-detail.html?id=4" class="px-4 py-2 bg-slate-900 hover:bg-brand text-white text-xs font-bold rounded-lg shadow-xs transition">
+              Beli Lagi
+            </a>
+          </div>
+        </div>
+
+        <!-- Empty Tab State -->
+        <div id="emptyOrdersState" class="hidden py-14 text-center">
+          <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-3 text-slate-400">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+          </div>
+          <h4 class="text-sm font-bold text-slate-800 mb-1">Tidak Ada Pesanan pada Kategori Ini</h4>
+          <p class="text-xs text-slate-500">Pilih tab status lainnya atau belanja gadget terbaru di katalog.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ACCESSIBLE TRACKING MODAL -->
+    <div id="trackingModal" class="hidden fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden border border-slate-200">
+        <div class="bg-slate-900 p-5 text-white flex items-center justify-between">
+          <div>
+            <h3 id="modalTitle" class="text-sm font-extrabold">Lacak Posisi Pengiriman Paket</h3>
+            <span class="text-xs text-slate-400">SPX Express Reguler (No. Resi SPXID0294829104)</span>
+          </div>
+          <button onclick="closeTrackingModal()" class="text-slate-400 hover:text-white p-1 rounded transition" aria-label="Tutup Dialog">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+
+        <div class="p-6 space-y-4 max-h-[70vh] overflow-y-auto custom-scrollbar">
+          <div class="relative pl-6 space-y-6 before:content-[''] before:absolute before:left-2 before:top-2 before:bottom-2 before:w-0.5 before:bg-orange-200 text-xs">
+            <div class="relative">
+              <div class="absolute -left-6 top-0.5 w-4 h-4 rounded-full bg-brand border-2 border-white shadow-xs"></div>
+              <strong class="text-slate-900 block font-bold">08 Nov 2026, 14:15 WIB</strong>
+              <p class="text-slate-600 mt-0.5">Kurir SPX Express sedang membawa paket menuju alamat penerima (Politeknik Negeri Batam).</p>
+            </div>
+
+            <div class="relative">
+              <div class="absolute -left-6 top-0.5 w-4 h-4 rounded-full bg-orange-400 border-2 border-white shadow-xs"></div>
+              <strong class="text-slate-800 block font-semibold">08 Nov 2026, 09:30 WIB</strong>
+              <p class="text-slate-600 mt-0.5">Paket tiba di Hub Sortir Batam Batam Centre.</p>
+            </div>
+
+            <div class="relative">
+              <div class="absolute -left-6 top-0.5 w-4 h-4 rounded-full bg-slate-300 border-2 border-white"></div>
+              <strong class="text-slate-800 block font-semibold">07 Nov 2026, 19:40 WIB</strong>
+              <p class="text-slate-600 mt-0.5">Paket telah diberangkatkan dari fasilitas sortir gudang pengirim.</p>
+            </div>
+
+            <div class="relative">
+              <div class="absolute -left-6 top-0.5 w-4 h-4 rounded-full bg-slate-300 border-2 border-white"></div>
+              <strong class="text-slate-800 block font-semibold">07 Nov 2026, 16:15 WIB</strong>
+              <p class="text-slate-600 mt-0.5">Penjual telah menyerahkan paket ke counter ekspedisi Batam.</p>
+            </div>
+
+            <div class="relative">
+              <div class="absolute -left-6 top-0.5 w-4 h-4 rounded-full bg-slate-300 border-2 border-white"></div>
+              <strong class="text-slate-800 block font-semibold">07 Nov 2026, 14:00 WIB</strong>
+              <p class="text-slate-600 mt-0.5">Pesanan berhasil dibuat dan pembayaran terverifikasi.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-slate-50 px-6 py-3.5 border-t border-slate-100 flex justify-end">
+          <button onclick="closeTrackingModal()" class="px-5 py-2 bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs font-bold rounded-lg transition">
+            Tutup
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    function filterStatus(status, el) {
+      document.querySelectorAll('.order-tab').forEach(tab => {
+        tab.className = 'order-tab flex-1 py-3.5 px-4 text-center border-b-2 border-transparent text-slate-500 hover:text-slate-800 whitespace-nowrap transition';
+      });
+      el.className = 'order-tab flex-1 py-3.5 px-4 text-center border-b-2 border-brand text-brand whitespace-nowrap transition';
+
+      const cards = document.querySelectorAll('.order-card');
+      let visibleCount = 0;
+      cards.forEach(card => {
+        if (status === 'semua' || card.dataset.status === status) {
+          card.classList.remove('hidden');
+          visibleCount++;
+        } else {
+          card.classList.add('hidden');
+        }
+      });
+
+      const emptyEl = document.getElementById('emptyOrdersState');
+      if (visibleCount === 0) {
+        emptyEl.classList.remove('hidden');
+      } else {
+        emptyEl.classList.add('hidden');
+      }
+    }
+
+    function openTrackingModal() {
+      const modal = document.getElementById('trackingModal');
+      modal.classList.remove('hidden');
+      modal.focus();
+    }
+
+    function closeTrackingModal() {
+      document.getElementById('trackingModal').classList.add('hidden');
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeTrackingModal();
+    });
+
+    function confirmOrder(btn) {
+      btn.textContent = "Pesanan Selesai";
+      btn.disabled = true;
+      btn.className = "px-4 py-2 bg-slate-100 text-slate-400 text-xs font-bold rounded-lg cursor-not-allowed";
+      showToast("Pesanan Dikonfirmasi", "Terima kasih telah berbelanja di Nexus Tech Store Batam.");
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('new_order') === 'true') {
+        showToast("Pesanan Berhasil", "Pesanan baru Anda telah diterima dan langsung diproses.");
+      }
+    });
+  </script>
+
+  <!-- FOOTER RESMI DENGAN 16 LOGO MITRA RESMI SHOPEE & PERBANKAN -->
+  <footer class="bg-white border-t border-slate-200 mt-16 text-slate-600 text-xs">
+    <div class="max-w-6xl mx-auto px-4 py-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+      <div>
+        <div class="flex items-center space-x-2 mb-3">
+          <div class="w-6 h-6 bg-slate-900 rounded flex items-center justify-center text-white">
+            <svg class="w-4 h-4 text-brand" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+          </div>
+          <span class="text-sm font-bold text-slate-900">Nexus Tech Store</span>
+        </div>
+        <p class="text-xs text-slate-500 leading-relaxed mb-4">
+          Toko ritel elektronik resmi berbasis di Kota Batam, menghadirkan produk teknologi terkurasi dengan garansi resmi distributor Indonesia.
+        </p>
+        <div class="text-[11px] text-slate-400 space-y-1">
+          <div>Politeknik Negeri Batam, Kepulauan Riau</div>
+          <div>Layanan Konsumen: halo@nexustech.id</div>
+        </div>
+      </div>
+
+      <div>
+        <h4 class="font-bold text-slate-900 mb-3 text-xs uppercase tracking-wider">Layanan & Garansi</h4>
+        <ul class="space-y-2 text-slate-600 text-xs">
+          <li><a href="account.html" class="hover:text-brand transition">Pusat Bantuan & Lacak Resi</a></li>
+          <li><a href="index.html" class="hover:text-brand transition">Panduan Pemesanan</a></li>
+          <li><a href="index.html" class="hover:text-brand transition">Ketentuan Garansi 1 Tahun</a></li>
+          <li><a href="cart.html" class="hover:text-brand transition">Pengembalian Barang & Dana</a></li>
+          <li><a href="index.html" class="hover:text-brand transition">Kebijakan Privasi Data</a></li>
+        </ul>
+      </div>
+
+      <!-- KOLOM METODE PEMBAYARAN RESMI -->
+      <div>
+        <h4 class="font-bold text-slate-900 mb-3 text-xs uppercase tracking-wider">Metode Pembayaran</h4>
+        <div class="grid grid-cols-3 sm:grid-cols-4 gap-2">
+          <!-- ShopeePay -->
+          <div class="bg-white border border-slate-200 rounded p-1 flex items-center justify-center h-8 hover:border-brand/60 transition shadow-xs" title="ShopeePay">
+            <svg viewBox="0 0 100 28" class="h-4 w-auto" xmlns="http://www.w3.org/2000/svg">
+              <path d="M7 8h10c0-2.8-2.2-5-5-5s-5 2.2-5 5zm-3 2h16c.6 0 1 .4 1 1v12c0 .6-.4 1-1 1H4c-.6 0-1-.4-1-1V11c0-.6.4-1 1-1zm6.2 4.5c-.8.2-1.2.5-1.2 1 0 .6.5.9 1.4 1l1.2.2c1.4.3 2.4.9 2.4 2.1 0 1.5-1.4 2.2-2.8 2.2-1.3 0-2.6-.5-3-1.4l1.3-.9c.3.6 1 1 1.7 1 .8 0 1.3-.4 1.3-.9 0-.5-.5-.8-1.3-.9l-1.3-.2c-1.5-.3-2.3-1.1-2.3-2.2 0-1.4 1.3-2.2 2.7-2.2 1.1 0 2.2.4 2.6 1.1l-1.2.9c-.3-.5-.8-.7-1.4-.7z" fill="#D9531E"/>
+              <text x="27" y="19" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="900" fill="#D9531E">Shopee<tspan fill="#0F172A" font-weight="700">Pay</tspan></text>
+            </svg>
+          </div>
+
+          <!-- SPayLater -->
+          <div class="bg-white border border-slate-200 rounded p-1 flex items-center justify-center h-8 hover:border-brand/60 transition shadow-xs" title="SPayLater">
+            <svg viewBox="0 0 95 28" class="h-4 w-auto" xmlns="http://www.w3.org/2000/svg">
+              <rect x="2" y="3" width="22" height="22" rx="4" fill="#D9531E"/>
+              <text x="13" y="19" text-anchor="middle" font-family="system-ui, sans-serif" font-size="14" font-weight="900" fill="#FFFFFF">S</text>
+              <text x="28" y="19" font-family="system-ui, sans-serif" font-size="11" font-weight="900" fill="#D9531E">Pay<tspan fill="#0F172A" font-weight="700">Later</tspan></text>
+            </svg>
+          </div>
+
+          <!-- BCA -->
+          <div class="bg-white border border-slate-200 rounded p-1 flex items-center justify-center h-8 hover:border-brand/60 transition shadow-xs" title="Bank Central Asia">
+            <img src="images/footer/logo_2.webp" onerror="this.onerror=null; this.src='https://down-id.img.susercontent.com/file/id-11134258-7rask-m3elfkyp7rvyc9.webp'" alt="BCA" class="max-h-5 max-w-[48px] object-contain">
+          </div>
+
+          <!-- Mandiri -->
+          <div class="bg-white border border-slate-200 rounded p-1 flex items-center justify-center h-8 hover:border-brand/60 transition shadow-xs" title="Bank Mandiri">
+            <img src="images/footer/logo_3.webp" onerror="this.onerror=null; this.src='https://down-id.img.susercontent.com/file/id-11134258-7rasi-m3elfnywtdgv0b.webp'" alt="Mandiri" class="max-h-5 max-w-[48px] object-contain">
+          </div>
+
+          <!-- BNI -->
+          <div class="bg-white border border-slate-200 rounded p-1 flex items-center justify-center h-8 hover:border-brand/60 transition shadow-xs" title="Bank BNI">
+            <img src="images/footer/logo_4.webp" onerror="this.onerror=null; this.src='https://down-id.img.susercontent.com/file/id-11134258-7rasa-m3elfqc3cpsg90.webp'" alt="BNI" class="max-h-5 max-w-[48px] object-contain">
+          </div>
+
+          <!-- BRI -->
+          <div class="bg-white border border-slate-200 rounded p-1 flex items-center justify-center h-8 hover:border-brand/60 transition shadow-xs" title="Bank BRI">
+            <img src="images/footer/logo_5.webp" onerror="this.onerror=null; this.src='https://down-id.img.susercontent.com/file/id-11134258-7rasc-m3elfssvqtqn58.webp'" alt="BRI" class="max-h-5 max-w-[48px] object-contain">
+          </div>
+
+          <!-- BSI -->
+          <div class="bg-white border border-slate-200 rounded p-1 flex items-center justify-center h-8 hover:border-brand/60 transition shadow-xs" title="Bank Syariah Indonesia">
+            <img src="images/footer/logo_6.webp" onerror="this.onerror=null; this.src='https://down-id.img.susercontent.com/file/id-11134258-7rask-m3elfv3kdsb4ae.webp'" alt="BSI" class="max-h-5 max-w-[48px] object-contain">
+          </div>
+
+          <!-- CIMB Niaga -->
+          <div class="bg-white border border-slate-200 rounded p-1 flex items-center justify-center h-8 hover:border-brand/60 transition shadow-xs" title="CIMB Niaga">
+            <img src="images/footer/logo_7.webp" onerror="this.onerror=null; this.src='https://down-id.img.susercontent.com/file/id-11134258-7ras8-m3elfxpckju7db.webp'" alt="CIMB Niaga" class="max-h-5 max-w-[48px] object-contain">
+          </div>
+
+          <!-- Indomaret -->
+          <div class="bg-white border border-slate-200 rounded p-1 flex items-center justify-center h-8 hover:border-brand/60 transition shadow-xs" title="Indomaret">
+            <img src="images/footer/logo_8.webp" onerror="this.onerror=null; this.src='https://down-id.img.susercontent.com/file/id-11134258-7rasc-m3elg0155yq700.webp'" alt="Indomaret" class="max-h-5 max-w-[48px] object-contain">
+          </div>
+
+          <!-- Alfamart -->
+          <div class="bg-white border border-slate-200 rounded p-1 flex items-center justify-center h-8 hover:border-brand/60 transition shadow-xs" title="Alfamart">
+            <img src="images/footer/logo_1.webp" onerror="this.onerror=null; this.src='https://down-id.img.susercontent.com/file/id-11134258-7rasg-m3elfigsva7j31.webp'" alt="Alfamart" class="max-h-5 max-w-[48px] object-contain">
+          </div>
+
+          <!-- Alfamidi -->
+          <div class="bg-white border border-slate-200 rounded p-1 flex items-center justify-center h-8 hover:border-brand/60 transition shadow-xs" title="Alfamidi">
+            <img src="images/footer/logo_9.webp" onerror="this.onerror=null; this.src='https://down-id.img.susercontent.com/file/id-11134258-7rasg-m3elgbu7vvkge8.webp'" alt="Alfamidi" class="max-h-5 max-w-[48px] object-contain">
+          </div>
+
+          <!-- QRIS -->
+          <div class="bg-white border border-slate-200 rounded p-1 flex items-center justify-center h-8 hover:border-brand/60 transition shadow-xs" title="QRIS">
+            <svg viewBox="0 0 65 28" class="h-4 w-auto" xmlns="http://www.w3.org/2000/svg">
+              <rect x="3" y="4" width="7" height="7" fill="#0F172A"/>
+              <rect x="4.5" y="5.5" width="4" height="4" fill="#FFFFFF"/>
+              <rect x="5.8" y="6.8" width="1.4" height="1.4" fill="#0F172A"/>
+              <text x="14" y="19" font-family="system-ui, sans-serif" font-size="13" font-weight="900" fill="#0F172A" letter-spacing="0.5">QRIS</text>
+              <circle cx="58" cy="8" r="2.5" fill="#D9531E"/>
+            </svg>
+          </div>
+
+          <!-- Visa -->
+          <div class="bg-white border border-slate-200 rounded p-1 flex items-center justify-center h-8 hover:border-brand/60 transition shadow-xs" title="Visa">
+            <svg viewBox="0 0 60 28" class="h-3.5 w-auto" xmlns="http://www.w3.org/2000/svg">
+              <text x="30" y="20" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="16" font-weight="900" font-style="italic" fill="#1A1F71" letter-spacing="1">VISA</text>
+            </svg>
+          </div>
+
+          <!-- Mastercard -->
+          <div class="bg-white border border-slate-200 rounded p-1 flex items-center justify-center h-8 hover:border-brand/60 transition shadow-xs" title="Mastercard">
+            <svg viewBox="0 0 60 28" class="h-4.5 w-auto" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="23" cy="14" r="9" fill="#EB001B"/>
+              <circle cx="37" cy="14" r="9" fill="#F79E1B"/>
+              <path d="M30 7.2a9 9 0 000 13.6 9 9 0 000-13.6z" fill="#FF5F00"/>
+            </svg>
+          </div>
+
+          <!-- COD -->
+          <div class="bg-white border border-slate-200 rounded p-1 flex items-center justify-center h-8 hover:border-brand/60 transition shadow-xs" title="Cash on Delivery">
+            <div class="bg-slate-900 text-brand font-black text-[10px] px-2 py-0.5 rounded tracking-wider">
+              COD
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- KOLOM JASA PENGIRIMAN RESMI -->
+      <div>
+        <h4 class="font-bold text-slate-900 mb-3 text-xs uppercase tracking-wider">Jasa Pengiriman</h4>
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+          <!-- SPX Express -->
+          <div class="bg-white border border-slate-200 rounded p-1 flex items-center justify-center h-8 hover:border-brand/60 transition shadow-xs" title="SPX Express">
+            <img src="images/footer/logo_10.webp" onerror="this.onerror=null; this.src='https://down-id.img.susercontent.com/file/id-11134258-7rasi-m3elgwdxtfqme2.webp'" alt="SPX Express" class="max-h-5 max-w-[48px] object-contain">
+          </div>
+
+          <!-- J&T Express -->
+          <div class="bg-white border border-slate-200 rounded p-1 flex items-center justify-center h-8 hover:border-brand/60 transition shadow-xs" title="J&T Express">
+            <img src="images/footer/logo_11.webp" onerror="this.onerror=null; this.src='https://down-id.img.susercontent.com/file/id-11134258-7rasj-m3elk3axne8sa2.webp'" alt="J&T Express" class="max-h-5 max-w-[48px] object-contain">
+          </div>
+
+          <!-- J&T Cargo -->
+          <div class="bg-white border border-slate-200 rounded p-1 flex items-center justify-center h-8 hover:border-brand/60 transition shadow-xs" title="J&T Cargo">
+            <img src="images/footer/logo_12.webp" onerror="this.onerror=null; this.src='https://down-id.img.susercontent.com/file/id-11134258-7ra0u-mcugpj7nj6b9b1.webp'" alt="J&T Cargo" class="max-h-5 max-w-[48px] object-contain">
+          </div>
+
+          <!-- SiCepat Ekspres -->
+          <div class="bg-white border border-slate-200 rounded p-1 flex items-center justify-center h-8 hover:border-brand/60 transition shadow-xs" title="SiCepat Ekspres">
+            <img src="images/footer/logo_13.webp" onerror="this.onerror=null; this.src='https://down-id.img.susercontent.com/file/id-11134258-7ras9-m3elkbmvgj1460.webp'" alt="SiCepat" class="max-h-5 max-w-[48px] object-contain">
+          </div>
+
+          <!-- JNE Express -->
+          <div class="bg-white border border-slate-200 rounded p-1 flex items-center justify-center h-8 hover:border-brand/60 transition shadow-xs" title="JNE Express">
+            <img src="images/footer/logo_14.webp" onerror="this.onerror=null; this.src='https://down-id.img.susercontent.com/file/id-11134258-7rasb-m3elkjsfixy0e0.webp'" alt="JNE" class="max-h-5 max-w-[48px] object-contain">
+          </div>
+
+          <!-- Anteraja -->
+          <div class="bg-white border border-slate-200 rounded p-1 flex items-center justify-center h-8 hover:border-brand/60 transition shadow-xs" title="Anteraja">
+            <img src="images/footer/logo_15.webp" onerror="this.onerror=null; this.src='https://down-id.img.susercontent.com/file/id-11134258-7rase-m3ell0woh4yg37.webp'" alt="Anteraja" class="max-h-5 max-w-[48px] object-contain">
+          </div>
+
+          <!-- Pos Indonesia -->
+          <div class="bg-white border border-slate-200 rounded p-1 flex items-center justify-center h-8 hover:border-brand/60 transition shadow-xs" title="Pos Indonesia">
+            <img src="images/footer/logo_16.webp" onerror="this.onerror=null; this.src='https://down-id.img.susercontent.com/file/id-11134258-7rasg-m3elktb3lhlk9e.webp'" alt="Pos Indonesia" class="max-h-5 max-w-[48px] object-contain">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sub-footer bar -->
+    <div class="border-t border-slate-100 py-4 bg-slate-50 text-center text-xs text-slate-500">
+      <div class="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+        <span>Hak Cipta 2026 e-shop Politeknik Negeri Batam.</span>
+        <span class="text-slate-400 text-[11px]">Sistem Terverifikasi Garansi Resmi Distributor</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- SHARED CART AND APP LOGIC SCRIPT -->
+  <script>
+    function getStoredCart() {
+      try {
+        const data = localStorage.getItem('nexus_cart');
+        if (data) {
+          return JSON.parse(data);
+        }
+      } catch (e) {
+        console.error('Error loading cart:', e);
+      }
+      const defaultCart = [
+        {
+          id: 1,
+          name: "Xiaomi Redmi 13C 8/256GB - Garansi Resmi",
+          price: 1499000,
+          originalPrice: 1799000,
+          image: "images/6ebd4.png",
+          color: "Midnight Black",
+          ram: "8/256GB",
+          qty: 1,
+          selected: true
+        },
+        {
+          id: 4,
+          name: "Amazfit GTS 2 Mini Smartwatch AMOLED",
+          price: 899000,
+          originalPrice: 1099000,
+          image: "images/41a39.png",
+          color: "Meteor Black",
+          ram: "Standard",
+          qty: 1,
+          selected: true
+        }
+      ];
+      localStorage.setItem('nexus_cart', JSON.stringify(defaultCart));
+      return defaultCart;
+    }
+
+    function saveCart(cart) {
+      localStorage.setItem('nexus_cart', JSON.stringify(cart));
+      updateCartBadge();
+    }
+
+    function updateCartBadge() {
+      const cart = getStoredCart();
+      const count = cart.reduce((sum, item) => sum + (item.qty || 1), 0);
+      const badge = document.getElementById('headerCartCount');
+      if (badge) {
+        badge.textContent = count;
+      }
+    }
+
+    function showToast(title, message) {
+      const toast = document.getElementById('globalToast');
+      const toastTitle = document.getElementById('toastTitle');
+      const toastMessage = document.getElementById('toastMessage');
+      if (!toast) return;
+
+      toastTitle.textContent = title;
+      toastMessage.textContent = message;
+
+      toast.classList.remove('translate-x-96', 'opacity-0', 'pointer-events-none');
+      toast.classList.add('translate-x-0', 'opacity-100');
+
+      setTimeout(() => {
+        toast.classList.remove('translate-x-0', 'opacity-100');
+        toast.classList.add('translate-x-96', 'opacity-0', 'pointer-events-none');
+      }, 2500);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      updateCartBadge();
+    });
+  </script>
+</body>
+</html>

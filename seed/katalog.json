@@ -1,0 +1,323 @@
+{
+  "keterangan": "Katalog contoh untuk demo (nama merek & produk diparodikan/diplesetkan untuk menghindari hak cipta). Harga & stok contoh. Foto dari Wikimedia Commons (dipotong & diperkecil), kredit tampil di /kredit-foto.",
+  "produk": [
+    {
+      "nama_produk": "iPon 16 Pro 128GB",
+      "merek": "Apel",
+      "kategori": "Handphone",
+      "harga": 16999000,
+      "harga_normal": 18999000,
+      "stok": 8,
+      "deskripsi": "Layar Super Retina XDR 6,3 inci, chip A18 Pro, kamera utama 48 MP, bodi titanium.\nWarna di foto: White Titanium.",
+      "spesifikasi": [
+        "Chip: A18 Pro",
+        "Penyimpanan: 128GB",
+        "Layar: 6,3 inci Super Retina XDR, 120Hz",
+        "Kamera belakang: 48 MP utama, 48 MP ultra wide, 12 MP telefoto 5x",
+        "Bodi: Titanium, tahan air IP68",
+        "Konektor: USB-C"
+      ],
+      "garansi": "Garansi resmi Apel Indonesia 1 tahun",
+      "foto": "iphone-16-pro.jpg",
+      "kredit": {"judul": "Back view of iPhone 16 Pro White Titanium", "pembuat": "メイド理世", "lisensi": "CC BY-SA 4.0", "url_lisensi": "https://creativecommons.org/licenses/by-sa/4.0", "halaman": "https://commons.wikimedia.org/wiki/File:Back_view_of_iPhone_16_Pro_White_Titanium.jpg"}
+    },
+    {
+      "nama_produk": "MekBuk Air 13 inci M2",
+      "merek": "Apel",
+      "kategori": "Laptop",
+      "harga": 13999000,
+      "harga_normal": 15999000,
+      "stok": 5,
+      "deskripsi": "Layar Liquid Retina 13,6 inci, chip Apel M2, tanpa kipas sehingga senyap.",
+      "spesifikasi": [
+        "Chip: Apel M2, CPU 8-core",
+        "Memori: 8GB unified memory, SSD 256GB",
+        "Layar: 13,6 inci Liquid Retina",
+        "Pendingin: Tanpa kipas (senyap)",
+        "Baterai: Hingga 18 jam",
+        "Port: 2x Thunderbolt / USB 4, MagSafe 3"
+      ],
+      "garansi": "Garansi resmi Apel Indonesia 1 tahun",
+      "foto": "macbook-air-m2.jpg",
+      "kredit": {"judul": "MacBook Air (A2681) front", "pembuat": "メイド理世", "lisensi": "CC BY-SA 4.0", "url_lisensi": "https://creativecommons.org/licenses/by-sa/4.0", "halaman": "https://commons.wikimedia.org/wiki/File:MacBook_Air_(A2681)_front.jpg"}
+    },
+    {
+      "nama_produk": "Apel Watch Series 10 42mm",
+      "merek": "Apel",
+      "kategori": "Smartwatch",
+      "harga": 6499000,
+      "harga_normal": null,
+      "stok": 10,
+      "deskripsi": "Layar OLED sudut lebar, bodi tipis, pemantauan detak jantung dan tidur.",
+      "spesifikasi": [
+        "Chip: S10 SiP",
+        "Ukuran casing: 42 mm",
+        "Layar: OLED LTPO3 sudut lebar",
+        "Kesehatan: Detak jantung, EKG, pemantauan tidur",
+        "Tahan air: 50 m (WR50)",
+        "Baterai: Hingga 18 jam"
+      ],
+      "garansi": "Garansi resmi Apel Indonesia 1 tahun",
+      "foto": "apple-watch-series-10.jpg",
+      "kredit": {"judul": "Apple Watch Series 10", "pembuat": "KK IN HK", "lisensi": "Public domain", "url_lisensi": "", "halaman": "https://commons.wikimedia.org/wiki/File:Apple_Watch_Series_10.JPG"}
+    },
+    {
+      "nama_produk": "AirPoc Pro 2 (USB-C)",
+      "merek": "Apel",
+      "kategori": "Audio",
+      "harga": 3799000,
+      "harga_normal": 4299000,
+      "stok": 15,
+      "deskripsi": "Peredam bising aktif (ANC), mode Transparansi, casing pengisian USB-C.",
+      "spesifikasi": [
+        "Chip: H2",
+        "Fitur: Peredam bising aktif, mode Transparansi Adaptif",
+        "Ketahanan: IP54",
+        "Baterai: Hingga 6 jam (30 jam dengan casing)",
+        "Pengisian: USB-C, MagSafe, Qi"
+      ],
+      "garansi": "Garansi resmi Apel Indonesia 1 tahun",
+      "foto": "airpods-pro-2.jpg",
+      "kredit": {"judul": "AirPods Pro (2nd generation)", "pembuat": "Hajoon0102", "lisensi": "CC BY-SA 4.0", "url_lisensi": "https://creativecommons.org/licenses/by-sa/4.0", "halaman": "https://commons.wikimedia.org/wiki/File:AirPods_Pro_(2nd_generation).jpg"}
+    },
+    {
+      "nama_produk": "Galaksi S24 Ultra 256GB",
+      "merek": "Samsul",
+      "kategori": "Handphone",
+      "harga": 16499000,
+      "harga_normal": 19999000,
+      "stok": 6,
+      "deskripsi": "Layar 6,8 inci QHD+, Snapdragon 8 Gen 3 for Galaksi, kamera utama 200 MP, S Pen bawaan, bodi titanium.",
+      "spesifikasi": [
+        "Prosesor: Snapdragon 8 Gen 3 for Galaksi",
+        "Memori: RAM 12GB, penyimpanan 256GB",
+        "Layar: 6,8 inci QHD+ Dynamic AMOLED 2X, 120Hz",
+        "Kamera belakang: 200 MP utama, 50 MP telefoto 5x, 12 MP ultra wide, 10 MP telefoto 3x",
+        "Baterai: 5000 mAh, pengisian 45W",
+        "Lainnya: S Pen bawaan, tahan air IP68"
+      ],
+      "garansi": "Garansi resmi Samsul Indonesia 1 tahun",
+      "foto": "galaxy-s24-ultra.jpg",
+      "kredit": {"judul": "Samsung Galaxy S24 Ultra with retail box, rear", "pembuat": "Benlisquare", "lisensi": "CC BY-SA 4.0", "url_lisensi": "https://creativecommons.org/licenses/by-sa/4.0", "halaman": "https://commons.wikimedia.org/wiki/File:Samsung_Galaxy_S24_Ultra_with_retail_box,_rear.jpg"}
+    },
+    {
+      "nama_produk": "Galaksi Watch 7 44mm",
+      "merek": "Samsul",
+      "kategori": "Smartwatch",
+      "harga": 3999000,
+      "harga_normal": null,
+      "stok": 12,
+      "deskripsi": "Wear OS, chip Exynos W1000, sensor kesehatan BioActive, tahan air 5ATM.",
+      "spesifikasi": [
+        "Chip: Exynos W1000",
+        "Sistem: Wear OS",
+        "Ukuran casing: 44 mm",
+        "Sensor: BioActive (detak jantung, EKG, komposisi tubuh)",
+        "Tahan air: 5ATM dan IP68"
+      ],
+      "garansi": "Garansi resmi Samsul Indonesia 1 tahun",
+      "foto": "galaxy-watch-7.jpg",
+      "kredit": {"judul": "Galaxy Watch7", "pembuat": "Pierre-Félix Vautrin", "lisensi": "CC0", "url_lisensi": "https://creativecommons.org/publicdomain/zero/1.0/", "halaman": "https://commons.wikimedia.org/wiki/File:Galaxy_Watch7.jpg"}
+    },
+    {
+      "nama_produk": "Redme Note 14 Pro 5G 8/256GB",
+      "merek": "Siomi",
+      "kategori": "Handphone",
+      "harga": 4299000,
+      "harga_normal": 4799000,
+      "stok": 20,
+      "deskripsi": "Layar AMOLED 6,67 inci 120Hz, kamera utama 200 MP, MediaTek Dimensity 7300-Ultra, tahan air IP68.",
+      "spesifikasi": [
+        "Prosesor: MediaTek Dimensity 7300-Ultra",
+        "Memori: RAM 8GB, penyimpanan 256GB",
+        "Layar: 6,67 inci AMOLED, 120Hz",
+        "Kamera utama: 200 MP",
+        "Baterai: 5110 mAh, pengisian 45W",
+        "Ketahanan: Tahan air IP68"
+      ],
+      "garansi": "Garansi resmi Siomi Indonesia 1 tahun",
+      "foto": "redmi-note-14-pro.jpg",
+      "kredit": {"judul": "Redmi Note 14 Pro (1)", "pembuat": "茅野ふたば", "lisensi": "CC BY-SA 4.0", "url_lisensi": "https://creativecommons.org/licenses/by-sa/4.0", "halaman": "https://commons.wikimedia.org/wiki/File:Redmi_Note_14_Pro_(1).jpg"}
+    },
+    {
+      "nama_produk": "Siomi Pad 6 8/256GB",
+      "merek": "Siomi",
+      "kategori": "Tablet",
+      "harga": 4999000,
+      "harga_normal": null,
+      "stok": 7,
+      "deskripsi": "Layar 11 inci 144Hz, Snapdragon 870, baterai 8840 mAh.\nKeyboard di foto dijual terpisah.",
+      "spesifikasi": [
+        "Prosesor: Snapdragon 870",
+        "Memori: RAM 8GB, penyimpanan 256GB",
+        "Layar: 11 inci, 144Hz",
+        "Baterai: 8840 mAh, pengisian 33W"
+      ],
+      "garansi": "Garansi resmi Siomi Indonesia 1 tahun",
+      "foto": "xiaomi-pad-6.jpg",
+      "kredit": {"judul": "Xiaomi Pad 6 display", "pembuat": "Myrat", "lisensi": "CC0", "url_lisensi": "https://creativecommons.org/publicdomain/zero/1.0/", "halaman": "https://commons.wikimedia.org/wiki/File:Xiaomi_Pad_6_display.jpg"}
+    },
+    {
+      "nama_produk": "iPet Air 11 inci M2 128GB",
+      "merek": "Apel",
+      "kategori": "Tablet",
+      "harga": 10999000,
+      "harga_normal": 11999000,
+      "stok": 6,
+      "deskripsi": "Layar Liquid Retina 11 inci, chip Apel M2, Touch ID di tombol atas.",
+      "spesifikasi": [
+        "Chip: Apel M2",
+        "Penyimpanan: 128GB",
+        "Layar: 11 inci Liquid Retina",
+        "Keamanan: Touch ID di tombol atas",
+        "Konektor: USB-C"
+      ],
+      "garansi": "Garansi resmi Apel Indonesia 1 tahun",
+      "foto": "ipad-air-m2.jpg",
+      "kredit": {"judul": "IPad Air 11-inch (M2) back side", "pembuat": "茅野ふたば", "lisensi": "CC BY-SA 4.0", "url_lisensi": "https://creativecommons.org/licenses/by-sa/4.0", "halaman": "https://commons.wikimedia.org/wiki/File:IPad_Air_11-inch_(M2)_back_side_(20250525_154602).jpg"}
+    },
+    {
+      "nama_produk": "AirPoc 4",
+      "merek": "Apel",
+      "kategori": "Audio",
+      "harga": 2199000,
+      "harga_normal": null,
+      "stok": 18,
+      "deskripsi": "Desain terbuka tanpa ujung karet, chip H2, casing pengisian USB-C.",
+      "spesifikasi": [
+        "Chip: H2",
+        "Desain: Terbuka, tanpa ujung karet",
+        "Ketahanan: IP54",
+        "Baterai: Hingga 5 jam (30 jam dengan casing)",
+        "Pengisian: USB-C"
+      ],
+      "garansi": "Garansi resmi Apel Indonesia 1 tahun",
+      "foto": "airpods-4.jpg",
+      "kredit": {"judul": "Airpods 4", "pembuat": "AppleFans 1", "lisensi": "CC0", "url_lisensi": "https://creativecommons.org/publicdomain/zero/1.0/", "halaman": "https://commons.wikimedia.org/wiki/File:Airpods_4.jpg"}
+    },
+    {
+      "nama_produk": "Apel Pensil",
+      "merek": "Apel",
+      "kategori": "Aksesoris",
+      "harga": 1999000,
+      "harga_normal": null,
+      "stok": 10,
+      "deskripsi": "Stylus untuk menulis dan menggambar di iPet. Cek kecocokan model iPet sebelum membeli.",
+      "spesifikasi": [
+        "Fungsi: Menulis, menggambar, dan anotasi di iPet",
+        "Kompatibilitas: Cek daftar model iPet yang didukung sebelum membeli"
+      ],
+      "garansi": "Garansi resmi Apel Indonesia 1 tahun",
+      "foto": "apple-pencil.jpg",
+      "kredit": {"judul": "Apple pencil", "pembuat": "Peppe2699", "lisensi": "CC BY-SA 4.0", "url_lisensi": "https://creativecommons.org/licenses/by-sa/4.0", "halaman": "https://commons.wikimedia.org/wiki/File:Apple_pencil.jpg"}
+    },
+    {
+      "nama_produk": "MegSep Charger (USB-C)",
+      "merek": "Apel",
+      "kategori": "Aksesoris",
+      "harga": 749000,
+      "harga_normal": 899000,
+      "stok": 25,
+      "deskripsi": "Pengisi daya nirkabel magnetik untuk iPon yang mendukung MegSep. Adaptor daya dijual terpisah.",
+      "spesifikasi": [
+        "Jenis: Pengisi daya nirkabel magnetik",
+        "Kompatibel: iPon dengan MegSep",
+        "Kabel: USB-C",
+        "Catatan: Adaptor daya dijual terpisah"
+      ],
+      "garansi": "Garansi resmi Apel Indonesia 1 tahun",
+      "foto": "magsafe-charger.jpg",
+      "kredit": {"judul": "MagSafe and USB-C Cable Charger for iPhone", "pembuat": "James Tamim", "lisensi": "CC BY-SA 4.0", "url_lisensi": "https://creativecommons.org/licenses/by-sa/4.0", "halaman": "https://commons.wikimedia.org/wiki/File:MagSafe_and_USB-C_Cable_Charger_for_iPhone.jpg"}
+    },
+    {
+      "nama_produk": "Galaksi Tab S9 8/128GB",
+      "merek": "Samsul",
+      "kategori": "Tablet",
+      "harga": 11999000,
+      "harga_normal": null,
+      "stok": 4,
+      "deskripsi": "Layar Dynamic AMOLED 2X 11 inci, Snapdragon 8 Gen 2 for Galaksi, S Pen di dalam kotak, tahan air IP68.",
+      "spesifikasi": [
+        "Prosesor: Snapdragon 8 Gen 2 for Galaksi",
+        "Memori: RAM 8GB, penyimpanan 128GB",
+        "Layar: 11 inci Dynamic AMOLED 2X, 120Hz",
+        "Baterai: 8400 mAh",
+        "Lainnya: S Pen di dalam kotak, tahan air IP68"
+      ],
+      "garansi": "Garansi resmi Samsul Indonesia 1 tahun",
+      "foto": "galaxy-tab-s9.jpg",
+      "kredit": {"judul": "Samsung Galaxy Tab S9", "pembuat": "AnVuong1222004", "lisensi": "CC BY-SA 4.0", "url_lisensi": "https://creativecommons.org/licenses/by-sa/4.0", "halaman": "https://commons.wikimedia.org/wiki/File:Samsung_Galaxy_Tab_S9.png"}
+    },
+    {
+      "nama_produk": "Galaksi Buds2 Pro",
+      "merek": "Samsul",
+      "kategori": "Audio",
+      "harga": 2499000,
+      "harga_normal": 3199000,
+      "stok": 14,
+      "deskripsi": "Peredam bising aktif (ANC), audio Hi-Fi 24-bit, tahan air IPX7.",
+      "spesifikasi": [
+        "Fitur: Peredam bising aktif (ANC)",
+        "Audio: Hi-Fi 24-bit",
+        "Ketahanan: IPX7",
+        "Baterai: Hingga 5 jam dengan ANC (18 jam dengan casing)"
+      ],
+      "garansi": "Garansi resmi Samsul Indonesia 1 tahun",
+      "foto": "galaxy-buds2-pro.jpg",
+      "kredit": {"judul": "Samsung Galaxy Buds2 Pro (Graphite)", "pembuat": "Gannu03", "lisensi": "CC BY-SA 4.0", "url_lisensi": "https://creativecommons.org/licenses/by-sa/4.0", "halaman": "https://commons.wikimedia.org/wiki/File:Samsung_Galaxy_Buds2_Pro_(Graphite).jpg"}
+    },
+    {
+      "nama_produk": "Siomi 14 12/256GB",
+      "merek": "Siomi",
+      "kategori": "Handphone",
+      "harga": 9999000,
+      "harga_normal": 11999000,
+      "stok": 9,
+      "deskripsi": "Layar 6,36 inci, Snapdragon 8 Gen 3, kamera 50 MP.",
+      "spesifikasi": [
+        "Prosesor: Snapdragon 8 Gen 3",
+        "Memori: RAM 12GB, penyimpanan 256GB",
+        "Layar: 6,36 inci AMOLED, 120Hz",
+        "Kamera belakang: 50 MP utama, telefoto, dan ultra wide",
+        "Baterai: 4610 mAh, pengisian 90W"
+      ],
+      "garansi": "Garansi resmi Siomi Indonesia 1 tahun",
+      "foto": "xiaomi-14.jpg",
+      "kredit": {"judul": "Xiaomi 14 rear (July 10, 2026)", "pembuat": "茅野ふたば", "lisensi": "CC BY-SA 4.0", "url_lisensi": "https://creativecommons.org/licenses/by-sa/4.0", "halaman": "https://commons.wikimedia.org/wiki/File:Xiaomi_14_rear_(July_10,_2026).jpg"}
+    },
+    {
+      "nama_produk": "Siomi Smart Band 8",
+      "merek": "Siomi",
+      "kategori": "Smartwatch",
+      "harga": 549000,
+      "harga_normal": null,
+      "stok": 30,
+      "deskripsi": "Layar AMOLED 1,62 inci, baterai hingga 16 hari, tahan air 5ATM.",
+      "spesifikasi": [
+        "Layar: 1,62 inci AMOLED",
+        "Baterai: Hingga 16 hari",
+        "Tahan air: 5ATM"
+      ],
+      "garansi": "Garansi resmi Siomi Indonesia 1 tahun",
+      "foto": "xiaomi-smart-band-8.jpg",
+      "kredit": {"judul": "Xiaomi Mi Band 8", "pembuat": "DeadJacb", "lisensi": "CC BY-SA 4.0", "url_lisensi": "https://creativecommons.org/licenses/by-sa/4.0", "halaman": "https://commons.wikimedia.org/wiki/File:Xiaomi_Mi_Band_8.jpg"}
+    },
+    {
+      "nama_produk": "Siomi Power Bank 10000mAh",
+      "merek": "Siomi",
+      "kategori": "Aksesoris",
+      "harga": 199000,
+      "harga_normal": null,
+      "stok": 40,
+      "deskripsi": "Kapasitas 10000 mAh, port USB-C dan USB-A, bodi ringkas.",
+      "spesifikasi": [
+        "Kapasitas: 10000 mAh",
+        "Port: USB-C dan USB-A",
+        "Bodi: Ringkas, mudah dibawa"
+      ],
+      "garansi": "Garansi resmi Siomi Indonesia 1 tahun",
+      "foto": "xiaomi-power-bank.jpg",
+      "kredit": {"judul": "Xiaomi 10000 mAh Power Bank", "pembuat": "YipC", "lisensi": "CC BY-SA 4.0", "url_lisensi": "https://creativecommons.org/licenses/by-sa/4.0", "halaman": "https://commons.wikimedia.org/wiki/File:Xiaomi_10000_mAh_Power_Bank.jpg"}
+    }
+  ]
+}

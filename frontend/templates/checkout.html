@@ -1,0 +1,257 @@
+{% extends "base.html" %}
+
+{% block title %}Checkout — Gadgetin{% endblock %}
+
+{% block content %}
+<main class="mx-auto min-h-hero max-w-store px-5 pt-7 lg:px-0">
+  
+  <!-- Breadcrumb -->
+  <nav aria-label="Breadcrumb" class="mb-7 flex items-center gap-2 text-xs text-muted">
+    <a href="/" class="hover:text-blue transition">Beranda</a>
+    <i data-lucide="chevron-right" class="size-3"></i>
+    <a href="/keranjang" class="hover:text-blue transition">Keranjang</a>
+    <i data-lucide="chevron-right" class="size-3"></i>
+    <span class="text-ink font-medium">Checkout</span>
+  </nav>
+
+  <!-- Success View (Hidden by default, shown upon form submit) -->
+  <div id="checkout-success-view" class="hidden mx-auto max-w-2xl px-5 py-20 text-center">
+    <span class="mx-auto flex size-20 items-center justify-center rounded-full bg-green-50 text-green-700">
+      <i data-lucide="check-circle-2" class="size-10"></i>
+    </span>
+    <p class="mb-3 mt-7 text-xs font-bold uppercase tracking-widest text-blue">
+      TERIMA KASIH SUDAH BERBELANJA
+    </p>
+    <h1 class="font-display text-3xl font-extrabold text-ink lg:text-4xl">
+      Pesananmu sudah kami terima.
+    </h1>
+    <p class="mt-4 text-sm leading-7 text-muted max-w-md mx-auto">
+      Tim Gadgetin akan segera mengonfirmasi ketersediaan dan menyiapkan pesananmu. Pembayaran dilakukan saat produk diterima (COD).
+    </p>
+
+    <div class="my-7 rounded-xl bg-surface p-6 max-w-md mx-auto border border-line">
+      <p class="text-xs text-muted">Nomor pesanan</p>
+      <p id="order-number-display" class="mt-2 break-all font-mono text-base font-bold text-ink">
+        GD-8F2B9C1A
+      </p>
+      <p id="order-total-display" class="mt-4 text-xl font-display font-extrabold text-ink">
+        Rp 0
+      </p>
+      <p class="mt-1 text-xs text-muted">
+        Menunggu konfirmasi · Bayar di tempat (COD)
+      </p>
+    </div>
+
+    <div class="flex justify-center gap-3">
+      <a
+        href="/akun"
+        class="inline-flex items-center gap-2 rounded-lg bg-ink px-6 py-3.5 text-sm font-bold text-white hover:bg-gray-800 transition"
+      >
+        <span>Lihat pesanan</span>
+        <i data-lucide="arrow-right" class="size-4"></i>
+      </a>
+      <a
+        href="/katalog"
+        class="inline-flex items-center gap-2 rounded-lg border border-line bg-white px-5 py-3 text-sm font-semibold text-ink hover:bg-surface transition"
+      >
+        Belanja lagi
+      </a>
+    </div>
+  </div>
+
+  <!-- Main Checkout Grid -->
+  <div id="checkout-main-view">
+    <!-- Page Header & Stepper -->
+    <div class="mb-8 flex flex-wrap items-center justify-between gap-4">
+      <h1 class="font-display text-3xl font-extrabold text-ink">
+        Satu langkah lagi.
+      </h1>
+      <div class="flex items-center gap-3 text-xs text-muted">
+        <span>01 Keranjang</span>
+        <i data-lucide="arrow-right" class="size-3 text-muted"></i>
+        <span class="font-bold text-blue">02 Checkout</span>
+        <i data-lucide="arrow-right" class="size-3 text-muted"></i>
+        <span>03 Selesai</span>
+      </div>
+    </div>
+
+    <div class="grid items-start gap-7 lg:grid-cols-3">
+      
+      <!-- Left: Checkout Form -->
+      <div class="lg:col-span-2">
+        <form
+          id="checkout-order-form"
+          class="space-y-6 rounded-xl border border-line bg-white p-6 sm:p-8"
+        >
+          <!-- Step 1: Shipping Info -->
+          <div class="flex items-center gap-3 border-b border-line pb-4">
+            <span class="flex size-8 items-center justify-center rounded-full bg-soft-yellow text-sm font-bold text-ink">
+              1
+            </span>
+            <h2 class="font-display text-xl font-bold text-ink">Informasi pengiriman</h2>
+          </div>
+
+          <div class="grid gap-5 sm:grid-cols-2">
+            <div>
+              <label for="recipient" class="block text-sm font-semibold text-ink mb-2">Nama penerima</label>
+              <input
+                id="recipient"
+                name="recipient"
+                type="text"
+                value="Budi Santoso"
+                required
+                class="w-full rounded-lg border border-line bg-white px-4 py-3 text-sm text-ink outline-none transition focus:border-blue focus:ring-2 focus:ring-blue/10"
+              >
+            </div>
+            <div>
+              <label for="phone" class="block text-sm font-semibold text-ink mb-2">Nomor telepon</label>
+              <input
+                id="phone"
+                name="phone"
+                type="tel"
+                placeholder="08xxxxxxxxxx"
+                value="081234567890"
+                required
+                class="w-full rounded-lg border border-line bg-white px-4 py-3 text-sm text-ink outline-none transition focus:border-blue focus:ring-2 focus:ring-blue/10"
+              >
+            </div>
+          </div>
+
+          <div>
+            <label for="address" class="block text-sm font-semibold text-ink mb-2">Alamat lengkap</label>
+            <textarea
+              id="address"
+              name="address"
+              rows="3"
+              placeholder="Jalan, nomor rumah, RT/RW, kelurahan, dan kecamatan"
+              required
+              class="w-full rounded-lg border border-line bg-white px-4 py-3 text-sm text-ink outline-none transition focus:border-blue focus:ring-2 focus:ring-blue/10"
+            >Jl. Sudirman No. 45, RT 02/RW 04, Menteng</textarea>
+          </div>
+
+          <div class="grid gap-5 sm:grid-cols-2">
+            <div>
+              <label for="city" class="block text-sm font-semibold text-ink mb-2">Kota / Kabupaten</label>
+              <input
+                id="city"
+                name="city"
+                type="text"
+                value="Jakarta Pusat"
+                required
+                class="w-full rounded-lg border border-line bg-white px-4 py-3 text-sm text-ink outline-none transition focus:border-blue focus:ring-2 focus:ring-blue/10"
+              >
+            </div>
+            <div>
+              <label for="postal" class="block text-sm font-semibold text-ink mb-2">Kode pos</label>
+              <input
+                id="postal"
+                name="postal"
+                type="text"
+                maxlength="5"
+                value="10310"
+                required
+                class="w-full rounded-lg border border-line bg-white px-4 py-3 text-sm text-ink outline-none transition focus:border-blue focus:ring-2 focus:ring-blue/10"
+              >
+            </div>
+          </div>
+
+          <!-- Step 2: Payment Method -->
+          <div class="border-t border-line pt-6">
+            <div class="mb-5 flex items-center gap-3">
+              <span class="flex size-8 items-center justify-center rounded-full bg-soft-yellow text-sm font-bold text-ink">
+                2
+              </span>
+              <h2 class="font-display text-xl font-bold text-ink">Metode pembayaran</h2>
+            </div>
+            
+            <div class="flex items-center gap-3 rounded-lg border border-blue bg-blue/5 p-4">
+              <span class="flex size-5 items-center justify-center rounded-full bg-blue text-white shrink-0">
+                <i data-lucide="check" class="size-3.5"></i>
+              </span>
+              <div>
+                <p class="text-sm font-bold text-ink">Bayar di tempat (COD)</p>
+                <p class="mt-1 text-xs text-muted">
+                  Bayar saat pesanan diterima langsung di alamatmu. Tidak ada pembayaran online.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Agreement Checkbox -->
+          <label class="flex items-start gap-2 text-xs leading-5 text-muted pt-2 cursor-pointer">
+            <input
+              type="checkbox"
+              checked
+              required
+              class="mt-1 size-4 shrink-0 accent-brand rounded cursor-pointer"
+            >
+            <span>Saya menyetujui pesanan dan bersedia menerima konfirmasi dari tim Gadgetin.</span>
+          </label>
+
+          <!-- Submit Button (Mobile / Desktop) -->
+          <div class="pt-2">
+            <button
+              type="submit"
+              id="btn-submit-order"
+              class="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-ink px-6 py-4 text-sm font-bold text-white hover:bg-gray-800 transition cursor-pointer"
+            >
+              <span>Buat pesanan sekarang</span>
+              <i data-lucide="arrow-right" class="size-4"></i>
+            </button>
+          </div>
+        </form>
+
+        <a
+          href="/keranjang"
+          class="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-blue hover:underline"
+        >
+          <i data-lucide="arrow-left" class="size-4"></i>
+          <span>Kembali ke keranjang</span>
+        </a>
+      </div>
+
+      <!-- Right: Summary Sidebar -->
+      <aside class="rounded-xl border border-line bg-white p-6">
+        <h3 class="font-display text-xl font-bold text-ink">Ringkasan belanja</h3>
+        
+        <!-- Cart Items mini list -->
+        <div id="checkout-items-list" class="my-5 space-y-4 border-y border-line py-5">
+          <!-- Populated by main.js from localStorage -->
+        </div>
+
+        <div class="mt-6 space-y-4 text-sm">
+          <div class="flex justify-between text-muted">
+            <span>Subtotal <span id="checkout-summary-count">(0 produk)</span></span>
+            <span id="checkout-summary-subtotal" class="font-semibold text-ink">Rp 0</span>
+          </div>
+          <div class="flex justify-between text-muted">
+            <span>Pengiriman reguler</span>
+            <span class="font-semibold text-green-700">Gratis</span>
+          </div>
+          <div class="flex justify-between border-t border-line pt-5">
+            <span class="font-bold text-ink">Total</span>
+            <span id="checkout-summary-total" class="font-display text-xl font-extrabold text-ink">
+              Rp 0
+            </span>
+          </div>
+        </div>
+
+        <p class="my-4 text-xs leading-5 text-muted">
+          Harga dan ketersediaan diperiksa kembali saat pesanan dibuat. Estimasi tiba 2–5 hari kerja setelah konfirmasi.
+        </p>
+
+        <p class="mt-4 flex items-center justify-center gap-1.5 text-xs text-muted">
+          <i data-lucide="shield-check" class="size-3.5 text-brand"></i>
+          Aman. Original. Langsung dari Gadgetin.
+        </p>
+
+        <div class="mt-5 flex items-center gap-3 border-t border-line pt-5 text-xs text-muted">
+          <i data-lucide="truck" class="size-5 text-blue shrink-0"></i>
+          <span>Dikemas aman untuk setiap perjalanan.</span>
+        </div>
+      </aside>
+    </div>
+  </div>
+</main>
+{% endblock %}
+

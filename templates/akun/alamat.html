@@ -1,0 +1,106 @@
+{% extends 'layouts/toko.html' %}
+{% from '_icons.html' import icon %}
+{% from '_macros.html' import field, checkbox, judul_halaman %}
+{% from '_akun.html' import area_akun %}
+{% block title %}Alamat Saya - {{ app_name }}{% endblock %}
+
+{% block content %}
+{% call area_akun('akun.alamat') %}
+<div class="lg:hidden mb-4">{{ judul_halaman('Alamat Saya', url_for('akun.profil'), 'Kembali ke profil') }}</div>
+
+<!-- SHOPEE STYLE ALAMAT CARD -->
+<div class="bg-white border border-gray-200 rounded-xs shadow-xs p-6 md:p-8">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-4 border-b border-gray-100 mb-6 gap-3">
+        <div>
+            <h1 class="text-lg font-medium text-gray-900">Alamat Saya</h1>
+            <p class="text-xs text-gray-500 mt-1">Kelola alamat pengiriman untuk kemudahan transaksi checkout (Maks. {{ maks }} alamat).</p>
+        </div>
+        {% if daftar | length < maks %}
+        <a href="#tambah-alamat" onclick="document.getElementById('form-tambah-alamat')?.scrollIntoView({behavior: 'smooth'})"
+           class="inline-flex items-center gap-1.5 bg-brand hover:bg-brand-dark text-white text-xs font-medium px-4 py-2 rounded-xs shadow-xs transition">
+            {{ icon('plus', 'w-3.5 h-3.5') }} Tambah Alamat Baru
+        </a>
+        {% endif %}
+    </div>
+
+    <!-- DAFTAR ALAMAT -->
+    <div class="divide-y divide-gray-100">
+        {% for a in daftar %}
+        <div class="py-5 flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+            <!-- Left Info -->
+            <div class="space-y-1.5 text-xs text-gray-600">
+                <div class="flex items-center gap-2">
+                    <span class="font-bold text-sm text-gray-900">{{ a.nama_penerima }}</span>
+                    <span class="text-gray-300">|</span>
+                    <span class="text-gray-500">{{ a.telepon }}</span>
+                    {% if a.utama %}
+                    <span class="border border-brand text-brand text-[10px] font-medium px-1.5 py-0.5 rounded-xs ml-1">Utama</span>
+                    {% endif %}
+                    <span class="bg-gray-100 text-gray-600 text-[10px] px-1.5 py-0.5 rounded-xs">{{ a.label }}</span>
+                </div>
+                <p class="text-gray-700 leading-relaxed max-w-xl">{{ a.alamat }}</p>
+                <p class="text-gray-500">{{ a.kota }}, {{ a.kode_pos }}</p>
+            </div>
+
+            <!-- Right Actions -->
+            <div class="flex flex-col md:items-end gap-2 text-xs shrink-0">
+                <div class="flex items-center gap-3">
+                    <a href="{{ url_for('akun.alamat_edit', alamat_id=a.id) }}" class="text-blue-600 hover:underline">Ubah</a>
+                    <form action="{{ url_for('akun.alamat_hapus', alamat_id=a.id) }}" method="POST" data-confirm="Hapus alamat {{ a.label }}?">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="text-red-500 hover:underline cursor-pointer">Hapus</button>
+                    </form>
+                </div>
+                {% if not a.utama %}
+                <form action="{{ url_for('akun.alamat_utama', alamat_id=a.id) }}" method="POST" class="mt-1">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="border border-gray-300 hover:bg-gray-50 text-gray-700 px-3 py-1.5 rounded-xs text-xs font-medium cursor-pointer transition">
+                        Atur sebagai utama
+                    </button>
+                </form>
+                {% else %}
+                <span class="text-[11px] text-gray-400 mt-1">Default pengiriman</span>
+                {% endif %}
+            </div>
+        </div>
+        {% else %}
+        <div class="text-center py-12">
+            <div class="w-14 h-14 rounded-full bg-gray-100 text-gray-400 mx-auto flex items-center justify-center mb-3">
+                {{ icon('map-pin', 'w-6 h-6') }}
+            </div>
+            <p class="text-sm font-semibold text-gray-800">Belum ada alamat tersimpan</p>
+            <p class="text-xs text-gray-500 mt-1">Simpan alamat pengiriman agar proses belanja lebih cepat.</p>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- FORM TAMBAH ALAMAT BARU -->
+    {% if daftar | length < maks %}
+    <div id="form-tambah-alamat" class="mt-8 pt-6 border-t border-gray-200">
+        <h2 class="text-sm font-bold text-gray-900 mb-4 flex items-center gap-2">
+            {{ icon('map-pin', 'w-4 h-4 text-brand') }} Tambah Alamat Baru
+        </h2>
+        <form action="{{ url_for('akun.alamat_tambah') }}" method="POST" novalidate class="space-y-4 max-w-xl">
+            {{ form.hidden_tag() }}
+            {{ field(form.label, placeholder='Contoh: Rumah, Kos, Kantor') }}
+            <div class="grid sm:grid-cols-2 gap-4">
+                {{ field(form.nama_penerima, 'user', autocomplete='name', placeholder='Nama penerima') }}
+                {{ field(form.telepon, 'phone', placeholder='081234567890', autocomplete='tel', inputmode='tel') }}
+            </div>
+            {{ field(form.alamat, rows=2, placeholder='Nama jalan, gedung, nomor rumah, RT/RW, kelurahan, kecamatan', autocomplete='street-address') }}
+            <div class="grid grid-cols-3 gap-4">
+                <div class="col-span-2">{{ field(form.kota, placeholder='Kota Batam', autocomplete='address-level2') }}</div>
+                {{ field(form.kode_pos, placeholder='29461', inputmode='numeric', maxlength=5, autocomplete='postal-code') }}
+            </div>
+            {{ checkbox(form.utama) }}
+            <div class="pt-2">
+                <button type="submit" class="bg-brand hover:bg-brand-dark text-white text-xs font-medium px-8 py-2.5 rounded-xs transition shadow-xs cursor-pointer">
+                    Simpan Alamat
+                </button>
+            </div>
+        </form>
+    </div>
+    {% endif %}
+</div>
+{% endcall %}
+{% endblock %}

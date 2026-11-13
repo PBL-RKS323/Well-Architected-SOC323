@@ -1,0 +1,260 @@
+{% extends 'layouts/toko.html' %}
+{% from '_icons.html' import icon %}
+{% from '_macros.html' import field, avatar %}
+{% from '_akun.html' import area_akun %}
+{% block title %}Profil Saya - {{ app_name }}{% endblock %}
+
+{% block content %}
+{% call area_akun('akun.profil') %}
+{% set tab = request.args.get('tab', 'profil') %}
+
+{% if tab == 'profil' %}
+<!-- SHOPEE STYLE PROFIL SAYA CARD -->
+<div class="bg-white border border-gray-200/80 rounded-xs shadow-xs p-6 md:p-8">
+    <div class="pb-4 border-b border-gray-100 mb-6">
+        <h1 class="text-lg font-medium text-gray-900">Profil Saya</h1>
+        <p class="text-xs text-gray-500 mt-1">Kelola informasi profil Anda untuk mengontrol, melindungi dan mengamankan akun</p>
+    </div>
+
+    <!-- 2 COLUMNS: FORM (LEFT) & AVATAR (RIGHT) -->
+    <div class="flex flex-col-reverse lg:flex-row gap-8 items-start">
+        <!-- FORM BIODATA DIRI -->
+        <form method="POST" action="{{ url_for('akun.pengaturan_nama') }}" class="flex-1 space-y-6 w-full" novalidate>
+            {{ nama_form.hidden_tag() }}
+
+            <!-- Username Row -->
+            <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-xs">
+                <span class="sm:w-28 sm:text-right text-gray-500 shrink-0">Username</span>
+                <span class="text-gray-900 font-medium">@{{ current_user.username }}</span>
+            </div>
+
+            <!-- Nama Lengkap Row -->
+            <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-xs">
+                <label for="nama-nama_lengkap" class="sm:w-28 sm:text-right text-gray-500 shrink-0">Nama</label>
+                <div class="flex-1 max-w-md">
+                    {{ nama_form.nama_lengkap(class="w-full border border-gray-300 rounded-xs px-3 py-2 text-xs text-gray-900 focus:border-brand focus:outline-none") }}
+                    {% for error in nama_form.nama_lengkap.errors %}
+                    <span class="text-red-500 text-[11px] block mt-1">{{ error }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Email Row -->
+            <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-xs">
+                <span class="sm:w-28 sm:text-right text-gray-500 shrink-0">Email</span>
+                <div class="flex items-center gap-2">
+                    <span class="text-gray-900 font-medium">{{ current_user.email }}</span>
+                    {% if current_user.email_terverifikasi %}
+                    <span class="text-gray-400 text-[11px]">(Terverifikasi)</span>
+                    {% endif %}
+                    <a href="{{ url_for('akun.profil', tab='keamanan') }}" class="text-blue-600 hover:underline text-[11px] ml-1">Ubah</a>
+                </div>
+            </div>
+
+            <!-- Nomor Telepon Row -->
+            <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-xs">
+                <label for="nama-telepon" class="sm:w-28 sm:text-right text-gray-500 shrink-0">Nomor Telepon</label>
+                <div class="flex-1 max-w-md">
+                    {{ nama_form.telepon(class="w-full border border-gray-300 rounded-xs px-3 py-2 text-xs text-gray-900 focus:border-brand focus:outline-none", placeholder="Tambah nomor telepon") }}
+                    {% for error in nama_form.telepon.errors %}
+                    <span class="text-red-500 text-[11px] block mt-1">{{ error }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Jenis Kelamin Row (Shopee Style Radio) -->
+            <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-xs">
+                <span class="sm:w-28 sm:text-right text-gray-500 shrink-0">Jenis Kelamin</span>
+                <div class="flex items-center gap-6">
+                    {% for val in ['Laki-laki', 'Perempuan', 'Lainnya'] %}
+                    <label class="inline-flex items-center gap-1.5 cursor-pointer text-gray-700 hover:text-brand transition">
+                        <input type="radio" name="{{ nama_form.jenis_kelamin.name }}" value="{{ val }}"
+                               class="accent-brand cursor-pointer"
+                               {% if nama_form.jenis_kelamin.data == val %}checked{% endif %}>
+                        <span>{{ val }}</span>
+                    </label>
+                    {% endfor %}
+                </div>
+                {% for error in nama_form.jenis_kelamin.errors %}
+                <span class="text-red-500 text-[11px] block mt-1">{{ error }}</span>
+                {% endfor %}
+            </div>
+
+            <!-- Tanggal Lahir Row -->
+            <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-xs">
+                <label for="nama-tanggal_lahir" class="sm:w-28 sm:text-right text-gray-500 shrink-0">Tanggal Lahir</label>
+                <div class="flex-1 max-w-md">
+                    {{ nama_form.tanggal_lahir(class="border border-gray-300 rounded-xs px-3 py-2 text-xs text-gray-900 focus:border-brand focus:outline-none") }}
+                </div>
+            </div>
+
+            <!-- Tombol Simpan -->
+            <div class="flex sm:pl-32 pt-2">
+                <button type="submit" class="bg-brand hover:bg-brand-dark text-white text-xs font-medium px-8 py-2.5 rounded-xs transition shadow-xs cursor-pointer">
+                    Simpan
+                </button>
+            </div>
+        </form>
+
+        <!-- RIGHT: FOTO PROFIL SECTION (SHOPEE STYLE) -->
+        <div class="w-full lg:w-60 lg:border-l lg:border-gray-100 lg:pl-8 flex flex-col items-center justify-center shrink-0">
+            <div class="w-24 h-24 rounded-full overflow-hidden border border-gray-200 bg-gray-50 flex items-center justify-center">
+                {{ avatar(current_user, 'w-full h-full object-cover') }}
+            </div>
+
+            <form method="POST" action="{{ url_for('akun.pengaturan_foto') }}" enctype="multipart/form-data" id="avatar-form" class="mt-4 text-center">
+                {{ avatar_form.hidden_tag() }}
+                <label for="avatar-input" class="inline-block border border-gray-300 hover:bg-gray-50 text-gray-700 text-xs font-medium px-4 py-2 rounded-xs cursor-pointer transition shadow-xs">
+                    Pilih Gambar
+                </label>
+                <input type="file" id="avatar-input" name="foto-avatar" accept="image/jpeg,image/png" class="hidden" onchange="document.getElementById('avatar-form').submit();">
+                {% for error in avatar_form.avatar.errors %}
+                <span class="text-red-500 text-[11px] block mt-1">{{ error }}</span>
+                {% endfor %}
+            </form>
+
+            <div class="text-[11px] text-gray-400 mt-3 text-center space-y-0.5 leading-tight">
+                <p>Ukuran gambar: maks. 1 MB</p>
+                <p>Format gambar: .JPEG, .PNG</p>
+            </div>
+
+            {% if current_user.avatar %}
+            <form method="POST" action="{{ url_for('akun.pengaturan_foto_hapus') }}" class="mt-2" data-confirm="Hapus foto profil?">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" class="text-[11px] text-red-500 hover:underline cursor-pointer">Hapus Foto</button>
+            </form>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% elif tab == 'keamanan' %}
+<!-- KEAMANAN & PASSWORD CARD (SHOPEE STYLE) -->
+<div class="bg-white border border-gray-200/80 rounded-xs shadow-xs p-6 md:p-8">
+    <div class="pb-4 border-b border-gray-100 mb-6">
+        <h1 class="text-lg font-medium text-gray-900">Ubah Password & Keamanan Akun</h1>
+        <p class="text-xs text-gray-500 mt-1">Untuk keamanan akun Anda, mohon untuk tidak menyebarkan password Anda ke orang lain.</p>
+    </div>
+
+    <div class="grid lg:grid-cols-2 gap-8 items-start">
+        <!-- FORM UBAH PASSWORD -->
+        <form method="POST" action="{{ url_for('akun.pengaturan_password') }}" class="space-y-4 text-xs">
+            {{ password_form.hidden_tag() }}
+            <div>
+                <label for="pw-password_sekarang" class="block text-gray-600 mb-1">Password Saat Ini</label>
+                {{ password_form.password_sekarang(class="w-full border border-gray-300 rounded-xs px-3 py-2 text-xs focus:border-brand focus:outline-none") }}
+                {% for error in password_form.password_sekarang.errors %}
+                <span class="text-red-500 text-[11px] block mt-1">{{ error }}</span>
+                {% endfor %}
+            </div>
+            <div>
+                <label for="pw-password_baru" class="block text-gray-600 mb-1">Password Baru</label>
+                {{ password_form.password_baru(class="w-full border border-gray-300 rounded-xs px-3 py-2 text-xs focus:border-brand focus:outline-none") }}
+                {% for error in password_form.password_baru.errors %}
+                <span class="text-red-500 text-[11px] block mt-1">{{ error }}</span>
+                {% endfor %}
+            </div>
+            <div>
+                <label for="pw-konfirmasi_password" class="block text-gray-600 mb-1">Konfirmasi Password Baru</label>
+                {{ password_form.konfirmasi_password(class="w-full border border-gray-300 rounded-xs px-3 py-2 text-xs focus:border-brand focus:outline-none") }}
+                {% for error in password_form.konfirmasi_password.errors %}
+                <span class="text-red-500 text-[11px] block mt-1">{{ error }}</span>
+                {% endfor %}
+            </div>
+            <button type="submit" class="bg-brand hover:bg-brand-dark text-white text-xs font-medium px-8 py-2.5 rounded-xs transition shadow-xs cursor-pointer">
+                Konfirmasi
+            </button>
+        </form>
+
+        <!-- FORM UBAH EMAIL -->
+        <div class="space-y-4 text-xs lg:border-l lg:border-gray-100 lg:pl-8">
+            <h2 class="text-sm font-semibold text-gray-900">Ubah Email Akun</h2>
+            <form method="POST" action="{{ url_for('akun.pengaturan_email') }}" class="space-y-4">
+                {{ email_form.hidden_tag() }}
+                <div>
+                    <label for="email-email_baru" class="block text-gray-600 mb-1">Alamat Email Baru</label>
+                    {{ email_form.email_baru(class="w-full border border-gray-300 rounded-xs px-3 py-2 text-xs focus:border-brand focus:outline-none") }}
+                    {% for error in email_form.email_baru.errors %}
+                    <span class="text-red-500 text-[11px] block mt-1">{{ error }}</span>
+                    {% endfor %}
+                </div>
+                <div>
+                    <label for="email-password_sekarang" class="block text-gray-600 mb-1">Konfirmasi Password Anda</label>
+                    {{ email_form.password_sekarang(class="w-full border border-gray-300 rounded-xs px-3 py-2 text-xs focus:border-brand focus:outline-none") }}
+                    {% for error in email_form.password_sekarang.errors %}
+                    <span class="text-red-500 text-[11px] block mt-1">{{ error }}</span>
+                    {% endfor %}
+                </div>
+                <button type="submit" class="bg-gray-800 hover:bg-black text-white text-xs font-medium px-6 py-2.5 rounded-xs transition shadow-xs cursor-pointer">
+                    Simpan Email
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- LOG AKTIVITAS KEAMANAN -->
+    <div class="mt-8 pt-6 border-t border-gray-100">
+        <h2 class="text-xs font-bold text-gray-900 uppercase tracking-wider mb-3">Aktivitas Keamanan Akun</h2>
+        <div class="overflow-x-auto border border-gray-200 rounded-xs">
+            <table class="w-full text-left text-xs">
+                <thead class="bg-gray-50 border-b border-gray-200 text-gray-600">
+                    <tr>
+                        <th class="py-2.5 px-3 font-semibold">Waktu (WIB)</th>
+                        <th class="py-2.5 px-3 font-semibold">Aktivitas</th>
+                        <th class="py-2.5 px-3 font-semibold">IP Address</th>
+                        <th class="py-2.5 px-3 font-semibold">Status</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100 text-gray-700">
+                    {% for log in aktivitas_keamanan %}
+                    <tr>
+                        <td class="py-2 px-3 whitespace-nowrap">{{ log.waktu }}</td>
+                        <td class="py-2 px-3 font-medium">{{ log.aktivitas }}</td>
+                        <td class="py-2 px-3 font-mono text-[11px] text-gray-500">{{ log.ip }}</td>
+                        <td class="py-2 px-3">{{ log.status }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="4" class="py-4 text-center text-gray-400">Belum ada catatan aktivitas keamanan.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% elif tab == 'favorit' %}
+<!-- TAB FAVORIT -->
+<div class="bg-white border border-gray-200/80 rounded-xs shadow-xs p-6 md:p-8">
+    <div class="pb-4 border-b border-gray-100 mb-6 flex items-center justify-between">
+        <div>
+            <h1 class="text-lg font-medium text-gray-900">Wishlist Favorit</h1>
+            <p class="text-xs text-gray-500 mt-1">Daftar produk elektronik yang Anda simpan</p>
+        </div>
+        <a href="{{ url_for('belanja.favorit') }}" class="text-xs text-brand hover:underline font-medium">Buka Halaman Penuh &rarr;</a>
+    </div>
+
+    {% if daftar_favorit %}
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+        {% for prod in daftar_favorit %}
+        <div class="border border-gray-200 rounded-xs p-3 flex flex-col justify-between hover:shadow-xs transition">
+            <a href="{{ url_for('toko.produk_detail', produk_id=prod.id) }}" class="block">
+                <img src="{{ url_for('static', filename='uploads/' ~ prod.gambar) }}" alt="{{ prod.nama_produk }}" class="w-full aspect-square object-contain mb-2">
+                <span class="block text-xs font-medium text-gray-900 line-clamp-2">{{ prod.nama_produk }}</span>
+                <span class="block text-xs font-bold text-brand mt-1">{{ prod.harga | rupiah }}</span>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-12 text-gray-400 text-xs">
+        <p>Belum ada produk favorit.</p>
+        <a href="{{ url_for('toko.jelajah') }}" class="mt-2 inline-block text-brand hover:underline">Mulai Jelajah Produk</a>
+    </div>
+    {% endif %}
+</div>
+{% endif %}
+
+{% endcall %}
+{% endblock %}

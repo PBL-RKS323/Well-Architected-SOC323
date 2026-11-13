@@ -1,0 +1,108 @@
+{% extends 'layouts/admin.html' %}
+{% from '_icons.html' import icon %}
+{% from 'admin/pesanan/_tabel.html' import tabel_pesanan %}
+{% block title %}Dasbor Admin - {{ app_name }}{% endblock %}
+{% block content %}
+<div class="flex flex-wrap items-end justify-between gap-4 mb-8">
+    <div>
+        <h1 class="font-display text-3xl font-extrabold">{{ sapaan }}, {{ admin.nama_panggilan }}</h1>
+        <p class="text-muted mt-1">Dashboard Admin &middot; perkembangan terkini di toko hari ini.</p>
+    </div>
+    <div class="flex flex-wrap gap-3">
+        {% if current_user.punya_izin('lihat_laporan') %}
+        <a href="{{ url_for('admin.laporan') }}" class="inline-flex items-center gap-2 bg-white border border-slate-200 hover:border-brand hover:text-brand font-medium px-5 py-3 rounded-full">
+            {{ icon('chart-column', 'w-5 h-5') }} Laporan Transaksi
+        </a>
+        {% endif %}
+        <a href="{{ url_for('admin.produk_tambah') }}" class="inline-flex items-center gap-2 bg-brand hover:bg-brand-dark text-white font-medium px-5 py-3 rounded-full">
+            {{ icon('plus', 'w-5 h-5') }} Tambah Produk
+        </a>
+    </div>
+</div>
+
+<div class="grid grid-cols-2 xl:grid-cols-4 gap-4 lg:gap-5 mb-8">
+    {% set kartu_utama = ('Total Pendapatan', stats.pendapatan | rupiah, 'banknote', 'bg-brand-soft text-brand', 'dari ' ~ stats.pesanan_lunas ~ ' pesanan lunas')
+        if current_user.punya_izin('lihat_laporan')
+        else ('Pesanan Lunas', stats.pesanan_lunas, 'circle-check', 'bg-brand-soft text-brand', 'pembayaran sudah diterima') %}
+    {% set kartu_stat = [
+        kartu_utama,
+        ('Total Pesanan', stats.total_pesanan, 'shopping-bag', 'bg-peach text-coral', 'tidak termasuk yang batal'),
+        ('Customer Terdaftar', stats.total_customer, 'users', 'bg-amber-100 text-amber-700', 'akun pelanggan'),
+        ('Total Produk', stats.total_produk, 'package', 'bg-brand-soft text-brand', 'di katalog'),
+    ] %}
+    {# Pendapatan jadi fokus utama (satu kartu biru penuh), kartu lain netral #}
+    {% for label, nilai, ic, warna, ket in kartu_stat %}
+    <div class="rounded-2xl p-5 {{ 'col-span-2 xl:col-span-1 bg-brand text-white' if loop.first else 'bg-white border border-slate-100' }}">
+        <div class="flex items-start justify-between">
+            <p class="text-sm {{ 'text-white' if loop.first else 'text-muted' }}">{{ label }}</p>
+            <span class="w-10 h-10 rounded-xl flex items-center justify-center {{ 'bg-white/15 text-white' if loop.first else warna }}">{{ icon(ic, 'w-5 h-5') }}</span>
+        </div>
+        <p class="font-display text-2xl xl:text-3xl font-extrabold mt-4 whitespace-nowrap">{{ nilai }}</p>
+        <p class="text-xs mt-1 {{ 'text-white' if loop.first else 'text-muted' }}">{{ ket }}</p>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="grid xl:grid-cols-3 gap-5 mb-8">
+    <section class="xl:col-span-2">
+        <h2 class="font-display text-lg font-bold">Status Operasional Toko</h2>
+        <p class="text-sm text-muted mb-4">Pesanan dan stok yang perlu ditindaklanjuti.</p>
+        <div class="grid grid-cols-2 gap-3 sm:gap-4">
+            {% set operasional = [
+                ('wallet', 'bg-brand-soft text-brand', stats.perlu_verifikasi, 'Pesanan', 'Menunggu verifikasi pembayaran', 'Tinjau Bukti', url_for('admin.pesanan', tab='verifikasi'), 'text-brand'),
+                ('truck', 'bg-brand-soft text-brand', stats.perlu_dikirim, 'Pesanan', 'Sudah dibayar, perlu dikemas & dikirim', 'Proses Pesanan', url_for('admin.pesanan', tab='diproses'), 'text-brand'),
+                ('triangle-alert', 'bg-red-50 text-coral', stats.stok_menipis, 'Produk', 'Stok menipis (5 unit atau kurang) / habis', 'Restok Sekarang', url_for('admin.produk'), 'text-coral'),
+                ('message-square', 'bg-amber-100 text-amber-700', stats.ulasan_belum_dibalas, 'Ulasan', 'Ulasan pelanggan yang belum dibalas toko', 'Balas Ulasan', url_for('admin.ulasan', filter='belum_dibalas'), 'text-brand'),
+            ] %}
+            {% for ic, warna, angka, satuan, ket, link_label, link, warna_link in operasional %}
+            <div class="bg-white border border-slate-100 rounded-2xl p-4 sm:p-5 flex flex-col">
+                <span class="w-10 h-10 rounded-xl flex items-center justify-center {{ warna }}">{{ icon(ic, 'w-5 h-5') }}</span>
+                <p class="font-display text-xl sm:text-2xl font-extrabold mt-4">{{ angka }} {{ satuan }}</p>
+                <p class="text-sm text-muted mt-1 flex-1">{{ ket }}</p>
+                <a href="{{ link }}" class="flex items-center min-h-11 mt-3 border-t border-slate-100 text-sm font-semibold {{ warna_link }}">{{ link_label }}</a>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section class="bg-white border border-slate-100 rounded-2xl p-5">
+        <h2 class="font-display text-lg font-bold">Produk Terlaris</h2>
+        <p class="text-sm text-muted">Pendapatan tertinggi dari pesanan lunas.</p>
+        <ul class="mt-4 divide-y divide-slate-100">
+            {% for t in terlaris %}
+            <li class="flex items-center justify-between gap-3 py-3">
+                <span class="min-w-0">
+                    <span class="block font-semibold truncate">{{ t.nama_produk }}</span>
+                    <span class="block text-xs text-muted">{{ t.terjual }} terjual &middot; {{ t.merek }}</span>
+                </span>
+                {% if current_user.punya_izin('lihat_laporan') %}<span class="font-semibold whitespace-nowrap">{{ t.pendapatan | rupiah }}</span>{% endif %}
+            </li>
+            {% else %}
+            <li class="py-8 text-center text-sm text-muted">Belum ada pesanan lunas.</li>
+            {% endfor %}
+        </ul>
+        {% if stok_menipis %}
+        <div class="mt-3 pt-3 border-t border-slate-100">
+            <p class="text-xs font-bold tracking-wider text-muted mb-2">STOK MENIPIS</p>
+            {% for produk in stok_menipis %}
+            <p class="flex items-center justify-between text-sm py-1">
+                <span class="truncate pr-3">{{ produk.nama_produk }}</span>
+                <span class="shrink-0 text-xs font-semibold px-2 py-0.5 rounded-full {{ 'bg-red-50 text-coral' if produk.stok == 0 else 'bg-amber-50 text-amber-700' }}">{{ 'Habis' if produk.stok == 0 else produk.stok ~ ' unit' }}</span>
+            </p>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </section>
+</div>
+
+<section class="bg-white border border-slate-100 rounded-2xl overflow-hidden">
+    <div class="flex flex-wrap items-center justify-between gap-3 p-5">
+        <div>
+            <h2 class="font-display text-lg font-bold">Pesanan Terbaru</h2>
+            <p class="text-sm text-muted">Pembelian terbaru dan status pengirimannya.</p>
+        </div>
+        <a href="{{ url_for('admin.pesanan') }}" class="inline-flex items-center min-h-11 text-sm font-medium text-brand bg-brand-soft px-4 rounded-full">Lihat Semua Pesanan</a>
+    </div>
+    {{ tabel_pesanan(pesanan_terbaru) }}
+</section>
+{% endblock %}
