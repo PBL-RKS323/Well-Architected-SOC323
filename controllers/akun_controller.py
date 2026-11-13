@@ -157,6 +157,7 @@ def ubah_email():
             return _render(email_form=form)
 
         g.user.email = form.email_baru.data.strip().lower()
+        g.user.email_terverifikasi = not email_aktif()
         db.session.commit()
         log_event("EMAIL_CHANGED", logging.WARNING, user_id=g.user.id, username=g.user.username)
         flash("Email berhasil diperbarui.", "success")

@@ -4,6 +4,7 @@ from flask import render_template, redirect, url_for, flash, request, g
 
 from controllers.toko_controller import _escape_like
 from forms.pesanan_form import AksiPesananForm
+from helpers.email import kirim_notifikasi_pesanan
 from helpers.security_logger import log_event
 from middlewares.auth_middleware import izin_required
 from models import db
@@ -126,9 +127,41 @@ def ubah_status(pesanan_id):
             b.catatan_verifikasi = form.alasan.data
     elif aksi == "batal":
         pesanan.alasan_tolak = form.alasan.data
+        for b in pesanan.daftar_transaksi:
+            if b.status != Pembayaran.STATUS_DIVERIFIKASI:
+                b.status = Pembayaran.STATUS_DITOLAK
+                b.diverifikasi_oleh = g.user.id
+                b.waktu_verifikasi = utcnow()
+                b.catatan_verifikasi = f"Dibatalkan admin: {form.alasan.data}"
     elif aksi == "kirim":
         pesanan.nomor_resi = resi
     db.session.commit()
+
+    if aksi == "terima":
+        kirim_notifikasi_pesanan(
+            pesanan, "Pembayaran Dikonfirmasi",
+            "Pembayaran untuk pesanan Anda telah berhasil diverifikasi oleh admin toko. Pesanan saat ini sedang disiapkan untuk pengemasan."
+        )
+    elif aksi == "tolak":
+        kirim_notifikasi_pesanan(
+            pesanan, "Bukti Pembayaran Ditolak",
+            f"Bukti transfer untuk pesanan Anda belum dapat diverifikasi dengan alasan: '{form.alasan.data}'. Silakan unggah bukti yang valid sebelum batas waktu pembayaran berakhir."
+        )
+    elif aksi == "kirim":
+        kirim_notifikasi_pesanan(
+            pesanan, "Pesanan Sedang Dikirim",
+            f"Pesanan Anda telah dikirim menggunakan kurir dengan nomor resi {resi}. Anda dapat melacak perkembangan kiriman melalui menu Pesanan Saya."
+        )
+    elif aksi == "siap_diambil":
+        kirim_notifikasi_pesanan(
+            pesanan, "Pesanan Siap Diambil",
+            "Pesanan Anda sudah siap diambil di outlet toko fisik kami. Mohon tunjukkan kode pesanan saat pengambilan."
+        )
+    elif aksi == "batal":
+        kirim_notifikasi_pesanan(
+            pesanan, "Pesanan Dibatalkan",
+            f"Pesanan Anda telah dibatalkan oleh admin dengan alasan: '{form.alasan.data}'."
+        )
 
     log_event(EVENT_LOG.get(aksi, "ORDER_STATUS_CHANGE"), logging.WARNING if aksi in ("tolak", "batal") else logging.INFO,
               user_id=g.user.id, kode=pesanan.kode, status_from=status_lama, status_to=status_baru)

@@ -85,6 +85,7 @@ class Pesanan(db.Model):
     updated_at = db.Column(db.DateTime, nullable=False, default=utcnow, onupdate=utcnow)
 
     user = db.relationship("User")
+    kupon = db.relationship("Kupon")
     items = db.relationship("PesananItem", backref="pesanan", cascade="all, delete-orphan",
                             order_by="PesananItem.id")
     riwayat = db.relationship("PesananRiwayat", backref="pesanan", cascade="all, delete-orphan",
@@ -154,6 +155,13 @@ class Pesanan(db.Model):
         self.riwayat.append(PesananRiwayat(status=status_baru, oleh=oleh, keterangan=keterangan))
         if status_baru == self.DIBATALKAN:
             self._kembalikan_stok()
+            self._kembalikan_kupon()
+            for b in (self.daftar_transaksi or []):
+                if b.status != "diverifikasi":
+                    b.status = "ditolak"
+                    b.waktu_verifikasi = utcnow()
+                    if not b.catatan_verifikasi:
+                        b.catatan_verifikasi = keterangan or "Pesanan dibatalkan"
         return True
 
     def _kembalikan_stok(self):
@@ -161,6 +169,15 @@ class Pesanan(db.Model):
             if item.produk_id:  # produk mungkin sudah dihapus admin
                 Produk.query.filter_by(id=item.produk_id).update(
                     {Produk.stok: Produk.stok + item.jumlah}, synchronize_session=False)
+
+    def _kembalikan_kupon(self):
+        """Mengembalikan kuota pemakaian kupon jika pesanan dibatalkan."""
+        if self.kupon_id:
+            from models.kupon import Kupon
+            Kupon.query.filter(Kupon.id == self.kupon_id, Kupon.terpakai > 0).update(
+                {Kupon.terpakai: Kupon.terpakai - 1}, synchronize_session=False)
+            if self.kupon and self.kupon.terpakai > 0:
+                self.kupon.terpakai -= 1
 
     @classmethod
     def batalkan_kedaluwarsa(cls):

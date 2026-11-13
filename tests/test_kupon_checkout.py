@@ -10,6 +10,9 @@ from models import db, utcnow
 from models.user import User
 from models.produk import Produk
 from models.kupon import Kupon
+from models.pesanan import Pesanan
+from models.keranjang import KeranjangItem
+from models.pembayaran import Pembayaran
 
 
 class TestKuponCheckout(unittest.TestCase):
@@ -67,6 +70,8 @@ class TestKuponCheckout(unittest.TestCase):
 
     def tearDown(self):
         db.session.rollback()
+        Pesanan.query.delete()
+        KeranjangItem.query.delete()
         Kupon.query.delete()
         Produk.query.delete()
         User.query.delete()
@@ -131,3 +136,63 @@ class TestKuponCheckout(unittest.TestCase):
         self.assertEqual(resp.status_code, 404)
         data = resp.get_json()
         self.assertFalse(data["valid"])
+
+    def test_kupon_dikembalikan_saat_pesanan_dibatalkan(self):
+        """Memastikan kuota terpakai kupon dikembalikan ketika pesanan dibatalkan."""
+        item = KeranjangItem(user_id=self.user.id, produk_id=self.prod.id, jumlah=1)
+        db.session.add(item)
+        db.session.commit()
+
+        with self.client.session_transaction() as sess:
+            sess["user_id"] = self.user.id
+            sess["sesi_token"] = self.user.sesi_token
+
+        # Checkout dengan kupon
+        self.client.post("/checkout", data={
+            "metode_pengiriman": "ambil",
+            "metode_pembayaran": "transfer",
+            "nama_penerima": "Tester Kupon",
+            "telepon": "081234567890",
+            "kode_kupon": "QADISKON20"
+        }, follow_redirects=True)
+
+        k = Kupon.query.filter_by(kode="QADISKON20").first()
+        self.assertEqual(k.terpakai, 1)
+
+        pesanan = Pesanan.query.filter_by(user_id=self.user.id).first()
+        self.assertIsNotNone(pesanan)
+
+        # Batalkan pesanan
+        self.client.post(f"/pesanan/{pesanan.kode}/batal", follow_redirects=True)
+
+        k_setelah = Kupon.query.filter_by(kode="QADISKON20").first()
+        self.assertEqual(k_setelah.terpakai, 0)
+
+    def test_kupon_tidak_dapat_dipakai_dua_kali_oleh_user_sama(self):
+        """Memastikan satu pelanggan tidak bisa memakai kupon promo berulang kali."""
+        item = KeranjangItem(user_id=self.user.id, produk_id=self.prod.id, jumlah=1)
+        db.session.add(item)
+        db.session.commit()
+
+        with self.client.session_transaction() as sess:
+            sess["user_id"] = self.user.id
+            sess["sesi_token"] = self.user.sesi_token
+
+        # Checkout pertama berhasil
+        self.client.post("/checkout", data={
+            "metode_pengiriman": "ambil",
+            "metode_pembayaran": "transfer",
+            "nama_penerima": "Tester Kupon",
+            "telepon": "081234567890",
+            "kode_kupon": "QADISKON20"
+        }, follow_redirects=True)
+
+        # Cek kupon lewat API untuk pesanan berikutnya -> harus ditolak karena sudah dipakai
+        resp = self.client.post("/checkout/cek-kupon", json={
+            "kode": "QADISKON20",
+            "subtotal": "1000000"
+        })
+        self.assertEqual(resp.status_code, 400)
+        data = resp.get_json()
+        self.assertFalse(data["valid"])
+        self.assertIn("1 kali per akun", data["pesan"])

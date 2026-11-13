@@ -30,3 +30,29 @@ def kirim_kode_otp(user, kode, tujuan_label):
         # Detail teknis hanya di log server, pengguna mendapat pesan umum
         log_event("EMAIL_FAILED", logging.ERROR, user_id=user.id, error=type(e).__name__)
         return False
+
+
+def kirim_notifikasi_pesanan(pesanan, judul, pesan_teks):
+    """Mengirim email notifikasi perubahan status pesanan kepada pelanggan."""
+    if not email_aktif() or not pesanan.user or not pesanan.user.email:
+        return False
+    app_name = current_app.config.get("APP_NAME", "Elektronik Store")
+    msg = Message(
+        f"[{app_name}] {judul} - {pesanan.kode}",
+        recipients=[pesanan.user.email],
+        body=(
+            f"Halo {pesanan.nama_penerima},\n\n"
+            f"{pesan_teks}\n\n"
+            f"Detail Pesanan:\n"
+            f"- Nomor Pesanan : {pesanan.kode}\n"
+            f"- Status        : {pesanan.label_status}\n"
+            f"- Total Tagihan : Rp {int(pesanan.total):,}\n\n"
+            f"Terima kasih telah berbelanja di {app_name}."
+        )
+    )
+    try:
+        mail.send(msg)
+        return True
+    except (smtplib.SMTPException, OSError) as e:
+        log_event("EMAIL_FAILED", logging.ERROR, user_id=pesanan.user_id, error=type(e).__name__)
+        return False

@@ -228,6 +228,41 @@ class TestERDBestPractice(unittest.TestCase):
         self.assertEqual(len(pesanan.daftar_transaksi), 1)
         self.assertEqual(pesanan.daftar_transaksi[0].status, Pembayaran.STATUS_PENDING)
 
+    def test_07_pembayaran_lifecycle_sync(self):
+        """Memvalidasi sinkronisasi status pembayaran saat dibatalkan / ditolak."""
+        from models.keranjang import KeranjangItem
+        prod = Produk(nama_produk="AirPods Max", merek="Apple", kategori="Audio", harga=Decimal("8000000"), stok=5, gambar="airpods.jpg")
+        db.session.add(prod)
+        db.session.commit()
+
+        client = self.app.test_client()
+        with client.session_transaction() as sess:
+            sess["user_id"] = self.cust.id
+            sess["sesi_token"] = self.cust.sesi_token
+
+        item = KeranjangItem(user_id=self.cust.id, produk_id=prod.id, jumlah=1)
+        db.session.add(item)
+        db.session.commit()
+
+        # Checkout
+        client.post("/checkout", data={
+            "metode_pengiriman": "ambil",
+            "metode_pembayaran": "transfer",
+            "nama_penerima": "Budi Belanja",
+            "telepon": "081234567890",
+        }, follow_redirects=True)
+
+        pesanan = Pesanan.query.filter_by(user_id=self.cust.id).order_by(Pesanan.id.desc()).first()
+        self.assertIsNotNone(pesanan)
+        self.assertEqual(len(pesanan.daftar_transaksi), 1)
+        self.assertEqual(pesanan.daftar_transaksi[0].status, Pembayaran.STATUS_PENDING)
+
+        # Batalkan pesanan oleh pelanggan -> status Pembayaran harus menjadi ditolak
+        client.post(f"/pesanan/{pesanan.kode}/batal", follow_redirects=True)
+        bayar = Pembayaran.query.filter_by(pesanan_id=pesanan.id).first()
+        self.assertEqual(bayar.status, Pembayaran.STATUS_DITOLAK)
+        self.assertIn("dibatalkan", bayar.catatan_verifikasi.lower())
+
 
 if __name__ == "__main__":
     unittest.main()

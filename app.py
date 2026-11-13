@@ -216,4 +216,10 @@ def register_commands(app):
         log_event("USER_CREATED", logging.WARNING, user_id=user.id, username=user.username, role=peran, by="cli")
         click.echo(f"Akun {email} ({User.LABEL_ROLE[peran]}) dibuat. Kata sandi sementara ada di {path}")
 
+    @app.cli.command("batalkan-kedaluwarsa")
+    def cli_batalkan_kedaluwarsa():
+        """Membatalkan pesanan yang melewati batas bayar (dapat dijadwalkan via cron job)."""
+        dibatalkan = Pesanan.batalkan_kedaluwarsa()
+        click.echo(f"{len(dibatalkan)} pesanan kedaluwarsa dibatalkan dan stok produk dikembalikan.")
+
 # Tidak ada objek `app` global: perintah `flask run` / `flask db ...` otomatis memanggil create_app().

@@ -109,12 +109,21 @@ def checkout():
         if kode_input:
             kupon_obj = Kupon.query.filter_by(kode=kode_input, aktif=True).first()
             if kupon_obj:
-                potongan = kupon_obj.hitung_diskon(subtotal)
-                if potongan > Decimal('0'):
-                    diskon_kupon = potongan
-                    kupon_obj.terpakai += 1
+                sudah_pakai = Pesanan.query.filter(
+                    Pesanan.user_id == g.user.id,
+                    Pesanan.kupon_id == kupon_obj.id,
+                    Pesanan.status != Pesanan.DIBATALKAN
+                ).first()
+                if sudah_pakai:
+                    flash(f"Kamu sudah pernah menggunakan voucher '{kode_input}'. Voucher hanya berlaku 1 kali per akun.", "warning")
+                    kupon_obj = None
                 else:
-                    flash(f"Kupon {kode_input} tidak memenuhi syarat minimal belanja.", "warning")
+                    potongan = kupon_obj.hitung_diskon(subtotal)
+                    if potongan > Decimal('0'):
+                        diskon_kupon = potongan
+                        kupon_obj.terpakai += 1
+                    else:
+                        flash(f"Kupon {kode_input} tidak memenuhi syarat minimal belanja.", "warning")
             else:
                 flash(f"Kode voucher '{kode_input}' tidak valid.", "warning")
 
@@ -240,6 +249,11 @@ def unggah_bukti(kode):
     pesanan.bukti_bayar = nama_file
     pesanan.bukti_diunggah_at = utcnow()
     pesanan.alasan_tolak = None
+    for b in pesanan.daftar_transaksi:
+        b.bukti_bayar = nama_file
+        b.status = Pembayaran.STATUS_PENDING
+        b.waktu_bayar = utcnow()
+        b.catatan_verifikasi = None
     db.session.commit()
 
     log_event("PAYMENT_PROOF_UPLOADED", user_id=g.user.id, kode=kode)
@@ -339,6 +353,17 @@ def cek_kupon():
 
     if kupon.kuota and kupon.terpakai >= kupon.kuota:
         return jsonify({"valid": False, "pesan": "Kuota kupon telah habis."}), 400
+
+    sudah_pakai = Pesanan.query.filter(
+        Pesanan.user_id == g.user.id,
+        Pesanan.kupon_id == kupon.id,
+        Pesanan.status != Pesanan.DIBATALKAN
+    ).first()
+    if sudah_pakai:
+        return jsonify({
+            "valid": False,
+            "pesan": f"Kamu sudah pernah menggunakan kode voucher '{kode}'. Voucher ini hanya berlaku 1 kali per akun."
+        }), 400
 
     potongan = kupon.hitung_diskon(subtotal)
     return jsonify({
