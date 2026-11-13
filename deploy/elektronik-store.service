@@ -2,8 +2,7 @@
 # Gunicorn hanya mendengar di 127.0.0.1 (tidak bisa diakses langsung dari internet, harus lewat Nginx).
 [Unit]
 Description=Elektronik Store (Flask + Gunicorn)
-After=network.target postgresql.service
-Requires=postgresql.service
+After=network.target
 
 [Service]
 User=ubuntu
