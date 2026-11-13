@@ -79,6 +79,7 @@ class TestConfig(Config):
     # Default SQLite di memori. Isi TEST_DATABASE_URL untuk menguji di PostgreSQL (database khusus uji!)
     SQLALCHEMY_DATABASE_URI = os.getenv("TEST_DATABASE_URL", "sqlite:///:memory:")
     WTF_CSRF_ENABLED = False
+    SESSION_COOKIE_SECURE = False
     # Email & Google mati secara default saat pengujian; tes email menyalakannya sendiri
     MAIL_USERNAME = MAIL_PASSWORD = MAIL_DEFAULT_SENDER = None
     MAIL_SUPPRESS_SEND = True
